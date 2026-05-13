@@ -17,9 +17,30 @@
   --c-primary-light: #f8612e;
 
   /* Brand Gradient */
-  --dbw-gradient: linear-gradient(135deg, var(--c-red), var(--c-pink), var(--c-magenta), var(--c-violet), var(--c-blue));
-  --dbw-gradient-hover: linear-gradient(135deg, var(--c-primary-dark), var(--c-red), var(--c-pink), var(--c-magenta), var(--c-violet));
-  --dbw-gradient-subtle: linear-gradient(135deg, var(--c-red) / 12%, var(--c-pink) / 10%, var(--c-magenta) / 8%, var(--c-violet) / 10%, var(--c-blue) / 12%);
+  --dbw-gradient: linear-gradient(
+    135deg,
+    var(--c-red),
+    var(--c-pink),
+    var(--c-magenta),
+    var(--c-violet),
+    var(--c-blue)
+  );
+  --dbw-gradient-hover: linear-gradient(
+    135deg,
+    var(--c-primary-dark),
+    var(--c-red),
+    var(--c-pink),
+    var(--c-magenta),
+    var(--c-violet)
+  );
+  --dbw-gradient-subtle: linear-gradient(
+    135deg,
+    var(--c-red) / 12%,
+    var(--c-pink) / 10%,
+    var(--c-magenta) / 8%,
+    var(--c-violet) / 10%,
+    var(--c-blue) / 12%
+  );
 }
 
 /* ==========================================================================
@@ -62,13 +83,17 @@
 /* Gradient bottom border (tabs, dividers) */
 .dbw-border-bottom-gradient {
   border-bottom: 2px solid transparent;
-  border-image: linear-gradient(to right, var(--c-red), var(--c-pink), var(--c-magenta), var(--c-violet), var(--c-blue)) 1;
+  border-image: linear-gradient(to right, var(--c-red), var(--c-pink), var(--c-magenta), var(--c-violet), var(--c-blue))
+    1;
 }
 
 /* Gradient focus ring */
 .dbw-focus-gradient:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--c-red), 0 0 0 4px var(--c-blue);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--c-red),
+    0 0 0 4px var(--c-blue);
   background-clip: padding-box;
 }
 
@@ -85,9 +110,10 @@
   color: #fff;
 }
 
-/* Active sidebar item with gradient left accent */
+/* Active sidebar item with gradient left accent + subtle gradient background */
 .dbw-sidebar-active {
   position: relative;
+  background: var(--dbw-gradient-subtle) !important;
 }
 .dbw-sidebar-active::before {
   content: "";

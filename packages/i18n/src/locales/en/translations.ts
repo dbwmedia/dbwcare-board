@@ -407,12 +407,12 @@ export default {
       not_right_now: "Not right now",
       create_project: {
         title: "Create a project",
-        description: "Most things start with a project.",
+        description: "Leg dein erstes Projekt an.",
         cta: "Get started",
       },
       invite_team: {
         title: "Teammitglied einladen",
-        description: "",
+        description: "Lad dein Team ein.",
         cta: "Get them in",
       },
       configure_workspace: {
@@ -421,8 +421,8 @@ export default {
         cta: "Configure this workspace",
       },
       personalize_account: {
-        title: "Mach's zu deinem.",
-        description: "Choose your picture, colors, and more.",
+        title: "Dein Board, deine Regeln.",
+        description: "Passe Farben, Logo und Einstellungen an.",
         cta: "Personalize now",
       },
       widgets: {

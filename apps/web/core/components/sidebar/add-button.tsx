@@ -15,9 +15,9 @@ export function SidebarAddButton(props: Props) {
   const { label, onClick, disabled, ...rest } = props;
   return (
     <Button
-      variant={"secondary"}
+      variant={"primary"}
       size={"xl"}
-      className="w-full justify-start"
+      className="dbw-btn-gradient w-full justify-start"
       onClick={onClick}
       disabled={disabled}
       {...rest}

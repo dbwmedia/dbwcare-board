@@ -76,8 +76,13 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
           />
         </Tooltip>
         <HelpMenuRoot />
-        <div className="flex size-8 items-center justify-center rounded-md hover:bg-layer-1-hover">
-          <UserMenuRoot />
+        <div
+          className="flex size-8 items-center justify-center rounded-full p-[2px]"
+          style={{ background: "var(--dbw-gradient)" }}
+        >
+          <div className="flex size-full items-center justify-center rounded-full bg-canvas">
+            <UserMenuRoot />
+          </div>
         </div>
       </div>
     </div>
