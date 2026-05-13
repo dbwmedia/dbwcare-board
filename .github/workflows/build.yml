@@ -14,8 +14,60 @@ env:
   IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/dbwcare-board
 
 jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+    outputs:
+      web: ${{ steps.filter.outputs.web }}
+      admin: ${{ steps.filter.outputs.admin }}
+      space: ${{ steps.filter.outputs.space }}
+      live: ${{ steps.filter.outputs.live }}
+      api: ${{ steps.filter.outputs.api }}
+      proxy: ${{ steps.filter.outputs.proxy }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            web:
+              - 'apps/web/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'turbo.json'
+              - 'branding/**'
+            admin:
+              - 'apps/admin/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'turbo.json'
+              - 'branding/**'
+            space:
+              - 'apps/space/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'turbo.json'
+              - 'branding/**'
+            live:
+              - 'apps/live/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'turbo.json'
+            api:
+              - 'apps/api/**'
+            proxy:
+              - 'apps/proxy/**'
+
   build-web:
     name: Build Web
+    needs: changes
+    if: ${{ needs.changes.outputs.web == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -41,6 +93,8 @@ jobs:
 
   build-admin:
     name: Build Admin
+    needs: changes
+    if: ${{ needs.changes.outputs.admin == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -66,6 +120,8 @@ jobs:
 
   build-space:
     name: Build Space
+    needs: changes
+    if: ${{ needs.changes.outputs.space == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -91,6 +147,8 @@ jobs:
 
   build-live:
     name: Build Live
+    needs: changes
+    if: ${{ needs.changes.outputs.live == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -116,6 +174,8 @@ jobs:
 
   build-api:
     name: Build API
+    needs: changes
+    if: ${{ needs.changes.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -141,6 +201,8 @@ jobs:
 
   build-proxy:
     name: Build Proxy
+    needs: changes
+    if: ${{ needs.changes.outputs.proxy == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-22.04
     permissions:
       contents: read
