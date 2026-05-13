@@ -11,6 +11,7 @@ import { Eye, EyeOff } from "lucide-react";
 import type { EAdminAuthErrorCodes, TAdminAuthErrorInfo } from "@plane/constants";
 import { API_BASE_URL } from "@plane/constants";
 import { Button } from "@plane/propel/button";
+import { DBWCareLogo } from "@plane/propel/icons";
 import { AuthService } from "@plane/services";
 import { Input, Spinner } from "@plane/ui";
 // components
@@ -95,7 +96,7 @@ export function InstanceSignInForm() {
   }, [errorCode, errorMessage]);
 
   const isButtonDisabled = useMemo(
-    () => (!isSubmitting && formData.email && formData.password ? false : true),
+    () => isSubmitting || !formData.email || !formData.password,
     [formData.email, formData.password, isSubmitting]
   );
 
@@ -113,10 +114,10 @@ export function InstanceSignInForm() {
       <AuthHeader />
       <div className="mt-10 flex w-full flex-grow flex-col items-center justify-center py-6">
         <div className="relative flex w-full max-w-[22.5rem] flex-col gap-6">
-          <FormHeader
-            heading="Manage your Plane instance"
-            subHeading="Configure instance-wide settings to secure your instance"
-          />
+          <div className="flex flex-col items-center gap-4">
+            <DBWCareLogo className="mb-2" />
+            <FormHeader heading="DBWCARE – Admin." subHeading="Nur für autorisierte Admins." />
+          </div>
           <form
             className="space-y-4"
             method="POST"
@@ -147,7 +148,6 @@ export function InstanceSignInForm() {
                 value={formData.email}
                 onChange={(e) => handleFormChange("email", e.target.value)}
                 autoComplete="off"
-                autoFocus
               />
             </div>
 
@@ -192,6 +192,17 @@ export function InstanceSignInForm() {
               </Button>
             </div>
           </form>
+          <p className="mt-4 text-center text-11 text-tertiary">
+            Ein Service von{" "}
+            <a
+              href="https://dbw-media.de"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium underline hover:text-secondary"
+            >
+              dbw media
+            </a>
+          </p>
         </div>
       </div>
     </>

@@ -7,6 +7,7 @@
 import { observer } from "mobx-react";
 import useSWR from "swr";
 import { useTranslation } from "@plane/i18n";
+import { DBWCareLogo } from "@plane/propel/icons";
 import type { IWorkspaceMemberInvitation } from "@plane/types";
 // components
 import { LogoSpinner } from "@/components/common/logo-spinner";
@@ -27,30 +28,30 @@ type TAuthHeader = {
 const Titles = {
   [EAuthModes.SIGN_IN]: {
     [EAuthSteps.EMAIL]: {
-      header: "Work in all dimensions.",
-      subHeader: "Welcome back to DBWCARE BOARD.",
+      header: "Dein Projektboard.",
+      subHeader: "Schön, dass du wieder da bist.",
     },
     [EAuthSteps.PASSWORD]: {
-      header: "Work in all dimensions.",
-      subHeader: "Welcome back to DBWCARE BOARD.",
+      header: "Dein Projektboard.",
+      subHeader: "Schön, dass du wieder da bist.",
     },
     [EAuthSteps.UNIQUE_CODE]: {
-      header: "Work in all dimensions.",
-      subHeader: "Welcome back to DBWCARE BOARD.",
+      header: "Dein Projektboard.",
+      subHeader: "Schön, dass du wieder da bist.",
     },
   },
   [EAuthModes.SIGN_UP]: {
     [EAuthSteps.EMAIL]: {
-      header: "Work in all dimensions.",
-      subHeader: "Create your DBWCARE BOARD account.",
+      header: "Dein Projektboard.",
+      subHeader: "Erstell dir jetzt deinen Account.",
     },
     [EAuthSteps.PASSWORD]: {
-      header: "Work in all dimensions.",
-      subHeader: "Create your DBWCARE BOARD account.",
+      header: "Dein Projektboard.",
+      subHeader: "Erstell dir jetzt deinen Account.",
     },
     [EAuthSteps.UNIQUE_CODE]: {
-      header: "Work in all dimensions.",
-      subHeader: "Create your DBWCARE BOARD account.",
+      header: "Dein Projektboard.",
+      subHeader: "Erstell dir jetzt deinen Account.",
     },
   },
 };
@@ -59,7 +60,6 @@ const workSpaceService = new WorkspaceService();
 
 export const AuthHeader = observer(function AuthHeader(props: TAuthHeader) {
   const { workspaceSlug, invitationId, invitationEmail, authMode, currentAuthStep } = props;
-  // plane imports
   const { t } = useTranslation();
 
   const { data: invitation, isLoading } = useSWR(
@@ -74,11 +74,11 @@ export const AuthHeader = observer(function AuthHeader(props: TAuthHeader) {
   const getHeaderSubHeader = (
     step: EAuthSteps,
     mode: EAuthModes,
-    invitation: IWorkspaceMemberInvitation | undefined,
+    invitationData: IWorkspaceMemberInvitation | undefined,
     email: string | undefined
   ) => {
-    if (invitation && email && invitation.email === email && invitation.workspace) {
-      const workspace = invitation.workspace;
+    if (invitationData && email && invitationData.email === email && invitationData.workspace) {
+      const workspace = invitationData.workspace;
       return {
         header: (
           <div className="relative inline-flex items-center gap-2">
@@ -87,10 +87,7 @@ export const AuthHeader = observer(function AuthHeader(props: TAuthHeader) {
             {workspace.name}
           </div>
         ),
-        subHeader:
-          mode == EAuthModes.SIGN_UP
-            ? "Create an account to start managing work with your team."
-            : "Log in to start managing work with your team.",
+        subHeader: mode == EAuthModes.SIGN_UP ? "Erstell einen Account und leg los." : "Meld dich an und leg los.",
       };
     }
 
@@ -116,9 +113,12 @@ type TAuthHeaderBase = {
 
 export function AuthHeaderBase(props: TAuthHeaderBase) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-h4-semibold text-primary">{props.header}</span>
-      <span className="text-h4-semibold text-placeholder">{props.subHeader}</span>
+    <div className="flex flex-col items-center gap-4">
+      <DBWCareLogo className="mb-2" />
+      <div className="flex flex-col gap-1 text-center">
+        <span className="text-h4-semibold text-primary">{props.header}</span>
+        <span className="text-h4-semibold text-placeholder">{props.subHeader}</span>
+      </div>
     </div>
   );
 }
