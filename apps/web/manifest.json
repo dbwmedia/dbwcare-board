@@ -1,12 +1,12 @@
 {
-  "theme_color": "#3579f6",
+  "theme_color": "#ea2b1f",
   "background_color": "#ffffff",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
-  "name": "Plane | Accelerate software development with peace.",
-  "short_name": "Plane",
-  "description": "Plane accelerated the software development by order of magnitude for agencies and product companies.",
+  "name": "DBWCARE BOARD | Project Management by DBW Media",
+  "short_name": "DBWCARE",
+  "description": "DBWCARE BOARD - project management for agencies and product companies by DBW Media.",
   "icons": [
     {
       "src": "/icon-192x192.png",

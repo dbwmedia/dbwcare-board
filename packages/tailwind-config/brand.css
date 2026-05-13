@@ -1,0 +1,20 @@
+/*
+ * DBW Care Board – Brand Tokens
+ * This file is merge-safe and should never be deleted.
+ * All brand colors are defined here and imported into variables.css.
+ */
+
+:root {
+  /* Brand Identity Colors */
+  --c-red: #ea2b1f;
+  --c-pink: #ff3c6f;
+  --c-magenta: #ff4fdd;
+  --c-violet: #7e56ff;
+  --c-blue: #00b2ff;
+  --c-primary: #ea2b1f;
+  --c-primary-dark: #d02a20;
+  --c-primary-light: #f8612e;
+
+  /* Brand Gradient */
+  --dbw-gradient: linear-gradient(135deg, #ea2b1f, #ff3c6f, #ff4fdd, #7e56ff, #00b2ff);
+}

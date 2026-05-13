@@ -19,8 +19,8 @@ import { usePublish, usePublishList } from "@/hooks/store/publish";
 import { useIssueFilter } from "@/hooks/store/use-issue-filter";
 import type { Route } from "./+types/layout";
 
-const DEFAULT_TITLE = "Plane";
-const DEFAULT_DESCRIPTION = "Made with Plane, an AI-powered work management platform with publishing capabilities.";
+const DEFAULT_TITLE = "DBWCARE BOARD";
+const DEFAULT_DESCRIPTION = "Made with DBWCARE BOARD, a project management platform by DBW Media.";
 
 interface IssueMetadata {
   name?: string;

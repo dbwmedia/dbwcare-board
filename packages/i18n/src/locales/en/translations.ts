@@ -1166,7 +1166,7 @@ export default {
       general: {
         title: "Overview of your projects, activity, and metrics",
         description:
-          "Welcome to Plane, we are excited to have you here. Create your first project and track your work items, and this page will transform into a space that helps you progress. Admins will also see items which help their team progress.",
+          "Welcome to DBWCARE BOARD, we are excited to have you here. Create your first project and track your work items, and this page will transform into a space that helps you progress. Admins will also see items which help their team progress.",
         primary_button: {
           text: "Build your first project",
           comic: {
