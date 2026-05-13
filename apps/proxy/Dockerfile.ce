@@ -1,3 +1,4 @@
+# DBW Care Board – Proxy service (Caddy)
 FROM caddy:2.10.0-builder-alpine AS caddy-builder
 
 RUN xcaddy build \
