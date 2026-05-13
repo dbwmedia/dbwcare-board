@@ -1,5 +1,3 @@
-@import "./brand.css";
-
 @custom-variant dark (&:where([data-theme*="dark"], [data-theme*="dark"] *));
 @custom-variant dark-high-contrast (&:where([data-theme="dark-contrast"], [data-theme="dark-contrast"] *));
 @custom-variant light-high-contrast (&:where([data-theme="light-contrast"], [data-theme="light-contrast"] *));
