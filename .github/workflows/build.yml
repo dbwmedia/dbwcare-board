@@ -225,3 +225,24 @@ jobs:
             ${{ env.IMAGE_PREFIX }}-proxy:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-22.04
+    needs: [build-web, build-admin, build-space, build-live, build-api, build-proxy]
+    if: ${{ always() && !cancelled() && !contains(needs.*.result, 'failure') }}
+    steps:
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "168.119.122.191 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGLIbmg5dG1FGoYq/EZfXvaYOMx6MkszlWXd6lFNxmwU" > ~/.ssh/known_hosts
+      - name: Deploy
+        run: |
+          ssh -i ~/.ssh/deploy_key root@168.119.122.191 << 'DEPLOY'
+            cd /opt/stacks/dbwcare-board
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker image prune -f
+          DEPLOY

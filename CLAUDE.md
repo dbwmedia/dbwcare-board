@@ -17,19 +17,35 @@ Selbst-gehosteter Fork von [Plane](https://github.com/makeplane/plane) (Kanban/P
 
 ## Build & Deploy
 
-### Automatischer Build (GitHub Actions)
-Jeder Push auf `main`, `master` oder `preview` triggert `.github/workflows/build.yml`:
-- Baut 6 Docker Images parallel (web, admin, space, live, backend, proxy)
-- Pusht zu `ghcr.io/dbwmedia/dbwcare-board-*:latest`
-- Nutzt GitHub's eigenen `GITHUB_TOKEN` (kein manueller Token nötig)
-- Path-Filter: Jeder Service wird nur gebaut, wenn sich relevante Dateien geändert haben
+### CI/CD Pipeline (vollautomatisch)
+```
+git push preview
+  → GitHub Actions: Detect Changes (path-filter pro Service)
+  → GitHub Actions: Build & Push Images zu ghcr.io (nur geänderte)
+  → GitHub Actions: SSH Deploy auf care.dbw-media.de
+  → docker compose pull + up -d --remove-orphans
+  → Live in ~10-15 Minuten
+```
 
-### Manuelles Deploy auf Server
+Workflow: `.github/workflows/build.yml`
+- Trigger: Push auf `main`, `master` oder `preview`
+- Baut 6 Docker Images parallel (web, admin, space, live, backend, proxy)
+- Path-Filter: Jeder Service wird nur gebaut wenn sich relevante Dateien geändert haben
+- Deploy-Job verbindet per SSH auf den Server und rollt neue Images aus
+- Nutzt `GITHUB_TOKEN` für GHCR und `DEPLOY_SSH_KEY` Secret für SSH
+
+### GitHub Secrets
+| Secret | Zweck |
+|--------|-------|
+| `DEPLOY_SSH_KEY` | Ed25519 Private Key für SSH-Deploy auf den Server |
+| `GITHUB_TOKEN` | Automatisch von GitHub bereitgestellt für GHCR-Push |
+
+### Manuelles Deploy (Fallback)
 ```bash
 ssh root@168.119.122.191
 cd /opt/stacks/dbwcare-board
 docker compose pull
-docker compose up -d
+docker compose up -d --remove-orphans
 ```
 
 ## Upstream-Updates von makeplane/plane
