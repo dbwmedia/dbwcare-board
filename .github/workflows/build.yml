@@ -12,6 +12,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/dbwcare-board
+  PLATFORMS: linux/amd64,linux/arm64
 
 jobs:
   changes:
@@ -74,6 +75,7 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
@@ -84,6 +86,7 @@ jobs:
         with:
           context: .
           file: ./apps/web/Dockerfile.web
+          platforms: ${{ env.PLATFORMS }}
           push: true
           tags: |
             ${{ env.IMAGE_PREFIX }}-web:latest
@@ -101,6 +104,7 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
@@ -111,6 +115,7 @@ jobs:
         with:
           context: .
           file: ./apps/admin/Dockerfile.admin
+          platforms: ${{ env.PLATFORMS }}
           push: true
           tags: |
             ${{ env.IMAGE_PREFIX }}-admin:latest
@@ -128,6 +133,7 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
@@ -138,6 +144,7 @@ jobs:
         with:
           context: .
           file: ./apps/space/Dockerfile.space
+          platforms: ${{ env.PLATFORMS }}
           push: true
           tags: |
             ${{ env.IMAGE_PREFIX }}-space:latest
@@ -155,6 +162,7 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
@@ -165,6 +173,7 @@ jobs:
         with:
           context: .
           file: ./apps/live/Dockerfile.live
+          platforms: ${{ env.PLATFORMS }}
           push: true
           tags: |
             ${{ env.IMAGE_PREFIX }}-live:latest
@@ -182,6 +191,7 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
@@ -192,6 +202,7 @@ jobs:
         with:
           context: ./apps/api
           file: ./apps/api/Dockerfile.api
+          platforms: ${{ env.PLATFORMS }}
           push: true
           tags: |
             ${{ env.IMAGE_PREFIX }}-backend:latest
@@ -209,6 +220,7 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
@@ -219,6 +231,7 @@ jobs:
         with:
           context: ./apps/proxy
           file: ./apps/proxy/Dockerfile.ce
+          platforms: ${{ env.PLATFORMS }}
           push: true
           tags: |
             ${{ env.IMAGE_PREFIX }}-proxy:latest
