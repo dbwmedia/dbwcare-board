@@ -30,10 +30,11 @@ on:
         required: false
         default: false
         type: boolean
-  push:
-    branches:
-      - preview
-      - canary
+  # push trigger disabled — we use build.yml for our own GHCR builds
+  # push:
+  #   branches:
+  #     - preview
+  #     - canary
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
