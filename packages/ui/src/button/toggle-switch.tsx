@@ -30,9 +30,9 @@ function ToggleSwitch(props: IToggleSwitchProps) {
         {
           "h-4 w-7": size === "sm",
           "h-5 w-9": size === "md",
-          "bg-accent-primary": value && !disabled,
+          "dbw-btn-gradient": value && !disabled,
           "bg-(--text-color-icon-placeholder)": !value && !disabled,
-          "cursor-not-allowed bg-accent-primary opacity-50": value && disabled,
+          "cursor-not-allowed dbw-btn-gradient opacity-50": value && disabled,
           "cursor-not-allowed bg-(--text-color-icon-placeholder) opacity-50": !value && disabled,
         },
         className

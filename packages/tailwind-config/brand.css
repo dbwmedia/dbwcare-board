@@ -1,5 +1,5 @@
 /*
- * DBW Care Board – Brand Tokens
+ * DBW Care Board – Brand Tokens & Gradient Utilities
  * This file is merge-safe and should never be deleted.
  * All brand colors are defined here and imported into variables.css.
  * Last updated: 2026-05-13
@@ -17,5 +17,85 @@
   --c-primary-light: #f8612e;
 
   /* Brand Gradient */
-  --dbw-gradient: linear-gradient(135deg, #ea2b1f, #ff3c6f, #ff4fdd, #7e56ff, #00b2ff);
+  --dbw-gradient: linear-gradient(135deg, var(--c-red), var(--c-pink), var(--c-magenta), var(--c-violet), var(--c-blue));
+  --dbw-gradient-hover: linear-gradient(135deg, var(--c-primary-dark), var(--c-red), var(--c-pink), var(--c-magenta), var(--c-violet));
+  --dbw-gradient-subtle: linear-gradient(135deg, var(--c-red) / 12%, var(--c-pink) / 10%, var(--c-magenta) / 8%, var(--c-violet) / 10%, var(--c-blue) / 12%);
+}
+
+/* ==========================================================================
+   DBW Gradient Utilities – applied via CSS class names
+   ========================================================================== */
+
+/* Primary buttons: gradient background */
+.dbw-btn-gradient {
+  background: var(--dbw-gradient) !important;
+  border: none !important;
+  color: #fff !important;
+  position: relative;
+  overflow: hidden;
+  transition: filter 0.2s ease;
+}
+.dbw-btn-gradient:hover {
+  filter: brightness(1.1);
+}
+.dbw-btn-gradient:active {
+  filter: brightness(0.95);
+}
+.dbw-btn-gradient:disabled {
+  filter: grayscale(0.5) opacity(0.6);
+}
+
+/* Gradient text (for links, headings) */
+.dbw-text-gradient {
+  background: var(--dbw-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient left border accent (sidebar, cards) */
+.dbw-border-left-gradient {
+  border-left: 3px solid transparent;
+  border-image: var(--dbw-gradient) 1;
+}
+
+/* Gradient bottom border (tabs, dividers) */
+.dbw-border-bottom-gradient {
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(to right, var(--c-red), var(--c-pink), var(--c-magenta), var(--c-violet), var(--c-blue)) 1;
+}
+
+/* Gradient focus ring */
+.dbw-focus-gradient:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--c-red), 0 0 0 4px var(--c-blue);
+  background-clip: padding-box;
+}
+
+/* Gradient divider line */
+.dbw-divider-gradient {
+  height: 2px;
+  border: none;
+  background: linear-gradient(to right, var(--c-red), var(--c-pink), var(--c-magenta), var(--c-violet), var(--c-blue));
+}
+
+/* Gradient badge/chip background */
+.dbw-badge-gradient {
+  background: var(--dbw-gradient);
+  color: #fff;
+}
+
+/* Active sidebar item with gradient left accent */
+.dbw-sidebar-active {
+  position: relative;
+}
+.dbw-sidebar-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--dbw-gradient);
 }

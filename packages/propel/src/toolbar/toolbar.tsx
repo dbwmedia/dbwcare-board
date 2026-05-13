@@ -130,7 +130,7 @@ const ToolbarSeparator = React.forwardRef(function ToolbarSeparator(
 });
 
 const buttonVariants = {
-  primary: "bg-accent-primary text-on-color hover:bg-accent-primary/80 focus:bg-accent-primary/80",
+  primary: "dbw-btn-gradient text-on-color",
   secondary: "bg-surface-1 text-secondary border border-subtle hover:bg-surface-2 focus:bg-surface-2",
   outline:
     "border border-accent-strong text-accent-primary bg-transparent hover:bg-accent-primary/10 focus:bg-accent-primary/20",

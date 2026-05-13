@@ -13,7 +13,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-accent-primary text-on-color hover:bg-accent-primary-hover active:bg-accent-primary-active disabled:bg-layer-disabled disabled:text-on-color-disabled",
+          "dbw-btn-gradient text-on-color disabled:bg-layer-disabled disabled:text-on-color-disabled",
         "error-fill":
           "bg-danger-primary text-on-color hover:bg-danger-primary-hover active:bg-danger-primary-active disabled:bg-layer-disabled disabled:text-disabled",
         "error-outline":
@@ -24,7 +24,7 @@ export const buttonVariants = cva(
           "bg-layer-3 text-secondary hover:bg-layer-3-hover active:bg-layer-3-active disabled:bg-layer-transparent disabled:text-disabled",
         ghost:
           "bg-layer-transparent text-secondary hover:bg-layer-transparent-hover focus:bg-layer-transparent-active active:bg-layer-transparent-active disabled:bg-layer-transparent disabled:text-disabled",
-        link: "px-0 text-link-primary underline hover:text-link-primary-hover focus:text-link-primary-hover active:text-link-primary-hover disabled:text-disabled",
+        link: "px-0 dbw-text-gradient underline hover:opacity-80 focus:opacity-80 active:opacity-80 disabled:text-disabled",
       },
       size: {
         sm: "h-5 rounded-sm px-1.5 text-caption-md-medium",

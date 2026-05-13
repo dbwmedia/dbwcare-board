@@ -55,9 +55,9 @@ export function OAuthOptions(props: OAuthOptionsProps) {
 
       {showDivider && (
         <div className="mt-4 flex items-center transition-all duration-300">
-          <hr className="w-full border-strong transition-colors duration-300" />
+          <hr className="dbw-divider-gradient w-full transition-colors duration-300" />
           <p className="mx-3 flex-shrink-0 text-center text-13 text-placeholder transition-colors duration-300">or</p>
-          <hr className="w-full border-strong transition-colors duration-300" />
+          <hr className="dbw-divider-gradient w-full transition-colors duration-300" />
         </div>
       )}
     </div>

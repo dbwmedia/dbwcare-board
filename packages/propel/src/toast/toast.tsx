@@ -88,7 +88,7 @@ const TOAST_DATA = {
   },
   [TOAST_TYPE.INFO]: {
     icon: <InfoIcon width={12} height={12} className="text-on-color" />,
-    iconBgClassName: "bg-accent-primary",
+    iconBgClassName: "dbw-btn-gradient",
     backgroundColorClassName: "bg-surface-1",
     borderColorClassName: "border-subtle",
   },

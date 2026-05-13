@@ -44,9 +44,9 @@ enum buttonIconStyling {
 
 export const buttonStyling: IButtonStyling = {
   primary: {
-    default: `text-on-color bg-accent-primary`,
-    hover: `hover:bg-accent-primary/80`,
-    pressed: `focus:text-custom-brand-40 focus:bg-accent-primary/80`,
+    default: `text-on-color dbw-btn-gradient`,
+    hover: ``,
+    pressed: ``,
     disabled: `cursor-not-allowed !bg-layer-1 !text-on-color-disabled`,
   },
   "accent-primary": {
