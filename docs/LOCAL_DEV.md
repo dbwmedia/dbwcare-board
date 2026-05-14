@@ -17,7 +17,7 @@ cp .env.dbwcare-local.example .env.dbwcare-local
 # 4. Demo-Daten anlegen (in neuem Terminal)
 ./dev-local.sh seed
 
-# 5. Login mit: dev@local / dev12345
+# 5. Login mit: dev@dbwcare.test / dev12345
 ```
 
 ## Architektur: Lokal vs. Hetzner

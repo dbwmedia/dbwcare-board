@@ -1,7 +1,7 @@
 """
 seed_dbwcare – Django Management Command
 Creates demo data for local DBWCARE development:
-- Test user (dev@local / dev12345)
+- Test user (dev@dbwcare.test / dev12345)
 - Workspace with CareSubscription (8h/month, Paket M)
 - Project with sample issues
 - Sample worklog entries
@@ -24,8 +24,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "--email",
-            default="dev@local",
-            help="Email for the test user (default: dev@local)",
+            default="dev@dbwcare.test",
+            help="Email for the test user (default: dev@dbwcare.test)",
         )
         parser.add_argument(
             "--password",
@@ -96,14 +96,19 @@ class Command(BaseCommand):
             },
         )
         if created:
-            WorkspaceMember.objects.create(
-                workspace=workspace,
-                member=user,
-                role=20,  # Admin
-            )
             self.stdout.write(self.style.SUCCESS(f"  Workspace erstellt: {slug}"))
         else:
             self.stdout.write(f"  Workspace existiert bereits: {slug}")
+
+        # Ensure user is a member (idempotent)
+        _, member_created = WorkspaceMember.objects.get_or_create(
+            workspace=workspace,
+            member=user,
+            defaults={"role": 20},  # Admin
+        )
+        if member_created:
+            self.stdout.write(self.style.SUCCESS(f"  WorkspaceMember erstellt fuer {user.email}"))
+
         return workspace
 
     def _create_subscription(self, workspace):

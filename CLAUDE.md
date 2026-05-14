@@ -40,7 +40,7 @@ Nutzen wenn: Backend-Code, Migrations, Celery-Tasks oder neue Models testen.
 ```bash
 cp .env.dbwcare-local.example .env.dbwcare-local   # einmalig
 ./dev-local.sh up                                    # Backend + Frontend
-./dev-local.sh seed                                  # Demo-Daten (dev@local / dev12345)
+./dev-local.sh seed                                  # Demo-Daten (dev@dbwcare.test / dev12345)
 ./dev-local.sh migrate                               # Migrations ausfuehren
 ./dev-local.sh shell                                 # Django-Shell
 ./dev-local.sh reset                                 # Volumes loeschen & neu starten

@@ -19,7 +19,7 @@ class WorkspaceCareSubscriptionSerializer(BaseSerializer):
 
 
 class WorkspaceMonthlyBalanceSerializer(BaseSerializer):
-    base_minutes = serializers.IntegerField(read_only=True, source="base_minutes")
+    base_minutes = serializers.IntegerField(read_only=True)
     total_available_minutes = serializers.IntegerField(read_only=True)
     remaining_minutes = serializers.IntegerField(read_only=True)
     consumption_percentage = serializers.IntegerField(read_only=True)
