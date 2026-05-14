@@ -15,6 +15,32 @@ Selbst-gehosteter Fork von [Plane](https://github.com/makeplane/plane) (Kanban/P
 | Reverse Proxy | Host-nginx + Let's Encrypt, Plane-Proxy auf Port 8082 |
 | Aktiver Branch | `preview` |
 
+## Lokale Entwicklung (empfohlen)
+
+Frontend lokal mit Hot-Reload, Backend auf dem Hetzner-Server.
+
+```bash
+# 1. Dev-Server starten (web, admin, space mit Hot-Reload)
+./dev.sh
+
+# 2. Browser oeffnen
+#    web:   http://localhost:3000
+#    admin: http://localhost:3001/god-mode
+#    space: http://localhost:3002/spaces
+
+# 3. Code aendern → sofort im Browser sichtbar (Hot-Reload)
+
+# 4. Wenn fertig: pushen → CI/CD deployed automatisch
+git push origin preview
+```
+
+**Voraussetzungen:**
+- Node.js >= 22.18.0, pnpm 10.x
+- `.env.local.dev` im Repo-Root (bereits erstellt, gitignored)
+- CORS auf dem Server erlaubt localhost (bereits konfiguriert)
+
+**Env-Variablen:** `.env.local.dev` zeigt `VITE_API_BASE_URL` auf `https://care.dbw-media.de`.
+
 ## Build & Deploy
 
 ### CI/CD Pipeline (vollautomatisch)

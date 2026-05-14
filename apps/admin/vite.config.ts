@@ -36,6 +36,22 @@ export default defineConfig(() => ({
   },
   server: {
     host: "127.0.0.1",
+    proxy: process.env.DEV_API_PROXY_TARGET
+      ? {
+          "/api": {
+            target: process.env.DEV_API_PROXY_TARGET,
+            changeOrigin: true,
+            secure: true,
+            cookieDomainRewrite: { "*": "" },
+          },
+          "/auth": {
+            target: process.env.DEV_API_PROXY_TARGET,
+            changeOrigin: true,
+            secure: true,
+            cookieDomainRewrite: { "*": "" },
+          },
+        }
+      : undefined,
   },
   // No SSR-specific overrides needed; alias resolves to ESM build
 }));
