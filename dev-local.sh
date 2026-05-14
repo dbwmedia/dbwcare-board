@@ -261,7 +261,8 @@ cmd_reset() {
 cmd_test() {
   check_env
   echo -e "${BLUE}→${NC} Backend-Tests (pytest)..."
-  dc exec api python -m pytest plane/tests/ -x -v --settings=plane.settings.test 2>&1
+  # pytest.ini setzt DJANGO_SETTINGS_MODULE=plane.settings.test
+  dc exec api python -m pytest plane/tests/ -x -v 2>&1
   echo -e "${GREEN}✓${NC} Tests abgeschlossen"
 }
 

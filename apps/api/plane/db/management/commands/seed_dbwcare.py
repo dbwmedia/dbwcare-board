@@ -143,15 +143,20 @@ class Command(BaseCommand):
             },
         )
         if created:
-            ProjectMember.objects.create(
-                project=project,
-                workspace=workspace,
-                member=user,
-                role=20,  # Admin
-            )
             self.stdout.write(self.style.SUCCESS(f"  Projekt erstellt: {project.name}"))
         else:
             self.stdout.write(f"  Projekt existiert bereits: {project.name}")
+
+        # Ensure user is project member (idempotent)
+        _, pm_created = ProjectMember.objects.get_or_create(
+            project=project,
+            workspace=workspace,
+            member=user,
+            defaults={"role": 20},
+        )
+        if pm_created:
+            self.stdout.write(self.style.SUCCESS(f"  ProjectMember erstellt fuer {user.email}"))
+
         return project
 
     def _create_issues(self, project, workspace, user):
