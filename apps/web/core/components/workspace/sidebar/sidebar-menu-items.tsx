@@ -29,6 +29,7 @@ import {
 } from "@/hooks/use-navigation-preferences";
 // plane-web imports
 import { SidebarItem } from "@/plane-web/components/workspace/sidebar/sidebar-item";
+import { CareBalanceWidget } from "@/plane-web/components/workspace/care-balance-widget";
 
 export const SidebarMenuItems = observer(function SidebarMenuItems() {
   // routers
@@ -96,6 +97,7 @@ export const SidebarMenuItems = observer(function SidebarMenuItems() {
 
   return (
     <>
+      <CareBalanceWidget />
       <div className="flex flex-col gap-0.5">
         {filteredStaticNavigationItems.map((item, _index) => (
           <SidebarItem key={`static_${_index}`} item={item} />
