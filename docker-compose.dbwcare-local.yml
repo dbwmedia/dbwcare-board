@@ -1,0 +1,201 @@
+# DBWCARE Board – Lokale Full-Stack-Entwicklungsumgebung
+# Gestartet via: dev-local.sh up
+# Oder direkt: docker compose -f docker-compose.dbwcare-local.yml --env-file .env.dbwcare-local up -d
+#
+# Frontend (web/admin/space) und Live-Service laufen NICHT hier,
+# sondern ueber dev-local.sh → pnpm dev (turbo startet alle inkl. live).
+
+services:
+  # ── Infrastruktur ──────────────────────────────────────────────────
+
+  plane-db:
+    image: postgres:15.7-alpine
+    restart: unless-stopped
+    networks:
+      - dbwcare-dev
+    command: postgres -c 'max_connections=1000'
+    volumes:
+      - dbwcare-pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  plane-redis:
+    image: valkey/valkey:7.2.11-alpine
+    restart: unless-stopped
+    networks:
+      - dbwcare-dev
+    volumes:
+      - dbwcare-redisdata:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  plane-mq:
+    image: rabbitmq:3.13.6-management-alpine
+    restart: unless-stopped
+    networks:
+      - dbwcare-dev
+    volumes:
+      - dbwcare-rabbitmq:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  plane-minio:
+    image: minio/minio
+    restart: unless-stopped
+    networks:
+      - dbwcare-dev
+    command: server /export --console-address ":9090"
+    volumes:
+      - dbwcare-uploads:/export
+    environment:
+      MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Minio bucket erstellen (einmalig, dann exit)
+  create-bucket:
+    image: minio/mc
+    networks:
+      - dbwcare-dev
+    depends_on:
+      plane-minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://plane-minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} &&
+      mc mb local/${AWS_S3_BUCKET_NAME} -p &&
+      mc anonymous set download local/${AWS_S3_BUCKET_NAME}
+      "
+    restart: "no"
+
+  # ── Backend Services ───────────────────────────────────────────────
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: unless-stopped
+    networks:
+      - dbwcare-dev
+    volumes:
+      - ./apps/api:/code
+    command: ./bin/docker-entrypoint-api-local.sh
+    env_file:
+      - .env.dbwcare-local
+    depends_on:
+      plane-db:
+        condition: service_healthy
+      plane-redis:
+        condition: service_healthy
+      plane-mq:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  migrator:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: "no"
+    networks:
+      - dbwcare-dev
+    volumes:
+      - ./apps/api:/code
+    command: ./bin/docker-entrypoint-migrator.sh --settings=plane.settings.local
+    env_file:
+      - .env.dbwcare-local
+    depends_on:
+      plane-db:
+        condition: service_healthy
+      plane-redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: unless-stopped
+    networks:
+      - dbwcare-dev
+    volumes:
+      - ./apps/api:/code
+    command: ./bin/docker-entrypoint-worker.sh
+    env_file:
+      - .env.dbwcare-local
+    depends_on:
+      plane-db:
+        condition: service_healthy
+      plane-redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+
+  beat-worker:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: unless-stopped
+    networks:
+      - dbwcare-dev
+    volumes:
+      - ./apps/api:/code
+    command: ./bin/docker-entrypoint-beat.sh
+    env_file:
+      - .env.dbwcare-local
+    depends_on:
+      plane-db:
+        condition: service_healthy
+      plane-redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+
+volumes:
+  dbwcare-pgdata:
+  dbwcare-redisdata:
+  dbwcare-uploads:
+  dbwcare-rabbitmq:
+
+networks:
+  dbwcare-dev:
+    driver: bridge

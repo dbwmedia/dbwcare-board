@@ -6,6 +6,9 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
+const proxyTarget = process.env.DEV_API_PROXY_TARGET;
+const proxySecure = proxyTarget?.startsWith("https") ?? false;
+
 // Expose only vars starting with VITE_
 const viteEnv = Object.keys(process.env)
   .filter((k) => k.startsWith("VITE_"))
@@ -33,24 +36,24 @@ export default defineConfig(() => ({
   },
   server: {
     host: "127.0.0.1",
-    proxy: process.env.DEV_API_PROXY_TARGET
+    proxy: proxyTarget
       ? {
           "/api": {
-            target: process.env.DEV_API_PROXY_TARGET,
+            target: proxyTarget,
             changeOrigin: true,
-            secure: true,
+            secure: proxySecure,
             cookieDomainRewrite: { "*": "" },
           },
           "/auth": {
-            target: process.env.DEV_API_PROXY_TARGET,
+            target: proxyTarget,
             changeOrigin: true,
-            secure: true,
+            secure: proxySecure,
             cookieDomainRewrite: { "*": "" },
           },
           "/static": {
-            target: process.env.DEV_API_PROXY_TARGET,
+            target: proxyTarget,
             changeOrigin: true,
-            secure: true,
+            secure: proxySecure,
           },
         }
       : undefined,

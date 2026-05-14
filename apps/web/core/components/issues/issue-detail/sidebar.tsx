@@ -41,6 +41,7 @@ import { WorkItemAdditionalSidebarProperties } from "@/plane-web/components/issu
 import { IssueParentSelectRoot } from "@/plane-web/components/issues/issue-details/parent-select-root";
 import { DateAlert } from "@/plane-web/components/issues/issue-details/sidebar/date-alert";
 import { TransferHopInfo } from "@/plane-web/components/issues/issue-details/sidebar/transfer-hop-info";
+import { IssueRecurrenceProperty } from "@/plane-web/components/issues/recurrence/recurrence-property";
 import { IssueWorklogProperty } from "@/plane-web/components/issues/worklog/property";
 import { SidebarPropertyListItem } from "@/components/common/layout/sidebar/property-list-item";
 import { IssueCycleSelect } from "./cycle-select";
@@ -260,6 +261,13 @@ export const IssueDetailsSidebar = observer(function IssueDetailsSidebar(props: 
             </SidebarPropertyListItem>
 
             <IssueWorklogProperty
+              workspaceSlug={workspaceSlug}
+              projectId={projectId}
+              issueId={issueId}
+              disabled={!isEditable}
+            />
+
+            <IssueRecurrenceProperty
               workspaceSlug={workspaceSlug}
               projectId={projectId}
               issueId={issueId}

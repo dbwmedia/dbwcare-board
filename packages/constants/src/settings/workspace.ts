@@ -56,6 +56,13 @@ export const WORKSPACE_SETTINGS: Record<TWorkspaceSettingsTabs, TWorkspaceSettin
     access: [EUserWorkspaceRoles.ADMIN],
     highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/webhooks/`,
   },
+  care: {
+    key: "care",
+    i18n_label: "dbwcare.care_settings",
+    href: `/settings/care`,
+    access: [EUserWorkspaceRoles.ADMIN],
+    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/care/`,
+  },
 };
 
 export const WORKSPACE_SETTINGS_ACCESS = Object.fromEntries(
@@ -69,6 +76,6 @@ export const GROUPED_WORKSPACE_SETTINGS: Record<WORKSPACE_SETTINGS_CATEGORY, TWo
     WORKSPACE_SETTINGS["billing-and-plans"],
     WORKSPACE_SETTINGS["export"],
   ],
-  [WORKSPACE_SETTINGS_CATEGORY.FEATURES]: [],
+  [WORKSPACE_SETTINGS_CATEGORY.FEATURES]: [WORKSPACE_SETTINGS["care"]],
   [WORKSPACE_SETTINGS_CATEGORY.DEVELOPER]: [WORKSPACE_SETTINGS["webhooks"]],
 };

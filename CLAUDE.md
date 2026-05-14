@@ -15,31 +15,36 @@ Selbst-gehosteter Fork von [Plane](https://github.com/makeplane/plane) (Kanban/P
 | Reverse Proxy | Host-nginx + Let's Encrypt, Plane-Proxy auf Port 8082 |
 | Aktiver Branch | `preview` |
 
-## Lokale Entwicklung (empfohlen)
+## Lokale Entwicklung
 
-Frontend lokal mit Hot-Reload, Backend auf dem Hetzner-Server.
+Vollstaendige Anleitung: **[docs/LOCAL_DEV.md](docs/LOCAL_DEV.md)**
+
+Es gibt zwei Dev-Workflows:
+
+### `./dev.sh` — Frontend lokal, Backend Hetzner (Standard)
+Frontend mit Hot-Reload, API-Calls gehen via Vite-Proxy an `care.dbw-media.de`.
+Nutzen wenn: reine Frontend-Arbeit, kein Backend-Code geaendert.
 
 ```bash
-# 1. Dev-Server starten (web, admin, space mit Hot-Reload)
 ./dev.sh
-
-# 2. Browser oeffnen
-#    web:   http://localhost:3000
-#    admin: http://localhost:3001/god-mode
-#    space: http://localhost:3002/spaces
-
-# 3. Code aendern → sofort im Browser sichtbar (Hot-Reload)
-
-# 4. Wenn fertig: pushen → CI/CD deployed automatisch
-git push origin preview
+# web: http://localhost:3000 | admin: http://localhost:3001/god-mode
 ```
 
-**Voraussetzungen:**
-- Node.js >= 22.18.0, pnpm 10.x
-- `.env.local.dev` im Repo-Root (bereits erstellt, gitignored)
-- CORS auf dem Server erlaubt localhost (bereits konfiguriert)
+**Voraussetzungen:** Node.js >= 22.18.0, pnpm 10.x, `.env.local.dev` im Repo-Root (gitignored).
 
-**Env-Variablen:** `.env.local.dev` zeigt `VITE_API_BASE_URL` auf `https://care.dbw-media.de`.
+### `./dev-local.sh` — Full-Stack lokal (Backend + Frontend)
+Backend (Django API, Postgres, Redis, RabbitMQ, Minio, Celery) laeuft in Docker,
+Frontend mit Hot-Reload gegen `localhost:8000`.
+Nutzen wenn: Backend-Code, Migrations, Celery-Tasks oder neue Models testen.
+
+```bash
+cp .env.dbwcare-local.example .env.dbwcare-local   # einmalig
+./dev-local.sh up                                    # Backend + Frontend
+./dev-local.sh seed                                  # Demo-Daten (dev@dbwcare.test / dev12345)
+./dev-local.sh migrate                               # Migrations ausfuehren
+./dev-local.sh shell                                 # Django-Shell
+./dev-local.sh reset                                 # Volumes loeschen & neu starten
+```
 
 ## Build & Deploy
 
@@ -180,6 +185,35 @@ apps/space/app/issues/[anchor]/layout.tsx → DEFAULT_TITLE
 | proxy (Caddy) | `apps/proxy/Dockerfile.ce` | `apps/proxy/` | dbwcare-board-proxy |
 
 Infrastruktur-Container (postgres, valkey, rabbitmq, minio) nutzen offizielle Images und werden nicht selbst gebaut.
+
+## DBWCARE-spezifische Erweiterungen
+
+Architektur-Details: **[docs/time-tracking-analysis.md](docs/time-tracking-analysis.md)**
+
+### Backend (Django)
+- **4 neue Models** in `apps/api/plane/db/models/care.py`:
+  `WorkspaceCareSubscription`, `WorkspaceMonthlyBalance`, `WorklogEntry`, `IssueRecurrence`
+- **Migration `0500_dbwcare_init`** — Nummer bewusst hochgewaehlt, um Upstream-Merge-Konflikte bei Plane-Migrations (0001-04xx) zu vermeiden
+- **2 Celery-Beat-Tasks** in `apps/api/plane/bgtasks/`:
+  - `dbwcare_balance_task.py` — Monatlicher Balance-Rollover (taeglich 00:05 UTC)
+  - `dbwcare_recurrence_task.py` — Recurring-Issue-Generierung (taeglich 00:15 UTC)
+- Beat-Schedule registriert in `apps/api/plane/celery.py`
+
+### Frontend (React/Vite)
+- DBWCARE-spezifischer Code lebt in `apps/web/ce/` (Alias: `@/plane-web/*` → `./ce/*`)
+- Komponenten: `ce/components/workspace/care-balance-widget.tsx`, `ce/components/issues/worklog/`
+- Store: `ce/store/care/index.ts`
+- Service: `ce/services/care.service.ts`
+
+## Branch-Status: `feature/dbwcare-time-tracking`
+
+Implementiert und lokal testbar. Vor Merge auf `preview` muessen folgende Punkte adressiert werden:
+
+- [ ] Backend-Tests (pytest) schreiben
+- [ ] Frontend-Tests (Vitest) schreiben
+- [ ] RecurrenceConfig-UI-Komponente im Issue-Detail bauen
+- [ ] Widget-Position pruefen (aktuell Sidebar, evtl. Header)
+- [ ] Route `/settings/care/` in `routes.ts` verifizieren
 
 ## Bekannte Fallstricke
 

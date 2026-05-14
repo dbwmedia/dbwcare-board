@@ -77,6 +77,15 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.exporter_expired_task.delete_old_s3_link",
         "schedule": crontab(hour=3, minute=45),  # UTC 03:45
     },
+    # DBWCARE tasks
+    "dbwcare-monthly-balance-init": {
+        "task": "plane.bgtasks.dbwcare_balance_task.dbwcare_monthly_balance_init",
+        "schedule": crontab(hour=0, minute=5),  # UTC 00:05
+    },
+    "dbwcare-recurrence-generator": {
+        "task": "plane.bgtasks.dbwcare_recurrence_task.dbwcare_recurrence_generator",
+        "schedule": crontab(hour=0, minute=15),  # UTC 00:15
+    },
 }
 
 
