@@ -90,3 +90,10 @@ from .device import Device, DeviceSession
 from .sticky import Sticky
 
 from .description import Description, DescriptionVersion
+
+from .care import (
+    WorkspaceCareSubscription,
+    WorkspaceMonthlyBalance,
+    WorklogEntry,
+    IssueRecurrence,
+)
