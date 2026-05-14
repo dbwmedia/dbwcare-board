@@ -52,6 +52,7 @@ def admin_user(db):
     """Create an admin user."""
     user = User.objects.create(
         email="admin@care-test.so",
+        username="admin-care-test",
         first_name="Admin",
         last_name="User",
     )
@@ -65,6 +66,7 @@ def member_user(db):
     """Create a regular member user."""
     user = User.objects.create(
         email="member@care-test.so",
+        username="member-care-test",
         first_name="Member",
         last_name="User",
     )

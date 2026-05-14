@@ -45,14 +45,14 @@ def _process_recurrence(recurrence, now):
 
     template = recurrence.template_issue
 
-    # Find default state for the project (lowest sort_order in Backlog group)
+    # Find default state for the project (lowest sequence in Backlog group)
     default_state = (
         State.objects.filter(
             project_id=template.project_id,
             group="backlog",
             deleted_at__isnull=True,
         )
-        .order_by("sort_order")
+        .order_by("sequence")
         .first()
     )
 
@@ -62,7 +62,7 @@ def _process_recurrence(recurrence, now):
                 project_id=template.project_id,
                 deleted_at__isnull=True,
             )
-            .order_by("sort_order")
+            .order_by("sequence")
             .first()
         )
 
