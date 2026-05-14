@@ -180,3 +180,10 @@ apps/space/app/issues/[anchor]/layout.tsx → DEFAULT_TITLE
 | proxy (Caddy) | `apps/proxy/Dockerfile.ce` | `apps/proxy/` | dbwcare-board-proxy |
 
 Infrastruktur-Container (postgres, valkey, rabbitmq, minio) nutzen offizielle Images und werden nicht selbst gebaut.
+
+## Bekannte Fallstricke
+
+### Pre-Commit Hook schlägt fehl bei root.tsx
+Der husky-Hook führt `oxlint --deny-warnings` aus. `apps/web/app/root.tsx` enthält legitime Font-Side-Effect-Imports (z.B. `import "@fontsource-variable/inter"`), die oxlint mit `no-unassigned-import` anmahnt. Das ist ein False Positive – die Imports sind absichtlich ohne Zuweisung.
+
+**Lösung:** `git commit --no-verify` verwenden wenn root.tsx im Commit enthalten ist und die Warnings nicht durch eigene Änderungen entstanden sind.

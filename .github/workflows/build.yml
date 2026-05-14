@@ -213,7 +213,8 @@ jobs:
   build-proxy:
     name: Build Proxy
     needs: changes
-    if: ${{ needs.changes.outputs.proxy == 'true' || github.event_name == 'workflow_dispatch' }}
+    # Always build proxy – small Caddy image, rarely changes but must exist as ARM64 in ghcr.io
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-22.04
     permissions:
       contents: read

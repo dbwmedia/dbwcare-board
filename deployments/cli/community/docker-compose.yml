@@ -216,7 +216,7 @@ services:
 
   # Comment this if you already have a reverse proxy running
   proxy:
-    image: makeplane/plane-proxy:${APP_RELEASE:-stable}
+    image: ghcr.io/dbwmedia/dbwcare-board-proxy:latest
     deploy:
       replicas: 1
       restart_policy:
