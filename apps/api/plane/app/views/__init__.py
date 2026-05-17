@@ -242,6 +242,7 @@ from .care import (
     WorklogTimerStopEndpoint,
     ActiveTimerEndpoint,
     IssueRecurrenceEndpoint,
+    ProvisionCustomerEndpoint,
 )
 
 from .error_404 import custom_404_view

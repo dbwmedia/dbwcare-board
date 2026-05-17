@@ -11,3 +11,4 @@ from .worklog import (
     ActiveTimerEndpoint,
 )
 from .recurrence import IssueRecurrenceEndpoint
+from .provisioning import ProvisionCustomerEndpoint
