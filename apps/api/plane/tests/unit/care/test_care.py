@@ -111,6 +111,7 @@ def care_project(care_workspace, admin_user):
     """Create a project inside the care workspace."""
     project = Project.objects.create(
         name="Care Project",
+        identifier="CARE",
         workspace=care_workspace,
         created_by=admin_user,
         updated_by=admin_user,
@@ -129,6 +130,7 @@ def other_project(care_workspace, admin_user):
     """Create a second project (for cross-project permission tests)."""
     project = Project.objects.create(
         name="Other Project",
+        identifier="OTHER",
         workspace=care_workspace,
         created_by=admin_user,
         updated_by=admin_user,
