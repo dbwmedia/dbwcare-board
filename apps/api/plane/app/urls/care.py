@@ -12,6 +12,7 @@ from plane.app.views import (
     WorklogTimerStopEndpoint,
     ActiveTimerEndpoint,
     IssueRecurrenceEndpoint,
+    ProvisionCustomerEndpoint,
 )
 
 urlpatterns = [
@@ -64,6 +65,12 @@ urlpatterns = [
         "workspaces/<str:slug>/active-timer/",
         ActiveTimerEndpoint.as_view(),
         name="active-timer",
+    ),
+    # Direct customer provisioning
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/provision-customer/",
+        ProvisionCustomerEndpoint.as_view(),
+        name="provision-customer",
     ),
     # Recurrence
     path(
