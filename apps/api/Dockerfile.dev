@@ -28,8 +28,9 @@ WORKDIR /code
 COPY requirements.txt ./requirements.txt
 ADD requirements ./requirements
 
-# Install the local development settings
+# Install the local development settings + test dependencies
 RUN pip install -r requirements/local.txt --compile --no-cache-dir
+RUN pip install -r requirements/test.txt --compile --no-cache-dir
 
 
 COPY . .

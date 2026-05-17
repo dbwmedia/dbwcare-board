@@ -24,16 +24,22 @@ class RecurrenceType(models.TextChoices):
     INTERVAL_DAYS = "interval_days", "Interval Days"
 
 
-class WorkspaceCareSubscription(BaseModel):
+class ProjectCareSubscription(BaseModel):
     """
-    One per Workspace. Represents the active DBWCARE subscription
-    with monthly hour quota.
+    One per Project. Represents the active DBWCARE subscription
+    with monthly hour quota. Each project = one customer.
     """
 
-    workspace = models.OneToOneField(
-        "db.Workspace",
+    project = models.OneToOneField(
+        "db.Project",
         on_delete=models.CASCADE,
         related_name="care_subscription",
+    )
+    workspace = models.ForeignKey(
+        "db.Workspace",
+        on_delete=models.CASCADE,
+        related_name="care_subscriptions",
+        help_text="Denormalized from project for fast admin-level aggregation",
     )
     monthly_hours = models.DecimalField(
         max_digits=5,
@@ -53,24 +59,30 @@ class WorkspaceCareSubscription(BaseModel):
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        db_table = "workspace_care_subscriptions"
-        verbose_name = "Workspace Care Subscription"
-        verbose_name_plural = "Workspace Care Subscriptions"
+        db_table = "project_care_subscriptions"
+        verbose_name = "Project Care Subscription"
+        verbose_name_plural = "Project Care Subscriptions"
 
     def __str__(self):
-        return f"CareSubscription {self.workspace.name}: {self.monthly_hours}h/month"
+        return f"CareSubscription {self.project.name}: {self.monthly_hours}h/month"
 
 
-class WorkspaceMonthlyBalance(BaseModel):
+class ProjectMonthlyBalance(BaseModel):
     """
-    Snapshot per Workspace per month. Created by Celery beat job
+    Snapshot per Project per month. Created by Celery beat job
     on the 1st of each month.
     """
 
+    project = models.ForeignKey(
+        "db.Project",
+        on_delete=models.CASCADE,
+        related_name="monthly_balances",
+    )
     workspace = models.ForeignKey(
         "db.Workspace",
         on_delete=models.CASCADE,
         related_name="monthly_balances",
+        help_text="Denormalized from project for fast admin-level aggregation",
     )
     year = models.IntegerField()
     month = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)])
@@ -97,20 +109,20 @@ class WorkspaceMonthlyBalance(BaseModel):
     )
 
     class Meta:
-        db_table = "workspace_monthly_balances"
-        verbose_name = "Workspace Monthly Balance"
-        verbose_name_plural = "Workspace Monthly Balances"
+        db_table = "project_monthly_balances"
+        verbose_name = "Project Monthly Balance"
+        verbose_name_plural = "Project Monthly Balances"
         constraints = [
             models.UniqueConstraint(
-                fields=["workspace", "year", "month"],
+                fields=["project", "year", "month"],
                 condition=models.Q(deleted_at__isnull=True),
-                name="unique_workspace_year_month_when_not_deleted",
+                name="unique_project_year_month_when_not_deleted",
             )
         ]
         indexes = [
             models.Index(
-                fields=["workspace", "-year", "-month"],
-                name="balance_ws_year_month_idx",
+                fields=["project", "-year", "-month"],
+                name="balance_proj_year_month_idx",
             ),
         ]
 
@@ -134,7 +146,7 @@ class WorkspaceMonthlyBalance(BaseModel):
         return min(round((self.consumed_minutes / total) * 100), 100)
 
     def __str__(self):
-        return f"Balance {self.workspace.name}: {self.year}-{self.month:02d}"
+        return f"Balance {self.project.name}: {self.year}-{self.month:02d}"
 
 
 class WorklogEntry(WorkspaceBaseModel):

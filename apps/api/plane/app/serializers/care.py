@@ -4,30 +4,39 @@ from rest_framework import serializers
 
 from .base import BaseSerializer
 from plane.db.models import (
-    WorkspaceCareSubscription,
-    WorkspaceMonthlyBalance,
+    ProjectCareSubscription,
+    ProjectMonthlyBalance,
     WorklogEntry,
     IssueRecurrence,
 )
 
 
-class WorkspaceCareSubscriptionSerializer(BaseSerializer):
+class ProjectCareSubscriptionSerializer(BaseSerializer):
+    project_name = serializers.SerializerMethodField()
+    started_at = serializers.DateField(required=False)
+
     class Meta:
-        model = WorkspaceCareSubscription
+        model = ProjectCareSubscription
         fields = "__all__"
-        read_only_fields = ["workspace"]
+        read_only_fields = ["project", "workspace"]
+
+    def get_project_name(self, obj):
+        return obj.project.name if obj.project else None
 
 
-class WorkspaceMonthlyBalanceSerializer(BaseSerializer):
+class ProjectMonthlyBalanceSerializer(BaseSerializer):
     base_minutes = serializers.IntegerField(read_only=True)
     total_available_minutes = serializers.IntegerField(read_only=True)
     remaining_minutes = serializers.IntegerField(read_only=True)
     consumption_percentage = serializers.IntegerField(read_only=True)
+    project_name = serializers.SerializerMethodField()
 
     class Meta:
-        model = WorkspaceMonthlyBalance
+        model = ProjectMonthlyBalance
         fields = [
             "id",
+            "project",
+            "project_name",
             "workspace",
             "year",
             "month",
@@ -43,7 +52,10 @@ class WorkspaceMonthlyBalanceSerializer(BaseSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["workspace", "year", "month", "consumed_minutes"]
+        read_only_fields = ["project", "workspace", "year", "month", "consumed_minutes"]
+
+    def get_project_name(self, obj):
+        return obj.project.name if obj.project else None
 
 
 class WorklogEntrySerializer(BaseSerializer):

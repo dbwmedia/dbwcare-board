@@ -2,9 +2,8 @@
 seed_dbwcare – Django Management Command
 Creates demo data for local DBWCARE development:
 - Test user (dev@dbwcare.test / dev12345)
-- Workspace with CareSubscription (8h/month, Paket M)
-- Project with sample issues
-- Sample worklog entries
+- Workspace with Project + CareSubscription (8h/month, Paket M)
+- Sample issues and worklog entries
 - Monthly balance for current month
 
 Usage: python manage.py seed_dbwcare [--settings=plane.settings.local]
@@ -40,11 +39,11 @@ class Command(BaseCommand):
         self._ensure_instance()
         user = self._create_user(email, password)
         workspace = self._create_workspace(user, "dbwcare-test")
-        subscription = self._create_subscription(workspace)
         project = self._create_project(workspace, user)
+        subscription = self._create_subscription(project, workspace)
         issues = self._create_issues(project, workspace, user)
         self._create_worklogs(issues, workspace, user)
-        self._create_balance(workspace, subscription)
+        self._create_balance(project, workspace, subscription)
 
         self.stdout.write("")
         self.stdout.write(self.style.SUCCESS("=== DBWCARE Seed abgeschlossen ==="))
@@ -111,24 +110,6 @@ class Command(BaseCommand):
 
         return workspace
 
-    def _create_subscription(self, workspace):
-        from plane.db.models import WorkspaceCareSubscription
-
-        sub, created = WorkspaceCareSubscription.objects.get_or_create(
-            workspace=workspace,
-            defaults={
-                "monthly_hours": Decimal("8.00"),
-                "package_label": "M",
-                "started_at": timezone.now().date().replace(day=1),
-                "is_active": True,
-            },
-        )
-        if created:
-            self.stdout.write(self.style.SUCCESS("  CareSubscription erstellt: 8h/Monat (Paket M)"))
-        else:
-            self.stdout.write("  CareSubscription existiert bereits")
-        return sub
-
     def _create_project(self, workspace, user):
         from plane.db.models import Project, ProjectMember
 
@@ -158,6 +139,25 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"  ProjectMember erstellt fuer {user.email}"))
 
         return project
+
+    def _create_subscription(self, project, workspace):
+        from plane.db.models import ProjectCareSubscription
+
+        sub, created = ProjectCareSubscription.objects.get_or_create(
+            project=project,
+            defaults={
+                "workspace": workspace,
+                "monthly_hours": Decimal("8.00"),
+                "package_label": "M",
+                "started_at": timezone.now().date().replace(day=1),
+                "is_active": True,
+            },
+        )
+        if created:
+            self.stdout.write(self.style.SUCCESS("  CareSubscription erstellt: 8h/Monat (Paket M)"))
+        else:
+            self.stdout.write("  CareSubscription existiert bereits")
+        return sub
 
     def _create_issues(self, project, workspace, user):
         from plane.db.models import Issue, State
@@ -281,8 +281,8 @@ class Command(BaseCommand):
             if created:
                 self.stdout.write(self.style.SUCCESS(f"  Worklog erstellt: {data['description']}"))
 
-    def _create_balance(self, workspace, subscription):
-        from plane.db.models import WorkspaceMonthlyBalance, WorklogEntry
+    def _create_balance(self, project, workspace, subscription):
+        from plane.db.models import ProjectMonthlyBalance, WorklogEntry
 
         now = timezone.now()
         year, month = now.year, now.month
@@ -291,7 +291,7 @@ class Command(BaseCommand):
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         consumed = (
             WorklogEntry.objects.filter(
-                workspace=workspace,
+                project=project,
                 billing_status="billable",
                 started_at__gte=month_start,
                 deleted_at__isnull=True,
@@ -299,11 +299,12 @@ class Command(BaseCommand):
             or 0
         )
 
-        balance, created = WorkspaceMonthlyBalance.objects.get_or_create(
-            workspace=workspace,
+        balance, created = ProjectMonthlyBalance.objects.get_or_create(
+            project=project,
             year=year,
             month=month,
             defaults={
+                "workspace": workspace,
                 "base_hours": subscription.monthly_hours,
                 "rolled_over_minutes": 0,
                 "borrowed_minutes": 0,

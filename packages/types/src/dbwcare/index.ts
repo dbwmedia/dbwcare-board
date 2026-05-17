@@ -4,6 +4,8 @@ export type TRecurrenceType = "monthly_date" | "interval_days";
 
 export interface ICareSubscription {
   id: string;
+  project: string;
+  project_name: string | null;
   workspace: string;
   monthly_hours: number;
   package_label: string;
@@ -22,6 +24,8 @@ export interface ICareSubscriptionFormData {
 
 export interface IMonthlyBalance {
   id: string;
+  project: string;
+  project_name: string | null;
   workspace: string;
   year: number;
   month: number;
@@ -36,6 +40,22 @@ export interface IMonthlyBalance {
   is_closed: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface ICareOverviewItem {
+  project_id: string;
+  project_name: string;
+  has_subscription: boolean;
+  package_label: string;
+  monthly_hours: number;
+  is_active: boolean;
+  base_minutes: number;
+  total_available_minutes: number;
+  consumed_minutes: number;
+  remaining_minutes: number;
+  consumption_percentage: number;
+  year: number;
+  month: number;
 }
 
 export interface IWorklogEntry {

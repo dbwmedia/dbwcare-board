@@ -32,26 +32,23 @@ export const IssueWorklogProperty = observer(function IssueWorklogProperty(props
 
   useEffect(() => {
     if (workspaceSlug && projectId && issueId) {
+      care.fetchSubscription(workspaceSlug, projectId);
       care.fetchWorklogEntries(workspaceSlug, projectId, issueId);
       care.fetchActiveTimer(workspaceSlug);
     }
   }, [workspaceSlug, projectId, issueId, care]);
 
+  const subscription = care.getSubscription(projectId);
   const entries = care.worklogEntries[issueId] || [];
-  const totalMinutes = entries
-    .filter((e) => !e.is_running)
-    .reduce((sum, e) => sum + e.duration_minutes, 0);
+  const totalMinutes = entries.filter((e) => !e.is_running).reduce((sum, e) => sum + e.duration_minutes, 0);
 
   const activeTimerOnThisIssue = care.activeTimer?.issue === issueId ? care.activeTimer : null;
 
-  if (!care.hasActiveSubscription) return null;
+  if (!subscription?.is_active) return null;
 
   return (
     <>
-      <SidebarPropertyListItem
-        icon={Clock}
-        label={t("dbwcare.time_tracking")}
-      >
+      <SidebarPropertyListItem icon={Clock} label={t("dbwcare.time_tracking")}>
         <div className="flex w-full flex-col gap-2">
           <div className="flex items-center gap-2">
             <WorklogTimer
@@ -66,7 +63,7 @@ export const IssueWorklogProperty = observer(function IssueWorklogProperty(props
           <div className="flex items-center justify-between">
             <button
               type="button"
-              className="text-body-xs-regular text-tertiary hover:text-primary cursor-pointer"
+              className="cursor-pointer text-body-xs-regular text-tertiary hover:text-primary"
               onClick={() => setIsExpanded(!isExpanded)}
             >
               {t("dbwcare.total")}: {formatDuration(totalMinutes)}
@@ -77,7 +74,7 @@ export const IssueWorklogProperty = observer(function IssueWorklogProperty(props
               <Tooltip tooltipContent={t("dbwcare.manual_add")}>
                 <button
                   type="button"
-                  className="flex items-center gap-1 text-body-xs-regular text-tertiary hover:text-primary cursor-pointer"
+                  className="flex cursor-pointer items-center gap-1 text-body-xs-regular text-tertiary hover:text-primary"
                   onClick={() => setIsManualModalOpen(true)}
                 >
                   <Plus className="size-3" />
