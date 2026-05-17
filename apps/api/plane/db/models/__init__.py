@@ -92,8 +92,8 @@ from .sticky import Sticky
 from .description import Description, DescriptionVersion
 
 from .care import (
-    WorkspaceCareSubscription,
-    WorkspaceMonthlyBalance,
+    ProjectCareSubscription,
+    ProjectMonthlyBalance,
     WorklogEntry,
     IssueRecurrence,
 )

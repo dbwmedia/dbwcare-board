@@ -233,9 +233,10 @@ from .webhook.base import (
 )
 
 from .care import (
-    WorkspaceCareSubscriptionEndpoint,
-    WorkspaceCareBalanceEndpoint,
-    WorkspaceCareBalanceHistoryEndpoint,
+    ProjectCareSubscriptionEndpoint,
+    ProjectCareBalanceEndpoint,
+    ProjectCareBalanceHistoryEndpoint,
+    CareOverviewEndpoint,
     WorklogEntryViewSet,
     WorklogTimerStartEndpoint,
     WorklogTimerStopEndpoint,

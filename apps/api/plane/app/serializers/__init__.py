@@ -135,8 +135,8 @@ from .draft import (
 )
 
 from .care import (
-    WorkspaceCareSubscriptionSerializer,
-    WorkspaceMonthlyBalanceSerializer,
+    ProjectCareSubscriptionSerializer,
+    ProjectMonthlyBalanceSerializer,
     WorklogEntrySerializer,
     WorklogEntryCreateSerializer,
     IssueRecurrenceSerializer,

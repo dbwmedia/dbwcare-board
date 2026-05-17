@@ -1,11 +1,12 @@
-# DBWCARE URL patterns
+# DBWCARE URL patterns — Project Level
 
 from django.urls import path
 
 from plane.app.views import (
-    WorkspaceCareSubscriptionEndpoint,
-    WorkspaceCareBalanceEndpoint,
-    WorkspaceCareBalanceHistoryEndpoint,
+    ProjectCareSubscriptionEndpoint,
+    ProjectCareBalanceEndpoint,
+    ProjectCareBalanceHistoryEndpoint,
+    CareOverviewEndpoint,
     WorklogEntryViewSet,
     WorklogTimerStartEndpoint,
     WorklogTimerStopEndpoint,
@@ -14,24 +15,30 @@ from plane.app.views import (
 )
 
 urlpatterns = [
-    # Subscription
+    # Project-level subscription
     path(
-        "workspaces/<str:slug>/care-subscription/",
-        WorkspaceCareSubscriptionEndpoint.as_view(),
+        "workspaces/<str:slug>/projects/<uuid:project_id>/care-subscription/",
+        ProjectCareSubscriptionEndpoint.as_view(),
         name="care-subscription",
     ),
-    # Balance
+    # Project-level balance
     path(
-        "workspaces/<str:slug>/care-balance/",
-        WorkspaceCareBalanceEndpoint.as_view(),
+        "workspaces/<str:slug>/projects/<uuid:project_id>/care-balance/",
+        ProjectCareBalanceEndpoint.as_view(),
         name="care-balance",
     ),
     path(
-        "workspaces/<str:slug>/care-balance/history/",
-        WorkspaceCareBalanceHistoryEndpoint.as_view(),
+        "workspaces/<str:slug>/projects/<uuid:project_id>/care-balance/history/",
+        ProjectCareBalanceHistoryEndpoint.as_view(),
         name="care-balance-history",
     ),
-    # Worklog entries
+    # Workspace-level admin overview (Mission Control)
+    path(
+        "workspaces/<str:slug>/care-overview/",
+        CareOverviewEndpoint.as_view(),
+        name="care-overview",
+    ),
+    # Worklog entries (unchanged URL structure)
     path(
         "workspaces/<str:slug>/projects/<uuid:project_id>/issues/<uuid:issue_id>/worklog-entries/",
         WorklogEntryViewSet.as_view({"get": "list", "post": "create"}),

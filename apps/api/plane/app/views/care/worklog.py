@@ -130,10 +130,10 @@ class WorklogEntryViewSet(BaseViewSet):
         return Workspace.objects.get(slug=slug).id
 
     def _refresh_balance(self, entry):
-        """Refresh consumed_minutes on the monthly balance."""
+        """Refresh consumed_minutes on the project's monthly balance."""
         from .balance import get_or_create_current_balance
         try:
-            get_or_create_current_balance(entry.workspace_id)
+            get_or_create_current_balance(entry.project_id)
         except Exception:
             pass  # Don't fail the main operation
 
@@ -188,10 +188,10 @@ class WorklogTimerStartEndpoint(BaseAPIView):
         entry.is_running = False
         entry.save()
 
-        # Refresh balance
+        # Refresh balance at project level
         from .balance import get_or_create_current_balance
         try:
-            get_or_create_current_balance(entry.workspace_id)
+            get_or_create_current_balance(entry.project_id)
         except Exception:
             pass
 
@@ -231,10 +231,10 @@ class WorklogTimerStopEndpoint(BaseAPIView):
         entry.billing_status = request.data.get("billing_status", entry.billing_status)
         entry.save()
 
-        # Refresh balance
+        # Refresh balance at project level
         from .balance import get_or_create_current_balance
         try:
-            get_or_create_current_balance(entry.workspace_id)
+            get_or_create_current_balance(entry.project_id)
         except Exception:
             pass
 
