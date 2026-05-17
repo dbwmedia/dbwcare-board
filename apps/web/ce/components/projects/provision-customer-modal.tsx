@@ -21,6 +21,7 @@ function generatePassword(length = 14): string {
 type Props = {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   workspaceSlug: string;
   projectId: string;
 };
@@ -33,7 +34,7 @@ type SuccessData = {
 };
 
 export const ProvisionCustomerModal = observer(function ProvisionCustomerModal(props: Props) {
-  const { isOpen, onClose, workspaceSlug, projectId } = props;
+  const { isOpen, onClose, onSuccess, workspaceSlug, projectId } = props;
   const { t } = useTranslation();
 
   // Form state
@@ -85,6 +86,7 @@ export const ProvisionCustomerModal = observer(function ProvisionCustomerModal(p
         email: email.trim(),
         password,
       });
+      onSuccess?.();
     } catch (err: any) {
       const data = err?.response?.data;
       if (data && typeof data === "object" && !data.error) {

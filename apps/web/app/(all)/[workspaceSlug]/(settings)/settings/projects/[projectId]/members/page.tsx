@@ -19,6 +19,7 @@ import { ProjectSettingsMemberDefaults } from "@/components/project/project-sett
 import { SettingsContentWrapper } from "@/components/settings/content-wrapper";
 import { SettingsHeading } from "@/components/settings/heading";
 // hooks
+import { useMember } from "@/hooks/store/use-member";
 import { useProject } from "@/hooks/store/use-project";
 import { useUserPermissions } from "@/hooks/store/user";
 // plane web imports
@@ -36,6 +37,9 @@ function MembersSettingsPage({ params }: Route.ComponentProps) {
   // store hooks
   const { currentProjectDetails } = useProject();
   const { workspaceUserInfo, allowPermissions } = useUserPermissions();
+  const {
+    project: { fetchProjectMembers },
+  } = useMember();
   // local state
   const [isProvisionModalOpen, setIsProvisionModalOpen] = useState(false);
   // derived values
@@ -74,6 +78,7 @@ function MembersSettingsPage({ params }: Route.ComponentProps) {
         <ProvisionCustomerModal
           isOpen={isProvisionModalOpen}
           onClose={() => setIsProvisionModalOpen(false)}
+          onSuccess={() => fetchProjectMembers(workspaceSlug, projectId)}
           workspaceSlug={workspaceSlug}
           projectId={projectId}
         />
