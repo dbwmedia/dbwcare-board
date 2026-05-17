@@ -157,13 +157,14 @@ class ProjectCareBalanceHistoryEndpoint(BaseAPIView):
 
 class CareOverviewEndpoint(BaseAPIView):
     """
-    GET: Admin-only overview of ALL project balances in the workspace.
-    Used for the "Mission Control" page.
+    GET: Admin-only overview of ALL projects in the workspace.
+    Projects with active subscription show balance data.
+    Projects without subscription show has_subscription=false.
     """
 
     @allow_permission([ROLE.ADMIN], level="WORKSPACE")
     def get(self, request, slug):
-        from plane.db.models import Workspace
+        from plane.db.models import Workspace, Project
 
         try:
             workspace = Workspace.objects.get(slug=slug)
@@ -173,44 +174,58 @@ class CareOverviewEndpoint(BaseAPIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # Get all active subscriptions with current month balance
         now = timezone.now()
         year, month = now.year, now.month
 
-        subscriptions = (
-            ProjectCareSubscription.objects.filter(
+        # Get ALL projects in workspace
+        projects = Project.objects.filter(
+            workspace=workspace,
+            deleted_at__isnull=True,
+        ).order_by("name")
+
+        # Build subscription lookup
+        subscriptions = {
+            sub.project_id: sub
+            for sub in ProjectCareSubscription.objects.filter(
                 workspace=workspace,
-                is_active=True,
-            )
-            .select_related("project")
-        )
+            ).select_related("project")
+        }
 
         overview = []
-        for sub in subscriptions:
-            # Get or create current balance
-            try:
-                balance = get_or_create_current_balance(sub.project_id)
-            except Exception:
-                balance = None
+        for project in projects:
+            sub = subscriptions.get(project.id)
 
             item = {
-                "project_id": str(sub.project_id),
-                "project_name": sub.project.name,
-                "package_label": sub.package_label,
-                "monthly_hours": float(sub.monthly_hours),
-                "is_active": sub.is_active,
+                "project_id": str(project.id),
+                "project_name": project.name,
+                "has_subscription": sub is not None,
+                "is_active": sub.is_active if sub else False,
+                "package_label": sub.package_label if sub else "",
+                "monthly_hours": float(sub.monthly_hours) if sub else 0,
             }
 
-            if balance:
-                item.update({
-                    "base_minutes": balance.base_minutes,
-                    "total_available_minutes": balance.total_available_minutes,
-                    "consumed_minutes": balance.consumed_minutes,
-                    "remaining_minutes": balance.remaining_minutes,
-                    "consumption_percentage": balance.consumption_percentage,
-                    "year": balance.year,
-                    "month": balance.month,
-                })
+            if sub and sub.is_active:
+                try:
+                    balance = get_or_create_current_balance(project.id)
+                    item.update({
+                        "base_minutes": balance.base_minutes,
+                        "total_available_minutes": balance.total_available_minutes,
+                        "consumed_minutes": balance.consumed_minutes,
+                        "remaining_minutes": balance.remaining_minutes,
+                        "consumption_percentage": balance.consumption_percentage,
+                        "year": balance.year,
+                        "month": balance.month,
+                    })
+                except Exception:
+                    item.update({
+                        "base_minutes": 0,
+                        "total_available_minutes": 0,
+                        "consumed_minutes": 0,
+                        "remaining_minutes": 0,
+                        "consumption_percentage": 0,
+                        "year": year,
+                        "month": month,
+                    })
             else:
                 item.update({
                     "base_minutes": 0,
@@ -224,7 +239,13 @@ class CareOverviewEndpoint(BaseAPIView):
 
             overview.append(item)
 
-        # Sort by consumption_percentage descending (most consumed first)
-        overview.sort(key=lambda x: x["consumption_percentage"], reverse=True)
+        # Sort: active subscriptions first (by consumption desc), then inactive (by name)
+        overview.sort(
+            key=lambda x: (
+                0 if x["is_active"] else 1,
+                -x["consumption_percentage"] if x["is_active"] else 0,
+                x["project_name"],
+            )
+        )
 
         return Response(overview, status=status.HTTP_200_OK)

@@ -2738,4 +2738,7 @@ export default {
   "dbwcare.utilization": "Auslastung",
   "dbwcare.balance_history": "Verlauf (12 Monate)",
   "dbwcare.month": "Monat",
+  "dbwcare.no_subscription_yet": "Noch keine Subscription",
+  "dbwcare.activate": "Aktivieren",
+  "dbwcare.no_projects": "Keine Projekte in diesem Workspace gefunden.",
 } as const;

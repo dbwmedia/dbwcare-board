@@ -45,6 +45,7 @@ export interface IMonthlyBalance {
 export interface ICareOverviewItem {
   project_id: string;
   project_name: string;
+  has_subscription: boolean;
   package_label: string;
   monthly_hours: number;
   is_active: boolean;

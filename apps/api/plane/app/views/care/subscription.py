@@ -1,5 +1,7 @@
 # DBWCARE Subscription ViewSet — Project Level
 
+from datetime import date
+
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -12,7 +14,7 @@ from plane.app.serializers import ProjectCareSubscriptionSerializer
 class ProjectCareSubscriptionEndpoint(BaseAPIView):
     """
     GET: Retrieve care subscription for a project (project members).
-    PATCH: Update subscription (workspace admin or project admin).
+    PATCH: Update/create subscription (workspace admin only).
     """
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="WORKSPACE")
@@ -45,8 +47,9 @@ class ProjectCareSubscriptionEndpoint(BaseAPIView):
             project=project,
             defaults={
                 "workspace": project.workspace,
-                "started_at": request.data.get("started_at"),
+                "started_at": request.data.get("started_at") or date.today(),
                 "monthly_hours": request.data.get("monthly_hours", 8),
+                "package_label": request.data.get("package_label", ""),
             },
         )
 

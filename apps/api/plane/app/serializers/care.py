@@ -13,6 +13,7 @@ from plane.db.models import (
 
 class ProjectCareSubscriptionSerializer(BaseSerializer):
     project_name = serializers.SerializerMethodField()
+    started_at = serializers.DateField(required=False)
 
     class Meta:
         model = ProjectCareSubscription

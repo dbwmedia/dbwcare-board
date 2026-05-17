@@ -2797,4 +2797,7 @@ export default {
   "dbwcare.utilization": "Utilization",
   "dbwcare.balance_history": "Balance history (12 months)",
   "dbwcare.month": "Month",
+  "dbwcare.no_subscription_yet": "No subscription yet",
+  "dbwcare.activate": "Activate",
+  "dbwcare.no_projects": "No projects found in this workspace.",
 } as const;

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { useParams, Link } from "react-router";
 import { useTranslation } from "@plane/i18n";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, ArrowRight } from "lucide-react";
 import { useCare } from "@/hooks/store/use-care";
 import { useUserPermissions } from "@/hooks/store/user";
 import type { ICareOverviewItem } from "@plane/types";
@@ -49,11 +49,17 @@ const CareOverviewPage = observer(function CareOverviewPage() {
       setSortAsc(!sortAsc);
     } else {
       setSortKey(key);
-      setSortAsc(key === "project_name"); // Name ascending, numbers descending by default
+      setSortAsc(key === "project_name");
     }
   };
 
-  const sortedOverview = [...care.overview].sort((a, b) => {
+  const sortedOverview = [...care.overview].toSorted((a, b) => {
+    // Always keep inactive projects at the bottom
+    if (a.is_active !== b.is_active) return a.is_active ? -1 : 1;
+    if (!a.has_subscription && !b.has_subscription) return a.project_name.localeCompare(b.project_name);
+    if (!a.has_subscription) return 1;
+    if (!b.has_subscription) return -1;
+
     let cmp = 0;
     if (sortKey === "project_name") {
       cmp = a.project_name.localeCompare(b.project_name);
@@ -71,7 +77,7 @@ const CareOverviewPage = observer(function CareOverviewPage() {
 
         {sortedOverview.length === 0 ? (
           <div className="rounded-lg border border-subtle p-8 text-center text-tertiary">
-            {t("dbwcare.no_active_subscriptions")}
+            {t("dbwcare.no_projects")}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -124,6 +130,31 @@ const CareOverviewPage = observer(function CareOverviewPage() {
 });
 
 function ProjectRow({ item, workspaceSlug }: { item: ICareOverviewItem; workspaceSlug: string }) {
+  const { t } = useTranslation();
+  const careSettingsUrl = `/${workspaceSlug}/settings/projects/${item.project_id}/care`;
+
+  if (!item.has_subscription) {
+    return (
+      <tr className="border-b border-subtle">
+        <td className="py-2 pr-4">
+          <span className="font-medium text-tertiary">{item.project_name}</span>
+        </td>
+        <td colSpan={4} className="py-2 pr-4">
+          <span className="text-body-xs-regular text-tertiary">{t("dbwcare.no_subscription_yet")}</span>
+        </td>
+        <td className="py-2 pr-4">
+          <Link
+            to={careSettingsUrl}
+            className="inline-flex items-center gap-1 text-body-xs-medium text-primary hover:underline"
+          >
+            {t("dbwcare.activate")}
+            <ArrowRight className="size-3" />
+          </Link>
+        </td>
+      </tr>
+    );
+  }
+
   const pct = item.consumption_percentage;
   let barColor = "bg-green-500";
   if (pct >= 90) barColor = "bg-red-500";
@@ -132,10 +163,7 @@ function ProjectRow({ item, workspaceSlug }: { item: ICareOverviewItem; workspac
   return (
     <tr className="border-b border-subtle hover:bg-layer-transparent-hover">
       <td className="py-2 pr-4">
-        <Link
-          to={`/${workspaceSlug}/settings/projects/${item.project_id}/care`}
-          className="font-medium text-primary hover:underline"
-        >
+        <Link to={careSettingsUrl} className="font-medium text-primary hover:underline">
           {item.project_name}
         </Link>
       </td>

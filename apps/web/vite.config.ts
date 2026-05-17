@@ -8,6 +8,8 @@ dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 const proxyTarget = process.env.DEV_API_PROXY_TARGET;
 const proxySecure = proxyTarget?.startsWith("https") ?? false;
+// Minio proxy for local full-stack setup (presigned upload URLs use the browser's host)
+const minioProxyTarget = process.env.DEV_MINIO_PROXY_TARGET;
 
 // Expose only vars starting with VITE_
 const viteEnv = Object.keys(process.env)
@@ -24,7 +26,11 @@ export default defineConfig(() => ({
   build: {
     assetsInlineLimit: 0,
   },
-  plugins: [reactRouter(), tsconfigPaths({ projects: [path.resolve(__dirname, "tsconfig.json")] })],
+  plugins: [
+    // Skip reactRouter plugin during vitest — it scans routes and causes hangs
+    ...(!process.env.VITEST ? [reactRouter()] : []),
+    tsconfigPaths({ projects: [path.resolve(__dirname, "tsconfig.json")] }),
+  ],
   resolve: {
     alias: {
       // Next.js compatibility shims used within web
@@ -40,21 +46,35 @@ export default defineConfig(() => ({
       ? {
           "/api": {
             target: proxyTarget,
-            changeOrigin: true,
+            // When Minio runs locally, keep the original Host header so Django's
+            // request.get_host() returns the Vite dev-server host (e.g. localhost:3000).
+            // Presigned upload URLs then point back to Vite, which proxies /uploads to Minio.
+            changeOrigin: !minioProxyTarget,
             secure: proxySecure,
             cookieDomainRewrite: { "*": "" },
           },
           "/auth": {
             target: proxyTarget,
-            changeOrigin: true,
+            changeOrigin: !minioProxyTarget,
             secure: proxySecure,
             cookieDomainRewrite: { "*": "" },
           },
           "/static": {
             target: proxyTarget,
-            changeOrigin: true,
+            changeOrigin: !minioProxyTarget,
             secure: proxySecure,
           },
+          // Proxy presigned Minio upload/download URLs (bucket path) to local Minio.
+          // changeOrigin must be false: presigned URL signatures include the Host header,
+          // so Minio must see the same host that boto3 used when signing (localhost:3000).
+          ...(minioProxyTarget
+            ? {
+                "/uploads": {
+                  target: minioProxyTarget,
+                  changeOrigin: false,
+                },
+              }
+            : {}),
         }
       : undefined,
   },

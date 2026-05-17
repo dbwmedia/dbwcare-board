@@ -13,9 +13,10 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
   const care = useCare();
   const { getWorkspaceRoleByWorkspaceSlug } = useUserPermissions();
 
+  const todayStr = new Date().toISOString().slice(0, 10);
   const [monthlyHours, setMonthlyHours] = useState("");
   const [packageLabel, setPackageLabel] = useState("");
-  const [startedAt, setStartedAt] = useState("");
+  const [startedAt, setStartedAt] = useState(todayStr);
   const [isActive, setIsActive] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -48,7 +49,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
       await care.updateSubscription(workspaceSlug, projectId, {
         monthly_hours: parseFloat(monthlyHours) || 8,
         package_label: packageLabel,
-        started_at: startedAt,
+        started_at: startedAt || new Date().toISOString().slice(0, 10),
         is_active: isActive,
       });
       await care.fetchCurrentBalance(workspaceSlug, projectId);
