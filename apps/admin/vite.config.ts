@@ -9,6 +9,7 @@ dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 const proxyTarget = process.env.DEV_API_PROXY_TARGET;
 const proxySecure = proxyTarget?.startsWith("https") ?? false;
+const minioProxyTarget = process.env.DEV_MINIO_PROXY_TARGET;
 
 // Expose only vars starting with VITE_
 const viteEnv = Object.keys(process.env)
@@ -43,16 +44,24 @@ export default defineConfig(() => ({
       ? {
           "/api": {
             target: proxyTarget,
-            changeOrigin: true,
+            changeOrigin: !minioProxyTarget,
             secure: proxySecure,
             cookieDomainRewrite: { "*": "" },
           },
           "/auth": {
             target: proxyTarget,
-            changeOrigin: true,
+            changeOrigin: !minioProxyTarget,
             secure: proxySecure,
             cookieDomainRewrite: { "*": "" },
           },
+          ...(minioProxyTarget
+            ? {
+                "/uploads": {
+                  target: minioProxyTarget,
+                  changeOrigin: false,
+                },
+              }
+            : {}),
         }
       : undefined,
   },

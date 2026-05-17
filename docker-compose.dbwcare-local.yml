@@ -76,6 +76,11 @@ services:
       MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
       MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
     ports:
+      # Port 9000 exposed to host so Vite dev-server can proxy /uploads/* here.
+      # Plane's backend generates presigned URLs using the browser's host (request.get_host()),
+      # so the browser sends upload/download requests to localhost:3000/uploads/... which
+      # Vite proxies to localhost:9000/uploads/... (Minio). Same pattern as Hetzner where
+      # Caddy proxies /uploads/* to plane-minio:9000.
       - "9000:9000"
       - "9090:9090"
     healthcheck:
