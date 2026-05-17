@@ -349,6 +349,11 @@ export const coreRoutes: RouteConfigEntry[] = [
                 "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/automations/page.tsx"
               ),
             ]),
+            // Project DBWCARE Settings
+            route(
+              ":workspaceSlug/settings/projects/:projectId/care",
+              "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/care/page.tsx"
+            ),
           ]),
         ]),
       ]),

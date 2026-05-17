@@ -2789,4 +2789,12 @@ export default {
   "dbwcare.pause_recurrence": "Pause recurrence",
   "dbwcare.managed_by_team": "This setting is managed by your dbw team.",
   "dbwcare.quick_select": "Quick select",
+  "dbwcare.save_success": "Settings saved successfully",
+  "dbwcare.mission_control": "DBWCARE Mission Control",
+  "dbwcare.mission_control_desc": "Overview of all projects with active care subscriptions.",
+  "dbwcare.no_active_subscriptions": "No active care subscriptions found.",
+  "dbwcare.project": "Project",
+  "dbwcare.utilization": "Utilization",
+  "dbwcare.balance_history": "Balance history (12 months)",
+  "dbwcare.month": "Month",
 } as const;

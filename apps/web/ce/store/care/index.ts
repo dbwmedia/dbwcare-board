@@ -2,6 +2,7 @@ import { action, computed, makeObservable, observable, runInAction } from "mobx"
 import type {
   ICareSubscription,
   ICareSubscriptionFormData,
+  ICareOverviewItem,
   IMonthlyBalance,
   IWorklogEntry,
   IWorklogEntryFormData,
@@ -12,23 +13,27 @@ import type { CoreRootStore } from "@/store/root.store";
 
 export interface ICareStore {
   // observables
-  subscription: ICareSubscription | null;
-  currentBalance: IMonthlyBalance | null;
-  balanceHistory: IMonthlyBalance[];
+  subscriptions: Record<string, ICareSubscription | null>; // project_id -> subscription
+  balances: Record<string, IMonthlyBalance | null>; // project_id -> current balance
+  balanceHistories: Record<string, IMonthlyBalance[]>; // project_id -> history
+  overview: ICareOverviewItem[];
   activeTimer: IWorklogEntry | null;
   worklogEntries: Record<string, IWorklogEntry[]>; // issue_id -> entries
   loader: boolean;
 
   // computed
+  currentProjectSubscription: ICareSubscription | null;
+  currentProjectBalance: IMonthlyBalance | null;
   hasActiveSubscription: boolean;
   remainingMinutes: number;
   consumptionPercentage: number;
 
   // actions
-  fetchSubscription: (workspaceSlug: string) => Promise<void>;
-  updateSubscription: (workspaceSlug: string, data: ICareSubscriptionFormData) => Promise<void>;
-  fetchCurrentBalance: (workspaceSlug: string) => Promise<void>;
-  fetchBalanceHistory: (workspaceSlug: string, months?: number) => Promise<void>;
+  fetchSubscription: (workspaceSlug: string, projectId: string) => Promise<void>;
+  updateSubscription: (workspaceSlug: string, projectId: string, data: ICareSubscriptionFormData) => Promise<void>;
+  fetchCurrentBalance: (workspaceSlug: string, projectId: string) => Promise<void>;
+  fetchBalanceHistory: (workspaceSlug: string, projectId: string, months?: number) => Promise<void>;
+  fetchCareOverview: (workspaceSlug: string) => Promise<void>;
   fetchActiveTimer: (workspaceSlug: string) => Promise<void>;
   fetchWorklogEntries: (workspaceSlug: string, projectId: string, issueId: string) => Promise<void>;
   createWorklogEntry: (
@@ -51,24 +56,36 @@ export interface ICareStore {
     description: string,
     billingStatus?: string
   ) => Promise<IWorklogEntry>;
+
+  // helpers
+  getSubscription: (projectId: string) => ICareSubscription | null;
+  getBalance: (projectId: string) => IMonthlyBalance | null;
+  getBalanceHistory: (projectId: string) => IMonthlyBalance[];
 }
 
 export class CareStore implements ICareStore {
-  subscription: ICareSubscription | null = null;
-  currentBalance: IMonthlyBalance | null = null;
-  balanceHistory: IMonthlyBalance[] = [];
+  subscriptions: Record<string, ICareSubscription | null> = {};
+  balances: Record<string, IMonthlyBalance | null> = {};
+  balanceHistories: Record<string, IMonthlyBalance[]> = {};
+  overview: ICareOverviewItem[] = [];
   activeTimer: IWorklogEntry | null = null;
   worklogEntries: Record<string, IWorklogEntry[]> = {};
   loader = false;
 
+  // Track which project the user is currently viewing
+  private _currentProjectId: string | null = null;
+
   constructor(private rootStore: CoreRootStore) {
     makeObservable(this, {
-      subscription: observable,
-      currentBalance: observable,
-      balanceHistory: observable,
+      subscriptions: observable,
+      balances: observable,
+      balanceHistories: observable,
+      overview: observable,
       activeTimer: observable,
       worklogEntries: observable,
       loader: observable.ref,
+      currentProjectSubscription: computed,
+      currentProjectBalance: computed,
       hasActiveSubscription: computed,
       remainingMinutes: computed,
       consumptionPercentage: computed,
@@ -76,6 +93,7 @@ export class CareStore implements ICareStore {
       updateSubscription: action,
       fetchCurrentBalance: action,
       fetchBalanceHistory: action,
+      fetchCareOverview: action,
       fetchActiveTimer: action,
       fetchWorklogEntries: action,
       createWorklogEntry: action,
@@ -85,56 +103,94 @@ export class CareStore implements ICareStore {
     });
   }
 
+  get currentProjectSubscription(): ICareSubscription | null {
+    if (!this._currentProjectId) return null;
+    return this.subscriptions[this._currentProjectId] ?? null;
+  }
+
+  get currentProjectBalance(): IMonthlyBalance | null {
+    if (!this._currentProjectId) return null;
+    return this.balances[this._currentProjectId] ?? null;
+  }
+
   get hasActiveSubscription(): boolean {
-    return !!this.subscription?.is_active;
+    return !!this.currentProjectSubscription?.is_active;
   }
 
   get remainingMinutes(): number {
-    return this.currentBalance?.remaining_minutes ?? 0;
+    return this.currentProjectBalance?.remaining_minutes ?? 0;
   }
 
   get consumptionPercentage(): number {
-    return this.currentBalance?.consumption_percentage ?? 0;
+    return this.currentProjectBalance?.consumption_percentage ?? 0;
   }
 
-  fetchSubscription = async (workspaceSlug: string) => {
+  // Helpers
+  getSubscription = (projectId: string): ICareSubscription | null => {
+    return this.subscriptions[projectId] ?? null;
+  };
+
+  getBalance = (projectId: string): IMonthlyBalance | null => {
+    return this.balances[projectId] ?? null;
+  };
+
+  getBalanceHistory = (projectId: string): IMonthlyBalance[] => {
+    return this.balanceHistories[projectId] ?? [];
+  };
+
+  fetchSubscription = async (workspaceSlug: string, projectId: string) => {
+    this._currentProjectId = projectId;
     try {
-      const data = await careService.getSubscription(workspaceSlug);
+      const data = await careService.getSubscription(workspaceSlug, projectId);
       runInAction(() => {
-        this.subscription = data;
+        this.subscriptions[projectId] = data;
       });
     } catch {
       runInAction(() => {
-        this.subscription = null;
+        this.subscriptions[projectId] = null;
       });
     }
   };
 
-  updateSubscription = async (workspaceSlug: string, data: ICareSubscriptionFormData) => {
-    const result = await careService.updateSubscription(workspaceSlug, data);
+  updateSubscription = async (workspaceSlug: string, projectId: string, data: ICareSubscriptionFormData) => {
+    const result = await careService.updateSubscription(workspaceSlug, projectId, data);
     runInAction(() => {
-      this.subscription = result;
+      this.subscriptions[projectId] = result;
     });
   };
 
-  fetchCurrentBalance = async (workspaceSlug: string) => {
+  fetchCurrentBalance = async (workspaceSlug: string, projectId: string) => {
+    this._currentProjectId = projectId;
     try {
-      const data = await careService.getCurrentBalance(workspaceSlug);
+      const data = await careService.getCurrentBalance(workspaceSlug, projectId);
       runInAction(() => {
-        this.currentBalance = data;
+        this.balances[projectId] = data;
       });
     } catch {
       runInAction(() => {
-        this.currentBalance = null;
+        this.balances[projectId] = null;
       });
     }
   };
 
-  fetchBalanceHistory = async (workspaceSlug: string, months = 12) => {
-    const data = await careService.getBalanceHistory(workspaceSlug, months);
+  fetchBalanceHistory = async (workspaceSlug: string, projectId: string, months = 12) => {
+    const data = await careService.getBalanceHistory(workspaceSlug, projectId, months);
     runInAction(() => {
-      this.balanceHistory = data;
+      this.balanceHistories[projectId] = data;
     });
+  };
+
+  fetchCareOverview = async (workspaceSlug: string) => {
+    try {
+      const data = await careService.getCareOverview(workspaceSlug);
+      runInAction(() => {
+        this.overview = data;
+      });
+    } catch {
+      runInAction(() => {
+        this.overview = [];
+      });
+    }
   };
 
   fetchActiveTimer = async (workspaceSlug: string) => {
@@ -177,7 +233,7 @@ export class CareStore implements ICareStore {
       this.worklogEntries[issueId] = [entry, ...existing];
     });
     // Refresh balance after logging time
-    this.fetchCurrentBalance(workspaceSlug);
+    this.fetchCurrentBalance(workspaceSlug, projectId);
     return entry;
   };
 
@@ -187,7 +243,7 @@ export class CareStore implements ICareStore {
       const existing = this.worklogEntries[issueId] || [];
       this.worklogEntries[issueId] = existing.filter((e) => e.id !== entryId);
     });
-    this.fetchCurrentBalance(workspaceSlug);
+    this.fetchCurrentBalance(workspaceSlug, projectId);
   };
 
   startTimer = async (
@@ -220,7 +276,7 @@ export class CareStore implements ICareStore {
       const existing = this.worklogEntries[issueId] || [];
       this.worklogEntries[issueId] = [entry, ...existing.filter((e) => e.id !== entry.id)];
     });
-    this.fetchCurrentBalance(workspaceSlug);
+    this.fetchCurrentBalance(workspaceSlug, projectId);
     return entry;
   };
 }

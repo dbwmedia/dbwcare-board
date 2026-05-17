@@ -37,9 +37,10 @@ export const IssueRecurrenceProperty = observer(function IssueRecurrenceProperty
   const [estimatedMinutes, setEstimatedMinutes] = useState(30);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Fetch recurrence on mount
+  // Fetch subscription + recurrence on mount
   useEffect(() => {
     if (!workspaceSlug || !projectId || !issueId) return;
+    care.fetchSubscription(workspaceSlug, projectId);
     setLoading(true);
     careService
       .getRecurrence(workspaceSlug, projectId, issueId)
@@ -54,10 +55,11 @@ export const IssueRecurrenceProperty = observer(function IssueRecurrenceProperty
           setEstimatedMinutes(data.estimated_minutes % 60);
           setIsPaused(!data.is_active);
         }
+        return data;
       })
       .catch(() => setRecurrence(null))
       .finally(() => setLoading(false));
-  }, [workspaceSlug, projectId, issueId]);
+  }, [workspaceSlug, projectId, issueId, care]);
 
   const buildPayload = useCallback(
     (overrides?: Partial<IIssueRecurrenceFormData>): IIssueRecurrenceFormData => ({
@@ -132,7 +134,8 @@ export const IssueRecurrenceProperty = observer(function IssueRecurrenceProperty
     handleUpdate({ is_active: !value });
   };
 
-  if (!care.hasActiveSubscription) return null;
+  const subscription = care.getSubscription(projectId);
+  if (!subscription?.is_active) return null;
 
   return (
     <SidebarPropertyListItem icon={Repeat} label={t("dbwcare.recurrence")}>
@@ -147,7 +150,7 @@ export const IssueRecurrenceProperty = observer(function IssueRecurrenceProperty
           <>
             {/* Recurrence type radio */}
             <div className="flex flex-col gap-1.5 pl-1">
-              <label className="flex items-center gap-2 text-body-xs-regular cursor-pointer">
+              <label className="flex cursor-pointer items-center gap-2 text-body-xs-regular">
                 <input
                   type="radio"
                   name={`recurrence-type-${issueId}`}
@@ -166,12 +169,12 @@ export const IssueRecurrenceProperty = observer(function IssueRecurrenceProperty
                     onChange={(e) => setDayOfMonth(Math.min(31, Math.max(1, Number(e.target.value))))}
                     onBlur={handleDayOfMonthBlur}
                     disabled={disabled}
-                    className="h-6 w-12 rounded border border-subtle-2 bg-transparent px-1.5 text-body-xs-regular text-primary text-center"
+                    className="border-subtle-2 h-6 w-12 rounded border bg-transparent px-1.5 text-center text-body-xs-regular text-primary"
                   />
                 )}
               </label>
 
-              <label className="flex items-center gap-2 text-body-xs-regular cursor-pointer">
+              <label className="flex cursor-pointer items-center gap-2 text-body-xs-regular">
                 <input
                   type="radio"
                   name={`recurrence-type-${issueId}`}
@@ -190,7 +193,7 @@ export const IssueRecurrenceProperty = observer(function IssueRecurrenceProperty
                     onChange={(e) => setIntervalDays(Math.min(365, Math.max(1, Number(e.target.value))))}
                     onBlur={handleIntervalDaysBlur}
                     disabled={disabled}
-                    className="h-6 w-14 rounded border border-subtle-2 bg-transparent px-1.5 text-body-xs-regular text-primary text-center"
+                    className="border-subtle-2 h-6 w-14 rounded border bg-transparent px-1.5 text-center text-body-xs-regular text-primary"
                   />
                 )}
               </label>
@@ -207,7 +210,7 @@ export const IssueRecurrenceProperty = observer(function IssueRecurrenceProperty
                 onChange={(e) => setEstimatedHours(Math.min(23, Math.max(0, Number(e.target.value))))}
                 onBlur={handleEstimatedDurationBlur}
                 disabled={disabled}
-                className="h-6 w-10 rounded border border-subtle-2 bg-transparent px-1 text-body-xs-regular text-primary text-center"
+                className="border-subtle-2 h-6 w-10 rounded border bg-transparent px-1 text-center text-body-xs-regular text-primary"
               />
               <span className="text-body-xs-regular text-tertiary">h</span>
               <input
@@ -218,7 +221,7 @@ export const IssueRecurrenceProperty = observer(function IssueRecurrenceProperty
                 onChange={(e) => setEstimatedMinutes(Math.min(59, Math.max(0, Number(e.target.value))))}
                 onBlur={handleEstimatedDurationBlur}
                 disabled={disabled}
-                className="h-6 w-10 rounded border border-subtle-2 bg-transparent px-1 text-body-xs-regular text-primary text-center"
+                className="border-subtle-2 h-6 w-10 rounded border bg-transparent px-1 text-center text-body-xs-regular text-primary"
               />
               <span className="text-body-xs-regular text-tertiary">min</span>
             </div>

@@ -11,12 +11,14 @@ vi.mock("@/hooks/store/use-care", () => ({
   useCare: () => mockCareStore,
 }));
 
-// Mock useParams to return a workspace slug
+const TEST_PROJECT_ID = "proj-123";
+
+// Mock useParams to return workspace slug and project id
 vi.mock("react-router", async () => {
   const actual = await vi.importActual<typeof import("react-router")>("react-router");
   return {
     ...actual,
-    useParams: () => ({ workspaceSlug: "test-workspace" }),
+    useParams: () => ({ workspaceSlug: "test-workspace", projectId: TEST_PROJECT_ID }),
     Link: ({ to, children, ...rest }: { to: string; children: React.ReactNode; [key: string]: unknown }) => {
       const React = require("react");
       return React.createElement("a", { href: to, ...rest }, children);
@@ -26,6 +28,8 @@ vi.mock("react-router", async () => {
 
 const makeBalance = (overrides: Partial<IMonthlyBalance> = {}): IMonthlyBalance => ({
   id: "bal-1",
+  project: TEST_PROJECT_ID,
+  project_name: "Test Project",
   workspace: "ws-1",
   year: 2026,
   month: 5,
@@ -45,6 +49,8 @@ const makeBalance = (overrides: Partial<IMonthlyBalance> = {}): IMonthlyBalance 
 
 const makeSubscription = (overrides: Partial<ICareSubscription> = {}): ICareSubscription => ({
   id: "sub-1",
+  project: TEST_PROJECT_ID,
+  project_name: "Test Project",
   workspace: "ws-1",
   monthly_hours: 10,
   package_label: "Care S",
@@ -63,119 +69,107 @@ describe("CareBalanceWidget", () => {
     Object.assign(mockCareStore, {
       fetchSubscription: vi.fn(),
       fetchCurrentBalance: vi.fn(),
+      getSubscription: (projectId: string) => mockCareStore.subscriptions?.[projectId] ?? null,
+      getBalance: (projectId: string) => mockCareStore.balances?.[projectId] ?? null,
+      subscriptions: {},
+      balances: {},
     });
   });
 
   it("renders green state when much time remains (>50%)", () => {
+    const sub = makeSubscription();
+    const bal = makeBalance({
+      consumed_minutes: 180,
+      total_available_minutes: 600,
+      remaining_minutes: 420,
+      consumption_percentage: 30,
+    });
     Object.assign(mockCareStore, {
-      hasActiveSubscription: true,
-      subscription: makeSubscription(),
-      currentBalance: makeBalance({
-        consumed_minutes: 180,
-        total_available_minutes: 600,
-        remaining_minutes: 420,
-        consumption_percentage: 30,
-      }),
+      getSubscription: () => sub,
+      getBalance: () => bal,
     });
 
-    const { container } = render(<CareBalanceWidget />);
+    const { container } = render(<CareBalanceWidget projectId={TEST_PROJECT_ID} />);
 
-    // Widget should render (not null)
     expect(container.innerHTML).not.toBe("");
-
-    // Should display the remaining time text (translation key with interpolation)
     expect(screen.getByText(/dbwcare\.remaining_this_month/)).toBeTruthy();
-
-    // Should display the "of total" text
     expect(screen.getByText(/dbwcare\.of_total/)).toBeTruthy();
 
-    // The link should point to the care settings page
     const link = container.querySelector("a");
     expect(link).toBeTruthy();
-    expect(link?.getAttribute("href")).toBe("/test-workspace/settings/care/");
+    expect(link?.getAttribute("href")).toContain("/settings/projects/");
   });
 
   it("renders warning state when little time remains (<=25%)", () => {
+    const sub = makeSubscription();
+    const bal = makeBalance({
+      consumed_minutes: 510,
+      total_available_minutes: 600,
+      remaining_minutes: 90,
+      consumption_percentage: 85,
+    });
     Object.assign(mockCareStore, {
-      hasActiveSubscription: true,
-      subscription: makeSubscription(),
-      currentBalance: makeBalance({
-        consumed_minutes: 510,
-        total_available_minutes: 600,
-        remaining_minutes: 90,
-        consumption_percentage: 85,
-      }),
+      getSubscription: () => sub,
+      getBalance: () => bal,
     });
 
-    const { container } = render(<CareBalanceWidget />);
-
-    // Widget should render
+    const { container } = render(<CareBalanceWidget projectId={TEST_PROJECT_ID} />);
     expect(container.innerHTML).not.toBe("");
-
-    // Should show remaining time (90 min = 1h 30min)
     expect(screen.getByText(/dbwcare\.remaining_this_month/)).toBeTruthy();
   });
 
   it("renders null when no active subscription", () => {
     Object.assign(mockCareStore, {
-      hasActiveSubscription: false,
-      subscription: null,
-      currentBalance: makeBalance(),
+      getSubscription: () => null,
+      getBalance: () => makeBalance(),
     });
 
-    const { container } = render(<CareBalanceWidget />);
-
-    // Should render nothing
+    const { container } = render(<CareBalanceWidget projectId={TEST_PROJECT_ID} />);
     expect(container.innerHTML).toBe("");
   });
 
   it("renders null when no balance data", () => {
     Object.assign(mockCareStore, {
-      hasActiveSubscription: true,
-      subscription: makeSubscription(),
-      currentBalance: null,
+      getSubscription: () => makeSubscription(),
+      getBalance: () => null,
     });
 
-    const { container } = render(<CareBalanceWidget />);
-
-    // Should render nothing
+    const { container } = render(<CareBalanceWidget projectId={TEST_PROJECT_ID} />);
     expect(container.innerHTML).toBe("");
   });
 
   it("shows borrowed state when remaining minutes are negative", () => {
+    const sub = makeSubscription();
+    const bal = makeBalance({
+      consumed_minutes: 660,
+      total_available_minutes: 600,
+      remaining_minutes: -60,
+      consumption_percentage: 110,
+    });
     Object.assign(mockCareStore, {
-      hasActiveSubscription: true,
-      subscription: makeSubscription(),
-      currentBalance: makeBalance({
-        consumed_minutes: 660,
-        total_available_minutes: 600,
-        remaining_minutes: -60,
-        consumption_percentage: 110,
-      }),
+      getSubscription: () => sub,
+      getBalance: () => bal,
     });
 
-    const { container } = render(<CareBalanceWidget />);
-
+    const { container } = render(<CareBalanceWidget projectId={TEST_PROJECT_ID} />);
     expect(container.innerHTML).not.toBe("");
-    // Should show "borrowed" text since remaining < 0
     expect(screen.getByText(/dbwcare\.borrowed_this_month/)).toBeTruthy();
   });
 
-  it("calls fetchSubscription and fetchCurrentBalance on mount", () => {
+  it("calls fetchSubscription and fetchCurrentBalance on mount with projectId", () => {
     const fetchSubscription = vi.fn();
     const fetchCurrentBalance = vi.fn();
 
     Object.assign(mockCareStore, {
-      hasActiveSubscription: false,
-      subscription: null,
-      currentBalance: null,
+      getSubscription: () => null,
+      getBalance: () => null,
       fetchSubscription,
       fetchCurrentBalance,
     });
 
-    render(<CareBalanceWidget />);
+    render(<CareBalanceWidget projectId={TEST_PROJECT_ID} />);
 
-    expect(fetchSubscription).toHaveBeenCalledWith("test-workspace");
-    expect(fetchCurrentBalance).toHaveBeenCalledWith("test-workspace");
+    expect(fetchSubscription).toHaveBeenCalledWith("test-workspace", TEST_PROJECT_ID);
+    expect(fetchCurrentBalance).toHaveBeenCalledWith("test-workspace", TEST_PROJECT_ID);
   });
 });

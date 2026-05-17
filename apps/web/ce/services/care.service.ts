@@ -2,6 +2,7 @@ import { API_BASE_URL } from "@plane/constants";
 import type {
   ICareSubscription,
   ICareSubscriptionFormData,
+  ICareOverviewItem,
   IMonthlyBalance,
   IWorklogEntry,
   IWorklogEntryFormData,
@@ -17,27 +18,40 @@ class CareService extends APIService {
     super(API_BASE_URL);
   }
 
-  // Subscription
-  async getSubscription(workspaceSlug: string): Promise<ICareSubscription | null> {
-    const { data } = await this.get(`/api/workspaces/${workspaceSlug}/care-subscription/`);
+  // Subscription (project-level)
+  async getSubscription(workspaceSlug: string, projectId: string): Promise<ICareSubscription | null> {
+    const { data } = await this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/care-subscription/`);
     return data;
   }
 
-  async updateSubscription(workspaceSlug: string, payload: ICareSubscriptionFormData): Promise<ICareSubscription> {
-    const { data } = await this.patch(`/api/workspaces/${workspaceSlug}/care-subscription/`, payload);
+  async updateSubscription(
+    workspaceSlug: string,
+    projectId: string,
+    payload: ICareSubscriptionFormData
+  ): Promise<ICareSubscription> {
+    const { data } = await this.patch(
+      `/api/workspaces/${workspaceSlug}/projects/${projectId}/care-subscription/`,
+      payload
+    );
     return data;
   }
 
-  // Balance
-  async getCurrentBalance(workspaceSlug: string): Promise<IMonthlyBalance | null> {
-    const { data } = await this.get(`/api/workspaces/${workspaceSlug}/care-balance/`);
+  // Balance (project-level)
+  async getCurrentBalance(workspaceSlug: string, projectId: string): Promise<IMonthlyBalance | null> {
+    const { data } = await this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/care-balance/`);
     return data;
   }
 
-  async getBalanceHistory(workspaceSlug: string, months = 12): Promise<IMonthlyBalance[]> {
-    const { data } = await this.get(`/api/workspaces/${workspaceSlug}/care-balance/history/`, {
+  async getBalanceHistory(workspaceSlug: string, projectId: string, months = 12): Promise<IMonthlyBalance[]> {
+    const { data } = await this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/care-balance/history/`, {
       params: { months },
     });
+    return data || [];
+  }
+
+  // Admin overview (workspace-level)
+  async getCareOverview(workspaceSlug: string): Promise<ICareOverviewItem[]> {
+    const { data } = await this.get(`/api/workspaces/${workspaceSlug}/care-overview/`);
     return data || [];
   }
 
