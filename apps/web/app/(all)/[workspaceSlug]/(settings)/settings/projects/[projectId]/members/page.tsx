@@ -39,6 +39,7 @@ function MembersSettingsPage({ params }: Route.ComponentProps) {
   const { workspaceUserInfo, allowPermissions } = useUserPermissions();
   const {
     project: { fetchProjectMembers },
+    workspace: { fetchWorkspaceMembers },
   } = useMember();
   // local state
   const [isProvisionModalOpen, setIsProvisionModalOpen] = useState(false);
@@ -78,7 +79,10 @@ function MembersSettingsPage({ params }: Route.ComponentProps) {
         <ProvisionCustomerModal
           isOpen={isProvisionModalOpen}
           onClose={() => setIsProvisionModalOpen(false)}
-          onSuccess={() => fetchProjectMembers(workspaceSlug, projectId)}
+          onSuccess={async () => {
+            await fetchWorkspaceMembers(workspaceSlug);
+            await fetchProjectMembers(workspaceSlug, projectId);
+          }}
           workspaceSlug={workspaceSlug}
           projectId={projectId}
         />
