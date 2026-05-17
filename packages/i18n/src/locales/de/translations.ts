@@ -711,6 +711,7 @@ export default {
     creating: "Wird erstellt",
     create: "Erstellen",
     cancel: "Abbrechen",
+    save: "Speichern",
     description: "Beschreibung",
     title: "Titel",
     attachment: "Anhang",

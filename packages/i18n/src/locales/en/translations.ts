@@ -538,6 +538,7 @@ export default {
     creating: "Creating",
     create: "Create",
     cancel: "Cancel",
+    save: "Save",
     description: "Description",
     title: "Title",
     attachment: "Attachment",
