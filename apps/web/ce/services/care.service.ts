@@ -165,6 +165,27 @@ class CareService extends APIService {
   async deleteRecurrence(workspaceSlug: string, projectId: string, issueId: string): Promise<void> {
     await this.delete(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/recurrence/`);
   }
+
+  // Direct customer provisioning
+  async provisionCustomer(
+    workspaceSlug: string,
+    projectId: string,
+    payload: { email: string; first_name: string; last_name: string; password: string }
+  ): Promise<{
+    user_id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    workspace_member: boolean;
+    project_member: boolean;
+    created: boolean;
+  }> {
+    const { data } = await this.post(
+      `/api/workspaces/${workspaceSlug}/projects/${projectId}/provision-customer/`,
+      payload
+    );
+    return data;
+  }
 }
 
 const careService = new CareService();
