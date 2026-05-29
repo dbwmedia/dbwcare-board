@@ -166,6 +166,19 @@ class CareService extends APIService {
     await this.delete(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/recurrence/`);
   }
 
+  // Manual report send
+  async sendReport(
+    workspaceSlug: string,
+    projectId: string,
+    payload?: { year?: number; month?: number }
+  ): Promise<{ message: string; customer_email: string; month_label: string }> {
+    const { data } = await this.post(
+      `/api/workspaces/${workspaceSlug}/projects/${projectId}/care-report/send/`,
+      payload || {}
+    );
+    return data;
+  }
+
   // Direct customer provisioning
   async provisionCustomer(
     workspaceSlug: string,

@@ -146,6 +146,12 @@ export const coreRoutes: RouteConfigEntry[] = [
             "./(all)/[workspaceSlug]/(projects)/projects/(detail)/[projectId]/issues/(detail)/[issueId]/page.tsx"
           ),
 
+          // DBWCARE Customer Care Overview
+          route(
+            ":workspaceSlug/projects/:projectId/care",
+            "./(all)/[workspaceSlug]/(projects)/projects/[projectId]/care/page.tsx"
+          ),
+
           // Cycle Detail
           layout("./(all)/[workspaceSlug]/(projects)/projects/(detail)/[projectId]/cycles/(detail)/layout.tsx", [
             route(

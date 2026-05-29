@@ -10,6 +10,8 @@ import { Ellipsis } from "lucide-react";
 import { Disclosure, Transition } from "@headlessui/react";
 // plane imports
 import {
+  EUserPermissions,
+  EUserPermissionsLevel,
   WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS_LINKS,
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS,
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS_LINKS,
@@ -22,6 +24,7 @@ import { cn } from "@plane/utils";
 import { SidebarNavItem } from "@/components/sidebar/sidebar-navigation";
 // store hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
+import { useUserPermissions } from "@/hooks/store/user";
 import useLocalStorage from "@/hooks/use-local-storage";
 import {
   usePersonalNavigationPreferences,
@@ -40,11 +43,18 @@ export const SidebarMenuItems = observer(function SidebarMenuItems() {
 
   // store hooks
   const { isExtendedSidebarOpened, toggleExtendedSidebar } = useAppTheme();
+  const { allowPermissions } = useUserPermissions();
   // hooks
   const { preferences: personalPreferences } = usePersonalNavigationPreferences();
   const { preferences: workspacePreferences } = useWorkspaceNavigationPreferences();
   // translation
   const { t } = useTranslation();
+
+  // Guests (customers) get a minimal sidebar — no Workspace section
+  const isAdminOrMember = allowPermissions(
+    [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
+    EUserPermissionsLevel.WORKSPACE
+  );
 
   const toggleListDisclosure = (isOpen: boolean) => {
     toggleWorkspaceMenu(isOpen);
@@ -98,12 +108,14 @@ export const SidebarMenuItems = observer(function SidebarMenuItems() {
   return (
     <>
       <CareBalanceWidget />
-      <div className="flex flex-col gap-0.5">
-        {filteredStaticNavigationItems.map((item, _index) => (
-          <SidebarItem key={`static_${_index}`} item={item} />
-        ))}
-      </div>
-      <Disclosure as="div" className="flex flex-col" defaultOpen={!!isWorkspaceMenuOpen}>
+      {isAdminOrMember && (
+        <div className="flex flex-col gap-0.5">
+          {filteredStaticNavigationItems.map((item, _index) => (
+            <SidebarItem key={`static_${_index}`} item={item} />
+          ))}
+        </div>
+      )}
+      {isAdminOrMember && <Disclosure as="div" className="flex flex-col" defaultOpen={!!isWorkspaceMenuOpen}>
         <div className="group flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-placeholder hover:bg-layer-transparent-hover">
           <Disclosure.Button
             as="button"
@@ -176,7 +188,7 @@ export const SidebarMenuItems = observer(function SidebarMenuItems() {
             </Disclosure.Panel>
           )}
         </Transition>
-      </Disclosure>
+      </Disclosure>}
     </>
   );
 });

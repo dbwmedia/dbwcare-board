@@ -14,6 +14,9 @@ from plane.db.models import (
 class ProjectCareSubscriptionSerializer(BaseSerializer):
     project_name = serializers.SerializerMethodField()
     started_at = serializers.DateField(required=False)
+    customer_name = serializers.CharField(required=False, allow_blank=True)
+    customer_email = serializers.EmailField(required=False, allow_blank=True)
+    report_enabled = serializers.BooleanField(required=False)
 
     class Meta:
         model = ProjectCareSubscription

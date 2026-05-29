@@ -86,6 +86,10 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.dbwcare_recurrence_task.dbwcare_recurrence_generator",
         "schedule": crontab(hour=0, minute=15),  # UTC 00:15
     },
+    "dbwcare-monthly-report": {
+        "task": "plane.bgtasks.dbwcare_monthly_report_task.dbwcare_monthly_report",
+        "schedule": crontab(day_of_month=2, hour=8, minute=0),  # 2nd of month, 08:00 UTC
+    },
 }
 
 

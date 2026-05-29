@@ -171,22 +171,23 @@ export const SidebarProjectsList = observer(function SidebarProjectsList() {
       >
         <>
           <Disclosure as="div" className="flex flex-col" defaultOpen={isAllProjectsListOpen}>
-            <div className="group flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-placeholder hover:bg-layer-transparent-hover">
-              <Disclosure.Button
-                as="button"
-                type="button"
-                className="flex w-full items-center gap-1 text-left text-13 font-semibold whitespace-nowrap text-placeholder"
-                onClick={() => toggleListDisclosure(!isAllProjectsListOpen)}
-                aria-label={t(
-                  isAllProjectsListOpen
-                    ? "aria_labels.projects_sidebar.close_projects_menu"
-                    : "aria_labels.projects_sidebar.open_projects_menu"
-                )}
-              >
-                <span className="text-13 font-semibold">{t("projects")}</span>
-              </Disclosure.Button>
-              <div className="flex items-center gap-1">
-                {isAuthorizedUser && (
+            {/* Projects header — hidden for Guests (customers) */}
+            {isAuthorizedUser && (
+              <div className="group flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-placeholder hover:bg-layer-transparent-hover">
+                <Disclosure.Button
+                  as="button"
+                  type="button"
+                  className="flex w-full items-center gap-1 text-left text-13 font-semibold whitespace-nowrap text-placeholder"
+                  onClick={() => toggleListDisclosure(!isAllProjectsListOpen)}
+                  aria-label={t(
+                    isAllProjectsListOpen
+                      ? "aria_labels.projects_sidebar.close_projects_menu"
+                      : "aria_labels.projects_sidebar.open_projects_menu"
+                  )}
+                >
+                  <span className="text-13 font-semibold">{t("projects")}</span>
+                </Disclosure.Button>
+                <div className="flex items-center gap-1">
                   <Tooltip tooltipHeading={t("create_project")} tooltipContent="">
                     <IconButton
                       variant="ghost"
@@ -200,26 +201,26 @@ export const SidebarProjectsList = observer(function SidebarProjectsList() {
                       aria-label={t("aria_labels.projects_sidebar.create_new_project")}
                     />
                   </Tooltip>
-                )}
-                <IconButton
-                  variant="ghost"
-                  size="sm"
-                  icon={ChevronRightIcon}
-                  onClick={() => toggleListDisclosure(!isAllProjectsListOpen)}
-                  className="text-placeholder"
-                  iconClassName={cn("transition-transform", {
-                    "rotate-90": isAllProjectsListOpen,
-                  })}
-                  aria-label={t(
-                    isAllProjectsListOpen
-                      ? "aria_labels.projects_sidebar.close_projects_menu"
-                      : "aria_labels.projects_sidebar.open_projects_menu"
-                  )}
-                />
+                  <IconButton
+                    variant="ghost"
+                    size="sm"
+                    icon={ChevronRightIcon}
+                    onClick={() => toggleListDisclosure(!isAllProjectsListOpen)}
+                    className="text-placeholder"
+                    iconClassName={cn("transition-transform", {
+                      "rotate-90": isAllProjectsListOpen,
+                    })}
+                    aria-label={t(
+                      isAllProjectsListOpen
+                        ? "aria_labels.projects_sidebar.close_projects_menu"
+                        : "aria_labels.projects_sidebar.open_projects_menu"
+                    )}
+                  />
+                </div>
               </div>
-            </div>
+            )}
             <Transition
-              show={isAllProjectsListOpen}
+              show={!isAuthorizedUser || isAllProjectsListOpen}
               enter="transition duration-100 ease-out"
               enterFrom="transform scale-95 opacity-0"
               enterTo="transform scale-100 opacity-100"

@@ -277,7 +277,7 @@ export const getComputedDisplayFilters = (
       show_weekends: filters?.calendar?.show_weekends || false,
       layout: filters?.calendar?.layout || "month",
     },
-    layout: filters?.layout || EIssueLayoutTypes.LIST,
+    layout: filters?.layout || EIssueLayoutTypes.KANBAN,
     order_by: filters?.order_by || "sort_order",
     group_by: filters?.group_by || null,
     sub_group_by: filters?.sub_group_by || null,

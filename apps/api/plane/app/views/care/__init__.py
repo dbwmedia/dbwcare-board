@@ -12,3 +12,4 @@ from .worklog import (
 )
 from .recurrence import IssueRecurrenceEndpoint
 from .provisioning import ProvisionCustomerEndpoint
+from .report import CareReportSendEndpoint

@@ -94,14 +94,14 @@ class ProvisionCustomerEndpoint(BaseAPIView):
             WorkspaceMember.objects.get_or_create(
                 workspace=workspace,
                 member=user,
-                defaults={"role": 15},  # Member
+                defaults={"role": 5},  # Guest (customer)
             )
 
             # --- Project membership ---
             pm, pm_created = ProjectMember.objects.get_or_create(
                 project=project,
                 member=user,
-                defaults={"role": 15},  # Member
+                defaults={"role": 5},  # Guest (customer)
             )
 
             if not pm_created:

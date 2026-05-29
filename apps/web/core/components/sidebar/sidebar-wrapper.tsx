@@ -13,7 +13,9 @@ import { ScrollArea } from "@plane/propel/scrollarea";
 // components
 import { CustomizeNavigationDialog } from "@/components/navigation/customize-navigation-dialog";
 // hooks
+import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { useAppTheme } from "@/hooks/store/use-app-theme";
+import { useUserPermissions } from "@/hooks/store/user";
 import useSize from "@/hooks/use-window-size";
 // plane web components
 import { WorkspaceEditionBadge } from "@/plane-web/components/workspace/edition-badge";
@@ -32,7 +34,12 @@ export const SidebarWrapper = observer(function SidebarWrapper(props: TSidebarWr
   const [isCustomizeNavDialogOpen, setIsCustomizeNavDialogOpen] = useState(false);
   // store hooks
   const { toggleSidebar, sidebarCollapsed } = useAppTheme();
+  const { allowPermissions } = useUserPermissions();
   const windowSize = useSize();
+  const isAdminOrMember = allowPermissions(
+    [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
+    EUserPermissionsLevel.WORKSPACE
+  );
   // refs
   const ref = useRef<HTMLDivElement>(null);
 
@@ -54,20 +61,26 @@ export const SidebarWrapper = observer(function SidebarWrapper(props: TSidebarWr
         <div className="flex flex-col gap-3 px-3">
           {/* Workspace switcher and settings */}
 
-          <div className="flex items-center justify-between gap-2 px-2">
-            <span className="pt-1 text-16 font-medium text-primary">{title}</span>
-            <div className="flex items-center gap-2">
-              {title === "Projects" && (
-                <IconButton
-                  size="base"
-                  variant="ghost"
-                  icon={PreferencesIcon}
-                  onClick={() => setIsCustomizeNavDialogOpen(true)}
-                />
-              )}
+          {isAdminOrMember ? (
+            <div className="flex items-center justify-between gap-2 px-2">
+              <span className="pt-1 text-16 font-medium text-primary">{title}</span>
+              <div className="flex items-center gap-2">
+                {title === "Projects" && (
+                  <IconButton
+                    size="base"
+                    variant="ghost"
+                    icon={PreferencesIcon}
+                    onClick={() => setIsCustomizeNavDialogOpen(true)}
+                  />
+                )}
+                <AppSidebarToggleButton />
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-end px-2">
               <AppSidebarToggleButton />
             </div>
-          </div>
+          )}
           {/* Quick actions */}
           {quickActions}
         </div>
@@ -81,15 +94,15 @@ export const SidebarWrapper = observer(function SidebarWrapper(props: TSidebarWr
         >
           {children}
         </ScrollArea>
-        {/* Help Section */}
-        <div className="flex h-12 items-center justify-between border-t border-subtle bg-surface-1 p-3">
+        {/* Help Section — only for Admin/Member */}
+        {isAdminOrMember && <div className="flex h-12 items-center justify-between border-t border-subtle bg-surface-1 p-3">
           <WorkspaceEditionBadge />
           {/* TODO: To be checked if we need this */}
           {/* <div className="flex items-center gap-2">
           {!shouldRenderAppRail && <HelpMenu />}
           {!isAppRailEnabled && <AppSidebarToggleButton />}
         </div> */}
-        </div>
+        </div>}
       </div>
     </>
   );

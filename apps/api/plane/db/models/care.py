@@ -58,6 +58,23 @@ class ProjectCareSubscription(BaseModel):
     )
     is_active = models.BooleanField(default=True)
 
+    # Customer contact for monthly reports
+    customer_name = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="Customer display name for reports (e.g. company name)",
+    )
+    customer_email = models.EmailField(
+        blank=True,
+        default="",
+        help_text="Customer email address for monthly report delivery",
+    )
+    report_enabled = models.BooleanField(
+        default=True,
+        help_text="Whether to send automatic monthly reports to the customer",
+    )
+
     class Meta:
         db_table = "project_care_subscriptions"
         verbose_name = "Project Care Subscription"

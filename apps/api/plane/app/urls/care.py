@@ -13,6 +13,7 @@ from plane.app.views import (
     ActiveTimerEndpoint,
     IssueRecurrenceEndpoint,
     ProvisionCustomerEndpoint,
+    CareReportSendEndpoint,
 )
 
 urlpatterns = [
@@ -71,6 +72,12 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/provision-customer/",
         ProvisionCustomerEndpoint.as_view(),
         name="provision-customer",
+    ),
+    # Manual report trigger
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/care-report/send/",
+        CareReportSendEndpoint.as_view(),
+        name="care-report-send",
     ),
     # Recurrence
     path(

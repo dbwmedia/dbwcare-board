@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "react-router";
 import { useTranslation } from "@plane/i18n";
+import { Send } from "lucide-react";
 import { Button, Input, ToggleSwitch } from "@plane/ui";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { useCare } from "@/hooks/store/use-care";
 import { useUserPermissions } from "@/hooks/store/user";
+import careService from "@/plane-web/services/care.service";
 
 const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
   const { workspaceSlug, projectId } = useParams<{ workspaceSlug: string; projectId: string }>();
@@ -18,7 +20,11 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
   const [packageLabel, setPackageLabel] = useState("");
   const [startedAt, setStartedAt] = useState(todayStr);
   const [isActive, setIsActive] = useState(true);
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [reportEnabled, setReportEnabled] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSendingReport, setIsSendingReport] = useState(false);
 
   const userRole = getWorkspaceRoleByWorkspaceSlug(workspaceSlug || "");
   const isAdmin = userRole === 20;
@@ -39,6 +45,9 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
       setPackageLabel(subscription.package_label);
       setStartedAt(subscription.started_at);
       setIsActive(subscription.is_active);
+      setCustomerName(subscription.customer_name || "");
+      setCustomerEmail(subscription.customer_email || "");
+      setReportEnabled(subscription.report_enabled ?? true);
     }
   }, [subscription]);
 
@@ -51,6 +60,9 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
         package_label: packageLabel,
         started_at: startedAt || new Date().toISOString().slice(0, 10),
         is_active: isActive,
+        customer_name: customerName,
+        customer_email: customerEmail,
+        report_enabled: reportEnabled,
       });
       await care.fetchCurrentBalance(workspaceSlug, projectId);
       setToast({
@@ -64,6 +76,28 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
       });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSendReport = async () => {
+    if (!workspaceSlug || !projectId) return;
+    setIsSendingReport(true);
+    try {
+      const result = await careService.sendReport(workspaceSlug, projectId);
+      setToast({
+        type: TOAST_TYPE.SUCCESS,
+        title: t("dbwcare.report_sent_success"),
+        message: result.message,
+      });
+    } catch (err: any) {
+      const errorMsg = err?.data?.error || err?.message || t("dbwcare.report_sent_error");
+      setToast({
+        type: TOAST_TYPE.ERROR,
+        title: t("dbwcare.report_sent_error"),
+        message: errorMsg,
+      });
+    } finally {
+      setIsSendingReport(false);
     }
   };
 
@@ -157,6 +191,69 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
             <Button variant="primary" size="sm" onClick={handleSave} loading={isSaving}>
               {t("save")}
             </Button>
+          </div>
+        </section>
+
+        {/* Customer & Report Settings */}
+        <section>
+          <h4 className="text-lg font-medium">{t("dbwcare.report_settings")}</h4>
+          <p className="mt-1 text-body-sm-regular text-tertiary">{t("dbwcare.report_settings_desc")}</p>
+
+          <div className="mt-4 space-y-4">
+            {/* Customer name */}
+            <div>
+              <label className="text-body-sm-medium">{t("dbwcare.customer_name")}</label>
+              <Input
+                id="care-customer-name"
+                name="customer_name"
+                placeholder={t("dbwcare.customer_name_placeholder")}
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                className="mt-1 w-72"
+              />
+            </div>
+
+            {/* Customer email */}
+            <div>
+              <label className="text-body-sm-medium">{t("dbwcare.customer_email")}</label>
+              <Input
+                id="care-customer-email"
+                name="customer_email"
+                type="email"
+                placeholder="kunde@beispiel.de"
+                value={customerEmail}
+                onChange={(e) => setCustomerEmail(e.target.value)}
+                className="mt-1 w-72"
+              />
+            </div>
+
+            {/* Report toggle */}
+            <div className="flex items-center gap-3">
+              <ToggleSwitch value={reportEnabled} onChange={() => setReportEnabled(!reportEnabled)} />
+              <span className="text-body-sm-regular">{t("dbwcare.report_enabled")}</span>
+            </div>
+
+            {!customerEmail && reportEnabled && (
+              <p className="text-body-xs-regular text-amber-500">{t("dbwcare.report_no_email_warning")}</p>
+            )}
+
+            <div className="flex items-center gap-3">
+              <Button variant="primary" size="sm" onClick={handleSave} loading={isSaving}>
+                {t("save")}
+              </Button>
+
+              {subscription && customerEmail && (
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={handleSendReport}
+                  loading={isSendingReport}
+                  prependIcon={<Send className="size-3.5" />}
+                >
+                  {t("dbwcare.send_report_now")}
+                </Button>
+              )}
+            </div>
           </div>
         </section>
 

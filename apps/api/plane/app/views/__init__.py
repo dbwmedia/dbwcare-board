@@ -243,6 +243,7 @@ from .care import (
     ActiveTimerEndpoint,
     IssueRecurrenceEndpoint,
     ProvisionCustomerEndpoint,
+    CareReportSendEndpoint,
 )
 
 from .error_404 import custom_404_view

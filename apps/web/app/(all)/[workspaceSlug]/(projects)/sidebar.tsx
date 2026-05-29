@@ -36,10 +36,10 @@ export const AppSidebar = observer(function AppSidebar() {
   return (
     <SidebarWrapper title="Projects" quickActions={<SidebarQuickActions />}>
       <SidebarMenuItems />
-      {/* Favorites Menu */}
+      {/* Favorites Menu — only for Admin/Member */}
       {canPerformWorkspaceMemberActions && !isFavoriteEmpty && <SidebarFavoritesMenu />}
-      {/* Teams List */}
-      <SidebarTeamsList />
+      {/* Teams List — only for Admin/Member */}
+      {canPerformWorkspaceMemberActions && <SidebarTeamsList />}
       {/* Projects List */}
       <SidebarProjectsList />
     </SidebarWrapper>

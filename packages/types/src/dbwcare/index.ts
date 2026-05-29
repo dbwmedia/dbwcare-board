@@ -11,6 +11,9 @@ export interface ICareSubscription {
   package_label: string;
   started_at: string;
   is_active: boolean;
+  customer_name: string;
+  customer_email: string;
+  report_enabled: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -20,6 +23,9 @@ export interface ICareSubscriptionFormData {
   package_label?: string;
   started_at?: string;
   is_active?: boolean;
+  customer_name?: string;
+  customer_email?: string;
+  report_enabled?: boolean;
 }
 
 export interface IMonthlyBalance {
