@@ -23,28 +23,6 @@
 
     <center style="width:100%;background-color:#f0f0f0;padding:32px 0;">
 
-      <!-- LOGO HEADER -->
-      <table role="presentation" width="100%">
-        <tr>
-          <td></td>
-          <td class="email-container" width="580" style="width:580px;max-width:580px;margin:0 auto;">
-            <table role="presentation" width="100%" style="padding:28px 0 20px;">
-              <tr>
-                <td style="text-align:center;">
-                  <!-- dbwCARE Pill Logo with gradient border -->
-                  <div style="display:inline-block;border-radius:50px;background:linear-gradient(135deg,#ea2b1f,#ff3c6f,#ff4fdd,#7e56ff,#00b2ff);padding:3px;">
-                    <div style="background:#ffffff;border-radius:48px;padding:10px 28px;">
-                      <span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:22px;color:#1a1a2e;letter-spacing:0.5px;font-weight:400;">DBW</span><span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:22px;color:#1a1a2e;letter-spacing:0.5px;font-weight:800;">CARE</span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </table>
-          </td>
-          <td></td>
-        </tr>
-      </table>
-
       <!-- MAIN CARD -->
       <table role="presentation" width="100%">
         <tr>
@@ -61,10 +39,24 @@
               <tr>
                 <td class="email-content" style="padding:36px 40px 32px;">
 
-                  <!-- Month + Customer -->
-                  <p style="margin:0;font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Monatsbericht</p>
-                  <h1 style="margin:6px 0 4px;font-size:26px;font-weight:700;color:#1a1a2e;line-height:1.2;">{{ month_label }}</h1>
-                  <p style="margin:0 0 28px;font-size:15px;color:#666;">{{ customer_name }}</p>
+                  <!-- Header: Month + Logo -->
+                  <table role="presentation" width="100%">
+                    <tr>
+                      <td style="vertical-align:top;">
+                        <p style="margin:0;font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Monatsbericht</p>
+                        <h1 style="margin:6px 0 4px;font-size:26px;font-weight:700;color:#1a1a2e;line-height:1.2;">{{ month_label }}</h1>
+                        <p style="margin:0;font-size:15px;color:#666;">{{ customer_name }}</p>
+                      </td>
+                      <td style="vertical-align:top;text-align:right;">
+                        <div style="display:inline-block;border-radius:40px;background:linear-gradient(135deg,#ea2b1f,#ff3c6f,#ff4fdd,#7e56ff,#00b2ff);padding:2px;">
+                          <div style="background:#ffffff;border-radius:38px;padding:6px 16px;">
+                            <span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;color:#1a1a2e;letter-spacing:0.3px;font-weight:400;">DBW</span><span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;color:#1a1a2e;letter-spacing:0.3px;font-weight:800;">CARE</span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  <div style="height:24px;"></div>
 
                   <!-- Stats Box -->
                   <table role="presentation" width="100%" style="background:#fafafa;border-radius:12px;border:1px solid #eee;">
