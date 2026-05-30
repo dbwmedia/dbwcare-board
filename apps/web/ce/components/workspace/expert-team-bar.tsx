@@ -1,3 +1,4 @@
+// Expert team bottom bar — visible to guests only
 import { useEffect } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "react-router";
