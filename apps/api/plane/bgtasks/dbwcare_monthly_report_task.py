@@ -238,7 +238,7 @@ def _send_report_for_subscription(
     html_content = render_to_string("emails/care/monthly_report.html", context)
     text_content = generate_plain_text_from_html(html_content)
 
-    subject = f"DBWCARE Monatsbericht – {month_label} – {sub.customer_name or project.name}"
+    subject = f"dbwCARE Monatsbericht – {month_label} – {sub.customer_name or project.name}"
 
     msg = EmailMultiAlternatives(
         subject=subject,

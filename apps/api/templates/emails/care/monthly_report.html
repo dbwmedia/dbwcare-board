@@ -3,35 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>DBWCARE Monatsbericht – {{ month_label }}</title>
+    <title>dbwCARE Monatsbericht – {{ month_label }}</title>
     <style>
       body, table, td, p { margin: 0; padding: 0; }
-      img { border: 0; line-height: 100%; text-decoration: none; -ms-interpolation-mode: bicubic; }
+      img { border: 0; line-height: 100%; text-decoration: none; }
       table { border-collapse: collapse; }
       @media only screen and (max-width: 600px) {
         .email-container { width: 100% !important; }
-        .email-content { padding: 24px 16px !important; }
-        .email-footer { padding: 0 16px 16px 16px !important; }
+        .email-content { padding: 24px 20px !important; }
+        .stats-cell { display: block !important; width: 100% !important; padding-bottom: 12px !important; }
       }
     </style>
   </head>
-  <body bgcolor="#f4f4f5" style="margin:0;padding:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:400;color:#374151;-webkit-font-smoothing:antialiased;background-color:#f4f4f5;">
+  <body bgcolor="#f0f0f0" style="margin:0;padding:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#1a1a2e;-webkit-font-smoothing:antialiased;background-color:#f0f0f0;">
     <!-- Preheader -->
-    <span style="display:none;font-size:1px;color:transparent;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;visibility:hidden;">
-      Ihr DBWCARE Monatsbericht für {{ month_label }}: {{ consumed_formatted }} von {{ available_formatted }} verbraucht.
+    <span style="display:none;font-size:1px;color:transparent;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+      {{ customer_name }} – {{ consumed_formatted }} von {{ available_formatted }} verbraucht im {{ month_label }}.
     </span>
 
-    <center style="width:100%;background-color:#f4f4f5;padding:40px 0;">
-      <!-- HEADER -->
+    <center style="width:100%;background-color:#f0f0f0;padding:32px 0;">
+
+      <!-- LOGO HEADER -->
       <table role="presentation" width="100%">
         <tr>
           <td></td>
-          <td class="email-container" width="620" style="width:620px;max-width:620px;margin:0 auto;">
-            <table role="presentation" width="100%" style="background-color:#111827;border-radius:8px 8px 0 0;">
+          <td class="email-container" width="580" style="width:580px;max-width:580px;margin:0 auto;">
+            <table role="presentation" width="100%" style="padding:24px 0;">
               <tr>
-                <td style="padding:28px 40px;text-align:left;">
-                  <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:0.5px;">DBWCARE</span>
-                  <span style="font-size:14px;color:#9ca3af;margin-left:12px;">Monatsbericht</span>
+                <td style="text-align:center;">
+                  <!-- dbwCARE Logo: dbw normal + CARE bold + gradient dot -->
+                  <span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:24px;color:#1a1a2e;letter-spacing:0.5px;">dbw</span><span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:24px;font-weight:800;color:#1a1a2e;letter-spacing:0.5px;">CARE</span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,#ea2b1f,#ff3c6f,#ff4fdd,#7e56ff,#00b2ff);margin-left:3px;vertical-align:super;"></span>
                 </td>
               </tr>
             </table>
@@ -40,60 +41,62 @@
         </tr>
       </table>
 
-      <!-- BODY -->
+      <!-- MAIN CARD -->
       <table role="presentation" width="100%">
         <tr>
           <td></td>
-          <td class="email-container" width="620" style="width:620px;max-width:620px;margin:0 auto;">
-            <table role="presentation" width="100%" class="email-content" style="background-color:#ffffff;padding:32px 40px;">
-              <tr>
-                <td>
-                  <!-- Greeting -->
-                  <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">{{ customer_name }}</p>
-                  <h1 style="margin:0 0 24px;font-size:22px;font-weight:600;color:#111827;line-height:1.3;">
-                    Bericht für {{ month_label }}
-                  </h1>
+          <td class="email-container" width="580" style="width:580px;max-width:580px;margin:0 auto;">
+            <table role="presentation" width="100%" style="background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
 
-                  <!-- Summary Box -->
-                  <table role="presentation" width="100%" style="background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;margin:0 0 28px;">
+              <!-- Gradient accent bar -->
+              <tr>
+                <td style="height:4px;background:linear-gradient(90deg,#ea2b1f,#ff3c6f,#ff4fdd,#7e56ff,#00b2ff);"></td>
+              </tr>
+
+              <!-- Content -->
+              <tr>
+                <td class="email-content" style="padding:36px 40px 32px;">
+
+                  <!-- Month + Customer -->
+                  <p style="margin:0;font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Monatsbericht</p>
+                  <h1 style="margin:6px 0 4px;font-size:26px;font-weight:700;color:#1a1a2e;line-height:1.2;">{{ month_label }}</h1>
+                  <p style="margin:0 0 28px;font-size:15px;color:#666;">{{ customer_name }}</p>
+
+                  <!-- Stats Box -->
+                  <table role="presentation" width="100%" style="background:#fafafa;border-radius:12px;border:1px solid #eee;">
                     <tr>
-                      <td style="padding:20px 24px;">
+                      <td style="padding:20px 24px 8px;">
                         <table role="presentation" width="100%">
                           <tr>
-                            <td style="padding:0 0 4px;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Paket {{ package_label }}</td>
+                            <td style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Paket {{ package_label }}</td>
+                            <td style="font-size:11px;color:#888;text-align:right;">{{ consumption_pct }}% genutzt</td>
                           </tr>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:8px 24px 16px;">
+                        <!-- Progress bar with gradient -->
+                        <div style="background:#e8e8e8;border-radius:6px;height:8px;width:100%;overflow:hidden;">
+                          <div style="background:linear-gradient(90deg,#ea2b1f,#ff3c6f,#ff4fdd,#7e56ff,#00b2ff);border-radius:6px;height:8px;width:{{ consumption_pct_clamped }}%;"></div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 24px 20px;">
+                        <table role="presentation" width="100%">
                           <tr>
-                            <td style="padding:0 0 16px;">
-                              <!-- Progress bar -->
-                              <table role="presentation" width="100%">
-                                <tr>
-                                  <td style="padding:0;">
-                                    <div style="background-color:#e5e7eb;border-radius:4px;height:8px;width:100%;">
-                                      <div style="background-color:{% if consumption_pct >= 90 %}#ef4444{% elif consumption_pct >= 75 %}#eab308{% else %}#22c55e{% endif %};border-radius:4px;height:8px;width:{{ consumption_pct_clamped }}%;"></div>
-                                    </div>
-                                  </td>
-                                </tr>
-                              </table>
+                            <td class="stats-cell" width="33%" style="vertical-align:top;">
+                              <p style="margin:0;font-size:11px;color:#888;font-weight:500;">Verfügbar</p>
+                              <p style="margin:3px 0 0;font-size:22px;font-weight:700;color:#1a1a2e;">{{ available_formatted }}</p>
                             </td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <table role="presentation" width="100%">
-                                <tr>
-                                  <td width="33%" style="padding:0;vertical-align:top;">
-                                    <p style="margin:0;font-size:11px;color:#6b7280;">Verfügbar</p>
-                                    <p style="margin:2px 0 0;font-size:18px;font-weight:600;color:#111827;">{{ available_formatted }}</p>
-                                  </td>
-                                  <td width="33%" style="padding:0;vertical-align:top;">
-                                    <p style="margin:0;font-size:11px;color:#6b7280;">Verbraucht</p>
-                                    <p style="margin:2px 0 0;font-size:18px;font-weight:600;color:#111827;">{{ consumed_formatted }}</p>
-                                  </td>
-                                  <td width="34%" style="padding:0;vertical-align:top;">
-                                    <p style="margin:0;font-size:11px;color:#6b7280;">Restbudget</p>
-                                    <p style="margin:2px 0 0;font-size:18px;font-weight:600;color:{% if remaining_minutes < 0 %}#ef4444{% else %}#111827{% endif %};">{{ remaining_formatted }}</p>
-                                  </td>
-                                </tr>
-                              </table>
+                            <td class="stats-cell" width="33%" style="vertical-align:top;">
+                              <p style="margin:0;font-size:11px;color:#888;font-weight:500;">Verbraucht</p>
+                              <p style="margin:3px 0 0;font-size:22px;font-weight:700;color:#1a1a2e;">{{ consumed_formatted }}</p>
+                            </td>
+                            <td class="stats-cell" width="34%" style="vertical-align:top;">
+                              <p style="margin:0;font-size:11px;color:#888;font-weight:500;">Restbudget</p>
+                              <p style="margin:3px 0 0;font-size:22px;font-weight:700;color:{% if remaining_minutes < 0 %}#ea2b1f{% else %}#1a1a2e{% endif %};">{{ remaining_formatted }}</p>
                             </td>
                           </tr>
                         </table>
@@ -101,75 +104,76 @@
                     </tr>
                   </table>
 
-                  <!-- Billable entries table -->
+                  <!-- Billable entries -->
                   {% if billable_entries %}
-                  <h2 style="margin:0 0 12px;font-size:15px;font-weight:600;color:#111827;">Leistungen</h2>
-                  <table role="presentation" width="100%" style="border:1px solid #e5e7eb;border-radius:6px;margin:0 0 24px;">
-                    <tr style="background-color:#f9fafb;">
-                      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#6b7280;border-bottom:1px solid #e5e7eb;">Aufgabe</td>
-                      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:right;white-space:nowrap;width:70px;">Zeit</td>
+                  <h2 style="margin:32px 0 16px;font-size:16px;font-weight:700;color:#1a1a2e;">Leistungen</h2>
+                  <table role="presentation" width="100%" style="border-radius:10px;overflow:hidden;border:1px solid #eee;">
+                    <tr style="background:#fafafa;">
+                      <td style="padding:10px 16px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #eee;">Aufgabe</td>
+                      <td style="padding:10px 16px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #eee;text-align:right;width:70px;">Zeit</td>
                     </tr>
                     {% for entry in billable_entries %}
                     <tr>
-                      <td style="padding:10px 14px;font-size:14px;color:#374151;border-bottom:1px solid #f3f4f6;">
-                        <strong style="color:#111827;">{{ entry.issue_title }}</strong>
+                      <td style="padding:12px 16px;font-size:14px;color:#1a1a2e;border-bottom:1px solid #f5f5f5;">
+                        <strong>{{ entry.issue_title }}</strong>
                         {% if entry.description %}
-                        <br><span style="font-size:12px;color:#6b7280;">{{ entry.description }}</span>
+                        <br><span style="font-size:12px;color:#888;">{{ entry.description }}</span>
                         {% endif %}
                       </td>
-                      <td style="padding:10px 14px;font-size:14px;color:#374151;border-bottom:1px solid #f3f4f6;text-align:right;white-space:nowrap;">{{ entry.duration_formatted }}</td>
+                      <td style="padding:12px 16px;font-size:14px;color:#1a1a2e;border-bottom:1px solid #f5f5f5;text-align:right;white-space:nowrap;">{{ entry.duration_formatted }}</td>
                     </tr>
                     {% endfor %}
-                    <tr style="background-color:#f9fafb;">
-                      <td style="padding:10px 14px;font-size:13px;font-weight:600;color:#111827;">Gesamt (abrechenbar)</td>
-                      <td style="padding:10px 14px;font-size:13px;font-weight:600;color:#111827;text-align:right;white-space:nowrap;">{{ billable_total_formatted }}</td>
+                    <tr style="background:#fafafa;">
+                      <td style="padding:12px 16px;font-size:13px;font-weight:700;color:#1a1a2e;">Gesamt (abrechenbar)</td>
+                      <td style="padding:12px 16px;font-size:13px;font-weight:700;color:#1a1a2e;text-align:right;white-space:nowrap;">{{ billable_total_formatted }}</td>
                     </tr>
                   </table>
                   {% else %}
-                  <p style="margin:0 0 24px;font-size:14px;color:#6b7280;font-style:italic;">In diesem Monat wurden keine abrechenbaren Leistungen erfasst.</p>
+                  <p style="margin:32px 0 16px;font-size:14px;color:#888;font-style:italic;">In diesem Monat wurden keine abrechenbaren Leistungen erfasst.</p>
                   {% endif %}
 
                   <!-- Gift entries -->
                   {% if gift_entries %}
-                  <h2 style="margin:0 0 12px;font-size:15px;font-weight:600;color:#059669;">Geschenkte Leistungen</h2>
-                  <table role="presentation" width="100%" style="border:1px solid #d1fae5;border-radius:6px;margin:0 0 24px;background-color:#f0fdf4;">
+                  <h2 style="margin:28px 0 12px;font-size:16px;font-weight:700;color:#059669;">Geschenkte Leistungen</h2>
+                  <table role="presentation" width="100%" style="border-radius:10px;overflow:hidden;background:#f0fdf4;border:1px solid #bbf7d0;">
                     {% for entry in gift_entries %}
                     <tr>
-                      <td style="padding:10px 14px;font-size:14px;color:#374151;border-bottom:1px solid #d1fae5;">
+                      <td style="padding:12px 16px;font-size:14px;color:#1a1a2e;border-bottom:1px solid #d1fae5;">
                         <strong>{{ entry.issue_title }}</strong>
                         {% if entry.gift_reason %}
                         <br><span style="font-size:12px;color:#059669;">{{ entry.gift_reason }}</span>
                         {% elif entry.description %}
-                        <br><span style="font-size:12px;color:#6b7280;">{{ entry.description }}</span>
+                        <br><span style="font-size:12px;color:#888;">{{ entry.description }}</span>
                         {% endif %}
                       </td>
-                      <td style="padding:10px 14px;font-size:14px;color:#374151;border-bottom:1px solid #d1fae5;text-align:right;white-space:nowrap;">{{ entry.duration_formatted }}</td>
+                      <td style="padding:12px 16px;font-size:14px;color:#1a1a2e;border-bottom:1px solid #d1fae5;text-align:right;white-space:nowrap;">{{ entry.duration_formatted }}</td>
                     </tr>
                     {% endfor %}
                     <tr>
-                      <td style="padding:10px 14px;font-size:13px;font-weight:600;color:#059669;">Gesamt (geschenkt)</td>
-                      <td style="padding:10px 14px;font-size:13px;font-weight:600;color:#059669;text-align:right;white-space:nowrap;">{{ gift_total_formatted }}</td>
+                      <td style="padding:12px 16px;font-size:13px;font-weight:700;color:#059669;">Gesamt (geschenkt)</td>
+                      <td style="padding:12px 16px;font-size:13px;font-weight:700;color:#059669;text-align:right;white-space:nowrap;">{{ gift_total_formatted }}</td>
                     </tr>
                   </table>
                   {% endif %}
 
                   <!-- Previous month comparison -->
                   {% if prev_month_consumed_formatted %}
-                  <p style="margin:0 0 8px;font-size:13px;color:#6b7280;">
+                  <p style="margin:24px 0 0;font-size:13px;color:#888;">
                     Zum Vergleich: Im {{ prev_month_label }} wurden {{ prev_month_consumed_formatted }} verbraucht.
                   </p>
                   {% endif %}
 
-                  <!-- CTA -->
-                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0 0;">
+                  <!-- CTA Button with gradient -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:32px 0 0;">
                     <tr>
-                      <td>
-                        <a href="{{ project_url }}" target="_blank" style="background-color:#3b82f6;border-radius:6px;color:#ffffff;padding:12px 24px;text-align:center;text-decoration:none;display:inline-block;font-size:14px;font-weight:500;white-space:nowrap;">
-                          Projekt in DBWCARE öffnen
+                      <td style="border-radius:10px;background:linear-gradient(135deg,#ea2b1f,#ff3c6f,#ff4fdd,#7e56ff,#00b2ff);">
+                        <a href="{{ project_url }}" target="_blank" style="display:inline-block;padding:14px 32px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">
+                          Projekt in dbwCARE öffnen
                         </a>
                       </td>
                     </tr>
                   </table>
+
                 </td>
               </tr>
             </table>
@@ -182,12 +186,12 @@
       <table role="presentation" width="100%">
         <tr>
           <td></td>
-          <td class="email-container" width="620" style="width:620px;max-width:620px;margin:0 auto;">
-            <table role="presentation" width="100%" class="email-footer" style="background-color:#ffffff;padding:0 40px 20px 40px;border-radius:0 0 8px 8px;">
+          <td class="email-container" width="580" style="width:580px;max-width:580px;margin:0 auto;">
+            <table role="presentation" width="100%" style="padding:24px 0;">
               <tr>
-                <td style="border-top:1px solid #e5e7eb;padding:20px 0 0;font-size:11px;line-height:1.6;color:#9ca3af;text-align:center;">
-                  <p style="margin:0;">Dieser Bericht wurde automatisch von DBWCARE erstellt.</p>
-                  <p style="margin:4px 0 0;">DBW Media &middot; {{ site_url }}</p>
+                <td style="text-align:center;">
+                  <p style="margin:0;font-size:11px;color:#aaa;">Dieser Bericht wurde automatisch von dbw<strong>CARE</strong> erstellt.</p>
+                  <p style="margin:6px 0 0;font-size:11px;color:#aaa;">DBW Media &middot; <a href="{{ site_url }}" style="color:#888;text-decoration:underline;">{{ site_url }}</a></p>
                 </td>
               </tr>
             </table>
@@ -195,6 +199,7 @@
           <td></td>
         </tr>
       </table>
+
     </center>
   </body>
 </html>
