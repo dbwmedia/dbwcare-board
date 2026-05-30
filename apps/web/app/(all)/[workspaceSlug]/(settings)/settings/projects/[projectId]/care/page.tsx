@@ -8,6 +8,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { useCare } from "@/hooks/store/use-care";
 import { useUserPermissions } from "@/hooks/store/user";
 import careService from "@/plane-web/services/care.service";
+import { EXPERTS } from "@/plane-web/constants/experts";
 
 const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
   const { workspaceSlug, projectId } = useParams<{ workspaceSlug: string; projectId: string }>();
@@ -23,6 +24,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [reportEnabled, setReportEnabled] = useState(true);
+  const [expertIds, setExpertIds] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isSendingReport, setIsSendingReport] = useState(false);
   const [reportMonth, setReportMonth] = useState("");
@@ -49,6 +51,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
       setCustomerName(subscription.customer_name || "");
       setCustomerEmail(subscription.customer_email || "");
       setReportEnabled(subscription.report_enabled ?? true);
+      setExpertIds(subscription.expert_ids || []);
     }
   }, [subscription]);
 
@@ -64,6 +67,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
         customer_name: customerName,
         customer_email: customerEmail,
         report_enabled: reportEnabled,
+        expert_ids: expertIds,
       });
       await care.fetchCurrentBalance(workspaceSlug, projectId);
       setToast({
@@ -241,7 +245,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
             </div>
 
             {!customerEmail && reportEnabled && (
-              <p className="text-body-xs-regular text-amber-500">{t("dbwcare.report_no_email_warning")}</p>
+              <p className="text-amber-500 text-body-xs-regular">{t("dbwcare.report_no_email_warning")}</p>
             )}
 
             <div className="flex items-center gap-3">
@@ -275,6 +279,49 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
                 </>
               )}
             </div>
+          </div>
+        </section>
+
+        {/* Expert team assignment */}
+        <section>
+          <h4 className="text-lg font-medium">{t("dbwcare.expert_team")}</h4>
+          <p className="mt-1 text-body-sm-regular text-tertiary">{t("dbwcare.expert_team_desc")}</p>
+
+          <div className="mt-4 flex gap-4">
+            {EXPERTS.map((expert) => {
+              const isSelected = expertIds.includes(expert.id);
+              return (
+                <button
+                  key={expert.id}
+                  type="button"
+                  onClick={() => {
+                    setExpertIds((prev) => (isSelected ? prev.filter((id) => id !== expert.id) : [...prev, expert.id]));
+                  }}
+                  className={`group flex flex-col items-center gap-2 rounded-lg border p-3 transition-all ${
+                    isSelected
+                      ? "border-primary-500 bg-primary-500/5 ring-primary-500/30 ring-1"
+                      : "hover:border-primary-500/50 border-subtle"
+                  }`}
+                >
+                  <div
+                    className={`size-16 overflow-hidden rounded-full transition-all ${
+                      isSelected
+                        ? "ring-primary-500 ring-2"
+                        : "opacity-50 grayscale group-hover:opacity-100 group-hover:grayscale-0"
+                    }`}
+                  >
+                    <img src={expert.image} alt={expert.name} className="size-full object-cover" />
+                  </div>
+                  <span className="text-body-sm-medium">{expert.name}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-4">
+            <Button variant="primary" size="sm" onClick={handleSave} loading={isSaving}>
+              {t("save")}
+            </Button>
           </div>
         </section>
 

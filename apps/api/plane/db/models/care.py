@@ -75,6 +75,13 @@ class ProjectCareSubscription(BaseModel):
         help_text="Whether to send automatic monthly reports to the customer",
     )
 
+    # Expert team assignment
+    expert_ids = models.JSONField(
+        default=list,
+        blank=True,
+        help_text='List of expert identifiers assigned to this customer, e.g. ["dennis", "robin", "lara"]',
+    )
+
     class Meta:
         db_table = "project_care_subscriptions"
         verbose_name = "Project Care Subscription"

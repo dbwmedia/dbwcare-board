@@ -2835,7 +2835,8 @@ export default {
     provision_copy_all: "Alles kopieren",
     provision_done: "Fertig",
     report_settings: "Monatsbericht & Kundendaten",
-    report_settings_desc: "Konfiguriere den automatischen Monatsbericht, der am 2. jedes Monats per E-Mail verschickt wird.",
+    report_settings_desc:
+      "Konfiguriere den automatischen Monatsbericht, der am 2. jedes Monats per E-Mail verschickt wird.",
     customer_name: "Kundenname",
     customer_name_placeholder: "z.B. Mustermann GmbH",
     customer_email: "Kunden-E-Mail",
@@ -2845,5 +2846,10 @@ export default {
     report_current_month: "Aktueller Monat",
     report_sent_success: "Monatsbericht versendet",
     report_sent_error: "Fehler beim Versand des Monatsberichts",
+    expert_team: "Dein Experten-Team",
+    expert_team_desc: "Wähle aus, welche Experten diesem Kunden zugeordnet sind.",
+    expert_dennis: "Dennis",
+    expert_robin: "Robin",
+    expert_lara: "Lara",
   },
 } as const;

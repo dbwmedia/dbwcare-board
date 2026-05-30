@@ -17,6 +17,7 @@ class ProjectCareSubscriptionSerializer(BaseSerializer):
     customer_name = serializers.CharField(required=False, allow_blank=True)
     customer_email = serializers.EmailField(required=False, allow_blank=True)
     report_enabled = serializers.BooleanField(required=False)
+    expert_ids = serializers.JSONField(required=False)
 
     class Meta:
         model = ProjectCareSubscription
