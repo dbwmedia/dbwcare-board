@@ -108,24 +108,31 @@
                     </tr>
                   </table>
 
-                  <!-- Billable entries -->
-                  {% if billable_entries %}
+                  <!-- Billable entries grouped by issue -->
+                  {% if billable_groups %}
                   <h2 style="margin:32px 0 16px;font-size:16px;font-weight:700;color:#1a1a2e;">Leistungen</h2>
                   <table role="presentation" width="100%" style="border-radius:10px;overflow:hidden;border:1px solid #eee;">
                     <tr style="background:#fafafa;">
                       <td style="padding:10px 16px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #eee;">Aufgabe</td>
                       <td style="padding:10px 16px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #eee;text-align:right;width:70px;">Zeit</td>
                     </tr>
-                    {% for entry in billable_entries %}
-                    <tr>
-                      <td style="padding:12px 16px;font-size:14px;color:#1a1a2e;border-bottom:1px solid #f5f5f5;">
-                        <strong>{{ entry.issue_title }}</strong>
-                        {% if entry.description %}
-                        <br><span style="font-size:12px;color:#888;">{{ entry.description }}</span>
-                        {% endif %}
+                    {% for group in billable_groups %}
+                    <!-- Issue header with total -->
+                    <tr style="background:#f8f8f8;">
+                      <td style="padding:12px 16px;font-size:14px;color:#1a1a2e;border-bottom:1px solid #eee;">
+                        <strong>{{ group.issue_title }}</strong>
                       </td>
-                      <td style="padding:12px 16px;font-size:14px;color:#1a1a2e;border-bottom:1px solid #f5f5f5;text-align:right;white-space:nowrap;">{{ entry.duration_formatted }}</td>
+                      <td style="padding:12px 16px;font-size:14px;font-weight:700;color:#1a1a2e;border-bottom:1px solid #eee;text-align:right;white-space:nowrap;">{{ group.total_formatted }}</td>
                     </tr>
+                    <!-- Individual entries -->
+                    {% for entry in group.entries %}
+                    <tr>
+                      <td style="padding:8px 16px 8px 32px;font-size:13px;color:#888;border-bottom:1px solid #f5f5f5;">
+                        · {{ entry.description|default:"–" }}
+                      </td>
+                      <td style="padding:8px 16px;font-size:13px;color:#888;border-bottom:1px solid #f5f5f5;text-align:right;white-space:nowrap;">{{ entry.duration_formatted }}</td>
+                    </tr>
+                    {% endfor %}
                     {% endfor %}
                     <tr style="background:#fafafa;">
                       <td style="padding:12px 16px;font-size:13px;font-weight:700;color:#1a1a2e;">Gesamt (abrechenbar)</td>
@@ -136,22 +143,26 @@
                   <p style="margin:32px 0 16px;font-size:14px;color:#888;font-style:italic;">In diesem Monat wurden keine abrechenbaren Leistungen erfasst.</p>
                   {% endif %}
 
-                  <!-- Gift entries -->
-                  {% if gift_entries %}
+                  <!-- Gift entries grouped by issue -->
+                  {% if gift_groups %}
                   <h2 style="margin:28px 0 12px;font-size:16px;font-weight:700;color:#059669;">Geschenkte Leistungen</h2>
                   <table role="presentation" width="100%" style="border-radius:10px;overflow:hidden;background:#f0fdf4;border:1px solid #bbf7d0;">
-                    {% for entry in gift_entries %}
-                    <tr>
+                    {% for group in gift_groups %}
+                    <tr style="background:#e6f9ee;">
                       <td style="padding:12px 16px;font-size:14px;color:#1a1a2e;border-bottom:1px solid #d1fae5;">
-                        <strong>{{ entry.issue_title }}</strong>
-                        {% if entry.gift_reason %}
-                        <br><span style="font-size:12px;color:#059669;">{{ entry.gift_reason }}</span>
-                        {% elif entry.description %}
-                        <br><span style="font-size:12px;color:#888;">{{ entry.description }}</span>
-                        {% endif %}
+                        <strong>{{ group.issue_title }}</strong>
                       </td>
-                      <td style="padding:12px 16px;font-size:14px;color:#1a1a2e;border-bottom:1px solid #d1fae5;text-align:right;white-space:nowrap;">{{ entry.duration_formatted }}</td>
+                      <td style="padding:12px 16px;font-size:14px;font-weight:700;color:#1a1a2e;border-bottom:1px solid #d1fae5;text-align:right;white-space:nowrap;">{{ group.total_formatted }}</td>
                     </tr>
+                    {% for entry in group.entries %}
+                    <tr>
+                      <td style="padding:8px 16px 8px 32px;font-size:13px;color:#059669;border-bottom:1px solid #d1fae5;">
+                        · {{ entry.description|default:"–" }}
+                        {% if entry.gift_reason %}<br><span style="font-size:11px;color:#059669;font-style:italic;">{{ entry.gift_reason }}</span>{% endif %}
+                      </td>
+                      <td style="padding:8px 16px;font-size:13px;color:#059669;border-bottom:1px solid #d1fae5;text-align:right;white-space:nowrap;">{{ entry.duration_formatted }}</td>
+                    </tr>
+                    {% endfor %}
                     {% endfor %}
                     <tr>
                       <td style="padding:12px 16px;font-size:13px;font-weight:700;color:#059669;">Gesamt (geschenkt)</td>

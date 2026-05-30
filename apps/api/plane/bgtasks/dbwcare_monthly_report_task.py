@@ -164,26 +164,55 @@ def _send_report_for_subscription(
         .order_by("started_at")
     )
 
-    # Split into billable and gift
-    billable_entries = []
-    gift_entries = []
+    # Group entries by issue, split into billable and gift
+    from collections import OrderedDict
+
+    billable_by_issue = OrderedDict()
+    gift_by_issue = OrderedDict()
     billable_total = 0
     gift_total = 0
 
     for entry in entries:
+        issue_id = str(entry.issue_id)
+        issue_title = entry.issue.name if entry.issue else "Unbekannt"
         entry_data = {
-            "issue_title": entry.issue.name if entry.issue else "Unbekannt",
             "description": entry.description,
             "duration_minutes": entry.duration_minutes,
             "duration_formatted": format_minutes(entry.duration_minutes),
             "gift_reason": entry.gift_reason,
         }
+
         if entry.billing_status == "gift":
-            gift_entries.append(entry_data)
+            if issue_id not in gift_by_issue:
+                gift_by_issue[issue_id] = {
+                    "issue_title": issue_title,
+                    "total_minutes": 0,
+                    "total_formatted": "",
+                    "entries": [],
+                }
+            gift_by_issue[issue_id]["total_minutes"] += entry.duration_minutes
+            gift_by_issue[issue_id]["entries"].append(entry_data)
             gift_total += entry.duration_minutes
         else:
-            billable_entries.append(entry_data)
+            if issue_id not in billable_by_issue:
+                billable_by_issue[issue_id] = {
+                    "issue_title": issue_title,
+                    "total_minutes": 0,
+                    "total_formatted": "",
+                    "entries": [],
+                }
+            billable_by_issue[issue_id]["total_minutes"] += entry.duration_minutes
+            billable_by_issue[issue_id]["entries"].append(entry_data)
             billable_total += entry.duration_minutes
+
+    # Compute formatted totals per issue
+    for group in billable_by_issue.values():
+        group["total_formatted"] = format_minutes(group["total_minutes"])
+    for group in gift_by_issue.values():
+        group["total_formatted"] = format_minutes(group["total_minutes"])
+
+    billable_groups = list(billable_by_issue.values())
+    gift_groups = list(gift_by_issue.values())
 
     # Get previous month's balance for comparison
     if report_month == 1:
@@ -225,9 +254,9 @@ def _send_report_for_subscription(
         "remaining_minutes": remaining_minutes,
         "consumption_pct": consumption_pct,
         "consumption_pct_clamped": min(consumption_pct, 100),
-        "billable_entries": billable_entries,
+        "billable_groups": billable_groups,
         "billable_total_formatted": format_minutes(billable_total),
-        "gift_entries": gift_entries,
+        "gift_groups": gift_groups,
         "gift_total_formatted": format_minutes(gift_total),
         "prev_month_consumed_formatted": prev_month_consumed_formatted,
         "prev_month_label": prev_month_label,
