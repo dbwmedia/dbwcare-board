@@ -70,7 +70,7 @@ export const WorklogManualEntryModal = observer(function WorklogManualEntryModal
   };
 
   return (
-    <ModalCore isOpen={isOpen} handleClose={handleClose}>
+    <ModalCore isOpen={isOpen} handleClose={() => {}}>
       <div className="p-5">
         <h3 className="text-lg font-medium">{t("dbwcare.manual_add")}</h3>
 

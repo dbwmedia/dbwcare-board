@@ -39,7 +39,7 @@ export const WorklogTimerStopModal = observer(function WorklogTimerStopModal(pro
   };
 
   return (
-    <ModalCore isOpen={isOpen} handleClose={onClose}>
+    <ModalCore isOpen={isOpen} handleClose={() => {}}>
       <div className="p-5">
         <h3 className="text-lg font-medium">{t("dbwcare.stop_timer")}</h3>
         <p className="mt-1 text-body-sm-regular text-tertiary">

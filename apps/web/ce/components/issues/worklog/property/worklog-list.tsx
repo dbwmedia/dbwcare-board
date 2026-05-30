@@ -28,10 +28,10 @@ const formatRelativeDate = (dateStr: string) => {
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return "today";
-  if (diffDays === 1) return "yesterday";
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
+  if (diffDays === 0) return "heute";
+  if (diffDays === 1) return "gestern";
+  if (diffDays < 7) return `vor ${diffDays}T`;
+  return date.toLocaleDateString("de-DE");
 };
 
 export const WorklogList = observer(function WorklogList(props: Props) {
