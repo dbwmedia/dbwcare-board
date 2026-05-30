@@ -2847,6 +2847,8 @@ export default {
     report_sent_success: "Monatsbericht versendet",
     report_sent_error: "Fehler beim Versand des Monatsberichts",
     expert_team: "Dein Experten-Team",
+    expert_team_title: "Deine Experten",
+    expert_team_subtitle: "Wir beraten dich gerne!",
     expert_team_desc: "Wähle aus, welche Experten diesem Kunden zugeordnet sind.",
     expert_dennis: "Dennis",
     expert_robin: "Robin",

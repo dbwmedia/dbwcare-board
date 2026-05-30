@@ -74,7 +74,7 @@ function StoreWrapper(props: TStoreWrapper) {
     }
 
     // Apply theme from server profile (one-time only)
-    setTheme(userProfile?.theme?.theme || "system");
+    setTheme(userProfile?.theme?.theme || "light");
 
     // Mark as initialized - prevents future syncs from server
     hasInitializedThemeRef.current = true;

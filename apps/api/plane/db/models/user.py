@@ -224,7 +224,7 @@ class Profile(TimeAuditModel):
     # User
     user = models.OneToOneField("db.User", on_delete=models.CASCADE, related_name="profile")
     # General
-    theme = models.JSONField(default=dict)
+    theme = models.JSONField(default=lambda: {"theme": "light"})
     is_app_rail_docked = models.BooleanField(default=True)
     # Onboarding
     is_tour_completed = models.BooleanField(default=False)
@@ -249,7 +249,7 @@ class Profile(TimeAuditModel):
     mobile_timezone_auto_set = models.BooleanField(default=False)
     # language
     language = models.CharField(max_length=255, default="en")
-    start_of_the_week = models.PositiveSmallIntegerField(choices=START_OF_THE_WEEK_CHOICES, default=SUNDAY)
+    start_of_the_week = models.PositiveSmallIntegerField(choices=START_OF_THE_WEEK_CHOICES, default=MONDAY)
     goals = models.JSONField(default=dict)
     background_color = models.CharField(max_length=255, default=get_random_color)
 
