@@ -63,7 +63,7 @@ export const ExpertTeamBar = observer(function ExpertTeamBar() {
           className="flex items-center gap-1.5 rounded-md bg-gradient-to-r from-[#ea2b1f] via-[#ff4fdd] to-[#7e56ff] px-4 py-2 text-body-xs-medium font-medium text-white shadow-sm transition-opacity hover:opacity-90"
         >
           <Plus className="size-3.5" />
-          {t("dbwcare.sidebar.new_task")}
+          {t("sidebar.new_work_item")}
         </button>
       </div>
     </div>
