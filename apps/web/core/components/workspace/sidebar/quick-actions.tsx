@@ -43,6 +43,10 @@ export const SidebarQuickActions = observer(function SidebarQuickActions() {
     [EUserPermissions.ADMIN, EUserPermissions.MEMBER, EUserPermissions.GUEST],
     EUserPermissionsLevel.WORKSPACE
   );
+  const isAdminOrMember = allowPermissions(
+    [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
+    EUserPermissionsLevel.WORKSPACE
+  );
   const disabled = joinedProjectIds.length === 0 || !canCreateIssue;
   const workspaceDraftIssue = workspaceSlug ? (storedValue?.[workspaceSlug] ?? undefined) : undefined;
 
@@ -77,7 +81,7 @@ export const SidebarQuickActions = observer(function SidebarQuickActions() {
         fetchIssueDetails={false}
         isDraft
       />
-      <div className="flex cursor-pointer items-center justify-between gap-2">
+      {isAdminOrMember && <div className="flex cursor-pointer items-center justify-between gap-2">
         <SidebarAddButton
           label={
             <>
@@ -91,7 +95,7 @@ export const SidebarQuickActions = observer(function SidebarQuickActions() {
           onMouseLeave={handleMouseLeave}
           data-ph-element={SIDEBAR_TRACKER_ELEMENTS.CREATE_WORK_ITEM_BUTTON}
         />
-      </div>
+      </div>}
     </>
   );
 });

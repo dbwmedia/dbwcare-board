@@ -24,7 +24,7 @@ export const ListLayout = observer(function ListLayout() {
 
   const canEditPropertiesBasedOnProject = (projectId: string) =>
     allowPermissions(
-      [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
+      [EUserPermissions.ADMIN, EUserPermissions.MEMBER, EUserPermissions.GUEST],
       EUserPermissionsLevel.PROJECT,
       workspaceSlug.toString(),
       projectId
