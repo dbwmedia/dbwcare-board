@@ -25,6 +25,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
   const [reportEnabled, setReportEnabled] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSendingReport, setIsSendingReport] = useState(false);
+  const [reportMonth, setReportMonth] = useState("");
 
   const userRole = getWorkspaceRoleByWorkspaceSlug(workspaceSlug || "");
   const isAdmin = userRole === 20;
@@ -83,7 +84,13 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
     if (!workspaceSlug || !projectId) return;
     setIsSendingReport(true);
     try {
-      const result = await careService.sendReport(workspaceSlug, projectId);
+      const payload: { year?: number; month?: number } = {};
+      if (reportMonth) {
+        const [y, m] = reportMonth.split("-").map(Number);
+        payload.year = y;
+        payload.month = m;
+      }
+      const result = await careService.sendReport(workspaceSlug, projectId, payload);
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: t("dbwcare.report_sent_success"),
@@ -243,15 +250,29 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
               </Button>
 
               {subscription && customerEmail && (
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={handleSendReport}
-                  loading={isSendingReport}
-                  prependIcon={<Send className="size-3.5" />}
-                >
-                  {t("dbwcare.send_report_now")}
-                </Button>
+                <>
+                  <select
+                    value={reportMonth}
+                    onChange={(e) => setReportMonth(e.target.value)}
+                    className="h-8 rounded-md border border-subtle bg-transparent px-2 text-body-xs-regular text-primary"
+                  >
+                    <option value="">{t("dbwcare.report_current_month")}</option>
+                    {balanceHistory.map((b) => (
+                      <option key={`${b.year}-${b.month}`} value={`${b.year}-${b.month}`}>
+                        {b.year}-{String(b.month).padStart(2, "0")} ({b.consumed_minutes}min)
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={handleSendReport}
+                    loading={isSendingReport}
+                    prependIcon={<Send className="size-3.5" />}
+                  >
+                    {t("dbwcare.send_report_now")}
+                  </Button>
+                </>
               )}
             </div>
           </div>
