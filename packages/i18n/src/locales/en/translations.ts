@@ -2784,6 +2784,8 @@ export default {
     gift_reason: "Geschenk-Begründung",
     gift_reason_placeholder: "Warum ist das ein Geschenk?",
     save_error: "Fehler beim Speichern",
+    save_changes: "Änderungen speichern",
+    edit_entry: "Eintrag bearbeiten",
     stop_error: "Fehler beim Stoppen des Timers",
     base_quota: "Basis-Kontingent",
     rolled_over: "Aus Vormonat übertragen",

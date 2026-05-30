@@ -42,6 +42,13 @@ export interface ICareStore {
     issueId: string,
     data: IWorklogEntryFormData
   ) => Promise<IWorklogEntry>;
+  updateWorklogEntry: (
+    workspaceSlug: string,
+    projectId: string,
+    issueId: string,
+    entryId: string,
+    data: Partial<IWorklogEntryFormData>
+  ) => Promise<IWorklogEntry>;
   deleteWorklogEntry: (workspaceSlug: string, projectId: string, issueId: string, entryId: string) => Promise<void>;
   startTimer: (
     workspaceSlug: string,
@@ -97,6 +104,7 @@ export class CareStore implements ICareStore {
       fetchActiveTimer: action,
       fetchWorklogEntries: action,
       createWorklogEntry: action,
+      updateWorklogEntry: action,
       deleteWorklogEntry: action,
       startTimer: action,
       stopTimer: action,
@@ -235,6 +243,22 @@ export class CareStore implements ICareStore {
     // Refresh balance after logging time
     this.fetchCurrentBalance(workspaceSlug, projectId);
     return entry;
+  };
+
+  updateWorklogEntry = async (
+    workspaceSlug: string,
+    projectId: string,
+    issueId: string,
+    entryId: string,
+    data: Partial<IWorklogEntryFormData>
+  ): Promise<IWorklogEntry> => {
+    const updated = await careService.updateWorklogEntry(workspaceSlug, projectId, issueId, entryId, data);
+    runInAction(() => {
+      const existing = this.worklogEntries[issueId] || [];
+      this.worklogEntries[issueId] = existing.map((e) => (e.id === entryId ? updated : e));
+    });
+    this.fetchCurrentBalance(workspaceSlug, projectId);
+    return updated;
   };
 
   deleteWorklogEntry = async (workspaceSlug: string, projectId: string, issueId: string, entryId: string) => {
