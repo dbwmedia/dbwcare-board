@@ -4,7 +4,14 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
-## [Unreleased] – 2026-05-29
+## [Unreleased] – 2026-05-30
+
+### Zeiterfassung — Einträge bearbeiten
+
+- **Edit-Modal:** Pencil-Icon pro Worklog-Eintrag → Modal zum Bearbeiten von Dauer, Beschreibung, Abrechnungsstatus und Geschenk-Begründung
+- **Store:** `updateWorklogEntry` Action mit PATCH-API, automatisches Balance-Refresh nach Edit
+- **UX:** Modals (Timer-Stop, Manual-Entry, Edit) schließen sich nicht mehr bei Backdrop-Click — nur noch über Cancel-Button
+- **i18n:** "Eintrag bearbeiten", "Änderungen speichern"
 
 ### Rollen-System & Kunden-UI-Vereinfachung
 
@@ -14,6 +21,7 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 - **Sidebar für Guests:** Nur "Neue Aufgabe"-Button, CARE-Widget, eigenes Projekt → "Aufgaben" — alles andere ausgeblendet (Home, Drafts, Your Work, Stickies, Workspace, Projects-Header, Footer)
 - **CARE-Widget:** Gradient-Hintergrund (grün/gelb/rot je nach Verbrauch), "**CARE**-Kontingent" mit Bold-Branding, Klick öffnet eigene Übersichtsseite
 - **Care-Übersichtsseite:** `/:workspace/projects/:projectId/care` — Hero mit großer Zahl, Fortschrittsbalken, Stats, Monatsverlauf mit allen vergangenen Monaten
+- **Default-Layout:** Kanban statt Liste für neue User
 - **i18n:** "Work Items" → "Aufgaben", "New work item" → "Neue Aufgabe", sidebar-Block in EN hinzugefügt
 
 ### Monthly Report & Kundendaten
@@ -21,11 +29,17 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 - **Model:** 3 neue Felder auf `ProjectCareSubscription`: `customer_name`, `customer_email`, `report_enabled`
 - **Migration:** `0502_care_report_fields`
 - **Celery-Task:** `dbwcare_monthly_report` — generiert am 2. des Monats (08:00 UTC) den Bericht des Vormonats und versendet ihn per SMTP
-- **E-Mail-Template:** `templates/emails/care/monthly_report.html` — professionelles deutsches HTML-Template mit Zusammenfassung, Fortschrittsbalken, Leistungstabelle (abrechenbar), geschenkte Leistungen (grün, mit Begründung), Vormonats-Vergleich
-- **Report-Logik:** `self_caused`-Einträge werden ausgeblendet, `gift`-Einträge in eigener Sektion mit `gift_reason`
-- **API:** `POST /projects/<pid>/care-report/send/` — manueller Report-Versand (Admin only), optional mit `year`/`month` Parameter
-- **Frontend:** Neue Sektion "Monatsbericht & Kundendaten" in Project Care Settings mit Kundenname, E-Mail, Report-Toggle, Warnung bei fehlendem Empfänger, und "Report jetzt senden"-Button
-- **i18n:** 10 neue Keys (DE + EN) für Report-Sektion
+- **E-Mail-Template:** dbwCARE Pill-Logo mit Gradient-Border, Gradient-Accent-Bar, Gradient-CTA-Button, gruppierte Leistungstabelle (nach Issue mit Subtotals), Geschenk-Sektion, Vormonats-Vergleich, Dankeschön-Footer
+- **Report-Logik:** Einträge nach Issue gruppiert (Header + Einzelzeiten), `self_caused` ausgeblendet, `gift` in eigener Sektion
+- **Manueller Versand:** Default = aktueller Monat, Monat-Dropdown mit nur Monaten die Daten haben
+- **API:** `POST /projects/<pid>/care-report/send/` — manueller Report-Versand (Admin only), mit `year`/`month` Parameter
+- **Frontend:** Sektion "Monatsbericht & Kundendaten" mit Kundenname, E-Mail, Report-Toggle, Monat-Auswahl, "Report senden"-Button
+
+### i18n — Deutsch in EN-Translations
+
+- Alle `dbwcare.*` Keys in der EN-Datei auf Deutsch gesetzt (Zeiterfassung, Provisioning, Reports, Settings)
+- Hardcoded Datums-Labels auf Deutsch (heute, gestern, vor Xt)
+- Schreibweisen: DBW**CARE** (Produkt), dbw media (Agentur, alles klein)
 
 ---
 
