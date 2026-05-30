@@ -136,11 +136,9 @@ def _send_report_for_subscription(
             deleted_at__isnull=True,
         )
     except ProjectMonthlyBalance.DoesNotExist:
-        logger.warning(
-            f"DBWCARE report: no balance found for project {project.id} "
-            f"{report_year}-{report_month:02d}, skipping"
+        raise ValueError(
+            f"Keine Balance-Daten für {GERMAN_MONTHS[report_month]} {report_year} vorhanden."
         )
-        return
 
     # Get all worklog entries for the report month
     from django.utils import timezone

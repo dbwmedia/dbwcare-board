@@ -43,18 +43,14 @@ class CareReportSendEndpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Determine report month: use request param or default to previous month
+        # Determine report month: use request param or default to current month
         today = date.today()
         report_year = int(request.data.get("year", 0)) or None
         report_month = int(request.data.get("month", 0)) or None
 
         if not report_year or not report_month:
-            if today.month == 1:
-                report_year = today.year - 1
-                report_month = 12
-            else:
-                report_year = today.year
-                report_month = today.month - 1
+            report_year = today.year
+            report_month = today.month
 
         GERMAN_MONTHS = [
             "", "Januar", "Februar", "März", "April", "Mai", "Juni",
