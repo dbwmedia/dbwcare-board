@@ -135,7 +135,8 @@ export const IssueRecurrenceProperty = observer(function IssueRecurrenceProperty
   };
 
   const subscription = care.getSubscription(projectId);
-  if (!subscription?.is_active) return null;
+  // Don't hide until subscription is loaded (null = not yet fetched, undefined would mean no sub)
+  if (subscription !== null && !subscription?.is_active) return null;
 
   return (
     <SidebarPropertyListItem icon={Repeat} label={t("dbwcare.recurrence")}>
