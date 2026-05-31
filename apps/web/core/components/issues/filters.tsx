@@ -8,13 +8,14 @@ import { useCallback, useState } from "react";
 import { observer } from "mobx-react";
 import { ChartNoAxesColumn, SlidersHorizontal } from "lucide-react";
 // plane imports
-import { EIssueFilterType, ISSUE_STORE_TO_FILTERS_MAP } from "@plane/constants";
+import { EIssueFilterType, EUserPermissions, EUserPermissionsLevel, ISSUE_STORE_TO_FILTERS_MAP } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import type { IIssueDisplayFilterOptions, IIssueDisplayProperties } from "@plane/types";
 import { EIssueLayoutTypes, EIssuesStoreType } from "@plane/types";
 // hooks
 import { useIssues } from "@/hooks/store/use-issues";
+import { useUserPermissions } from "@/hooks/store/user";
 // plane web imports
 import type { TProject } from "@/plane-web/types";
 // local imports
@@ -34,12 +35,16 @@ type Props = {
   canUserCreateIssue: boolean | undefined;
   storeType?: EIssuesStoreType.PROJECT | EIssuesStoreType.EPIC;
 };
-const LAYOUTS = [
+const ALL_LAYOUTS = [
   EIssueLayoutTypes.LIST,
   EIssueLayoutTypes.KANBAN,
   EIssueLayoutTypes.CALENDAR,
   EIssueLayoutTypes.SPREADSHEET,
   EIssueLayoutTypes.GANTT,
+];
+const GUEST_LAYOUTS = [
+  EIssueLayoutTypes.LIST,
+  EIssueLayoutTypes.KANBAN,
 ];
 
 export const HeaderFilters = observer(function HeaderFilters(props: Props) {
@@ -58,7 +63,10 @@ export const HeaderFilters = observer(function HeaderFilters(props: Props) {
   const {
     issuesFilter: { issueFilters, updateFilters },
   } = useIssues(storeType);
+  const { allowPermissions } = useUserPermissions();
   // derived values
+  const isGuest = !allowPermissions([EUserPermissions.ADMIN, EUserPermissions.MEMBER], EUserPermissionsLevel.WORKSPACE);
+  const LAYOUTS = isGuest ? GUEST_LAYOUTS : ALL_LAYOUTS;
   const activeLayout = issueFilters?.displayFilters?.layout;
   const layoutDisplayFiltersOptions = ISSUE_STORE_TO_FILTERS_MAP[storeType]?.layoutOptions[activeLayout];
 

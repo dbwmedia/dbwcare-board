@@ -23,35 +23,35 @@ class StateGroup(models.TextChoices):
 # Default states
 DEFAULT_STATES = [
     {
-        "name": "Backlog",
+        "name": "Eingang",
         "color": "#60646C",
         "sequence": 15000,
         "group": StateGroup.BACKLOG.value,
         "default": True,
     },
     {
-        "name": "Todo",
+        "name": "Geplant",
         "color": "#60646C",
         "sequence": 25000,
         "group": StateGroup.UNSTARTED.value,
     },
     {
-        "name": "In Progress",
+        "name": "In Arbeit",
         "color": "#F59E0B",
         "sequence": 35000,
         "group": StateGroup.STARTED.value,
     },
     {
-        "name": "Done",
+        "name": "Feedback",
+        "color": "#6366F1",
+        "sequence": 40000,
+        "group": StateGroup.STARTED.value,
+    },
+    {
+        "name": "Erledigt",
         "color": "#46A758",
         "sequence": 45000,
         "group": StateGroup.COMPLETED.value,
-    },
-    {
-        "name": "Cancelled",
-        "color": "#9AA4BC",
-        "sequence": 55000,
-        "group": StateGroup.CANCELLED.value,
     },
     {
         "name": "Triage",
