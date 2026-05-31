@@ -36,13 +36,13 @@ export const ExpertTeamBar = observer(function ExpertTeamBar() {
 
   return (
     <>
-      <div className="fixed right-0 bottom-0 left-0 z-50 bg-white/70 backdrop-blur-xl dark:bg-neutral-900/70">
+      <div className="fixed right-0 bottom-0 left-0 z-20 bg-white/70 backdrop-blur-xl dark:bg-neutral-900/70">
         <div className="mx-auto flex max-w-screen-xl items-center justify-between px-5 py-2.5">
           {/* Left: Expert team */}
           <div className="flex items-center gap-3">
             <div>
-              <p className="text-body-xs-medium font-bold text-primary">{t("dbwcare.expert_team_title")}</p>
-              <p className="text-caption-xs text-tertiary">{t("dbwcare.expert_team_subtitle")}</p>
+              <p className="text-sm font-bold text-primary">{t("dbwcare.expert_team_title")}</p>
+              <p className="text-[11px] text-tertiary">{t("dbwcare.expert_team_subtitle")}</p>
             </div>
             <div className="flex items-center -space-x-2">
               {experts.map((expert) => (
