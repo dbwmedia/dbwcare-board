@@ -19,11 +19,23 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
   - Drag&Drop Datei-Upload (max. 5 Dateien, Bilder + PDF)
 - **Step 4 — Dringlichkeit:** 4 farbige Priority-Karten (Kann warten / Normal / Wichtig / Dringend) + optionaler Wunschtermin
 - **Automatische Titel-Generierung:** `Fix: ...`, `Feature: ...`, `Content: ...`, `Frage: ...`
-- **Strukturierte Beschreibung:** HTML mit H3-Ueberschriften (Ist/Soll etc.) — sofort bearbeitbar fuer das Team
+- **Strukturierte Beschreibung:** HTML mit Bold-Labels (Ist/Soll etc.) — sofort bearbeitbar fuer das Team
 - **Attachments:** Screenshots werden nach Issue-Erstellung als Attachments hochgeladen
 - **UX:** DBWCARE-Gradient Progress-Bar, Zurueck-Navigation, Enter-Key-Support, Loading-Spinner, kein Backdrop-Close
 - **Komponente:** `ce/components/workspace/guest-create-wizard.tsx`
 - **Integration:** Expert-Team-Bar oeffnet Wizard statt `toggleCreateIssueModal`
+
+### UX-Polish & Fixes
+
+- **Typeform-Style Interaktionen:** Karten heben sich beim Hover an (translate + shadow), druecken sich beim Klick, Icon-Container mit Hover-Feedback
+- **Priority-Karten:** Radio-Button-Indikator, farbiger Background + Ring bei Auswahl, deutlich sichtbarer Selection-State
+- **Success-Animation:** Gruener Kreis skaliert rein, SVG-Checkmark mit Stroke-Draw-Animation, gestaffeltes Text-Fade-in
+- **Beschreibungs-Format:** H3-Ueberschriften durch `<strong>` ersetzt (dezenter in Issue-Ansicht)
+- **UTF-8 Fix:** Alle `\u00xx` Unicode-Escape-Sequences durch echte UTF-8-Zeichen ersetzt (wurden literal gerendert)
+- **Expert-Bar z-Index:** Von z-50 auf z-20 gesenkt, damit Peek-Overlay (z-25) darüber liegt
+- **Expert-Bar Font-Sizes:** "Deine Experten" groesser (text-sm), Subtitle kleiner (text-[11px])
+- **Wizard-Zentrierung:** Modal aus Expert-Bar Container rausgenommen (backdrop-blur Stacking-Context)
+- **Notification-Logging:** Stilles `except pass` durch Error-Logging ersetzt fuer Guest-Issue-Notification
 
 ---
 
