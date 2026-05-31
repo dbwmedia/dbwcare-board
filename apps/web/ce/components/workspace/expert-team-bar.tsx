@@ -1,21 +1,21 @@
 // Expert team bottom bar — visible to guests only
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "react-router";
 import { useTranslation } from "@plane/i18n";
 import { Plus } from "lucide-react";
 import { useCare } from "@/hooks/store/use-care";
 import { useUserPermissions } from "@/hooks/store/user";
-import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { EXPERTS_BY_ID } from "@/plane-web/constants/experts";
+import { GuestCreateWizard } from "./guest-create-wizard";
 
 export const ExpertTeamBar = observer(function ExpertTeamBar() {
   const { workspaceSlug, projectId } = useParams<{ workspaceSlug: string; projectId: string }>();
   const { t } = useTranslation();
   const care = useCare();
   const { allowPermissions } = useUserPermissions();
-  const { toggleCreateIssueModal } = useCommandPalette();
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
 
   const isGuest = !allowPermissions([EUserPermissions.ADMIN, EUserPermissions.MEMBER], EUserPermissionsLevel.WORKSPACE);
 
@@ -59,13 +59,14 @@ export const ExpertTeamBar = observer(function ExpertTeamBar() {
         {/* Right: New task button */}
         <button
           type="button"
-          onClick={() => toggleCreateIssueModal(true)}
+          onClick={() => setIsWizardOpen(true)}
           className="flex items-center gap-1.5 rounded-md bg-gradient-to-r from-[#ea2b1f] via-[#ff4fdd] to-[#7e56ff] px-4 py-2 text-body-xs-medium font-medium text-white shadow-sm transition-opacity hover:opacity-90"
         >
           <Plus className="size-3.5" />
           {t("sidebar.new_work_item")}
         </button>
       </div>
+      <GuestCreateWizard isOpen={isWizardOpen} onClose={() => setIsWizardOpen(false)} />
     </div>
   );
 });

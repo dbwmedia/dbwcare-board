@@ -4,6 +4,29 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.6.0 – 2026-05-31
+
+### Guest Create Wizard (Multi-Step Aufgaben-Erstellung)
+
+- **Neuer 4-Step-Wizard** ersetzt das Standard-Create-Modal fuer Gast-Nutzer (Kunden)
+- **Step 1 — Kategorie:** Fehlverhalten, Erweiterung, Inhalt aendern, Frage (visuelle Karten mit Icons)
+- **Step 2 — Kurzbeschreibung:** Ein-Satz-Beschreibung mit dynamischem Placeholder je nach Typ + Live-Preview des Titels
+- **Step 3 — Details + Screenshots:** Dynamische Felder je nach Kategorie:
+  - Bug: Betroffene Seite, Ist-Zustand, Soll-Zustand
+  - Feature: Wo + Was genau
+  - Content: Welche Seite + Was aendern
+  - Frage: Freitext
+  - Drag&Drop Datei-Upload (max. 5 Dateien, Bilder + PDF)
+- **Step 4 — Dringlichkeit:** 4 farbige Priority-Karten (Kann warten / Normal / Wichtig / Dringend) + optionaler Wunschtermin
+- **Automatische Titel-Generierung:** `Fix: ...`, `Feature: ...`, `Content: ...`, `Frage: ...`
+- **Strukturierte Beschreibung:** HTML mit H3-Ueberschriften (Ist/Soll etc.) — sofort bearbeitbar fuer das Team
+- **Attachments:** Screenshots werden nach Issue-Erstellung als Attachments hochgeladen
+- **UX:** DBWCARE-Gradient Progress-Bar, Zurueck-Navigation, Enter-Key-Support, Loading-Spinner, kein Backdrop-Close
+- **Komponente:** `ce/components/workspace/guest-create-wizard.tsx`
+- **Integration:** Expert-Team-Bar oeffnet Wizard statt `toggleCreateIssueModal`
+
+---
+
 ## v0.5.1 – 2026-05-31
 
 ### Bugfix
