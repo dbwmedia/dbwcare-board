@@ -4,6 +4,14 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.5.1 – 2026-05-31
+
+### Bugfix
+
+- **Wiederkehrende Aufgaben in Peek-Ansicht:** `IssueRecurrenceProperty` war nur in der Fullpage-Detail-Sidebar eingebaut, fehlte aber in der Peek-Übersicht (`peek-overview/properties.tsx`) — dem Panel, das beim Klick auf ein Issue im Board erscheint. Recurrence-Toggle ist jetzt in beiden Ansichten sichtbar.
+
+---
+
 ## v0.5.0 – 2026-05-31
 
 ### Guest-Issue-Notification
