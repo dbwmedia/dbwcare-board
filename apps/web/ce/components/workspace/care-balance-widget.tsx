@@ -95,6 +95,11 @@ export const CareBalanceWidget = observer(function CareBalanceWidget({ projectId
           <span>{formatMinutes(consumed)} genutzt</span>
           <span>von {formatMinutes(total)}</span>
         </div>
+        {balance.borrowed_minutes > 0 && (
+          <div className="mt-1 text-caption-xs text-red-400">
+            -{formatMinutes(balance.borrowed_minutes)} Überziehung Vormonat
+          </div>
+        )}
       </Link>
     </div>
   );

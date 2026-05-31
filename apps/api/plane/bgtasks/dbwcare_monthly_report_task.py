@@ -243,6 +243,11 @@ def _send_report_for_subscription(
     remaining_minutes = balance.total_available_minutes - balance.consumed_minutes
     consumption_pct = balance.consumption_percentage
 
+    # Compute what carries forward to next month
+    from plane.app.views.care.balance import compute_carryover_for_next_month
+
+    next_rollover, next_borrowed = compute_carryover_for_next_month(balance)
+
     context = {
         "customer_name": sub.customer_name or project.name,
         "project_name": project.name,
@@ -260,6 +265,14 @@ def _send_report_for_subscription(
         "gift_total_formatted": format_minutes(gift_total),
         "prev_month_consumed_formatted": prev_month_consumed_formatted,
         "prev_month_label": prev_month_label,
+        "rolled_over_minutes": balance.rolled_over_minutes,
+        "rolled_over_formatted": format_minutes(balance.rolled_over_minutes) if balance.rolled_over_minutes > 0 else None,
+        "borrowed_minutes": balance.borrowed_minutes,
+        "borrowed_formatted": format_minutes(balance.borrowed_minutes) if balance.borrowed_minutes > 0 else None,
+        "next_rollover_minutes": next_rollover,
+        "next_rollover_formatted": format_minutes(next_rollover) if next_rollover > 0 else None,
+        "next_borrowed_minutes": next_borrowed,
+        "next_borrowed_formatted": format_minutes(next_borrowed) if next_borrowed > 0 else None,
         "project_url": project_url,
         "site_url": site_url,
     }

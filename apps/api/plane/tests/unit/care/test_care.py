@@ -34,6 +34,7 @@ from plane.app.views.care.balance import (
     get_or_create_current_balance,
     _build_balance_defaults,
     _compute_consumed_minutes,
+    compute_carryover_for_next_month,
 )
 from plane.bgtasks.dbwcare_balance_task import dbwcare_monthly_balance_init
 from plane.bgtasks.dbwcare_recurrence_task import (
@@ -294,17 +295,21 @@ class TestWorklogEntryActiveTimerConstraint:
 @pytest.mark.django_db
 @pytest.mark.unit
 class TestMonthlyBalanceRollover:
-    """Remaining minutes from previous month roll over into the current one."""
+    """Remaining base minutes from previous month roll over; depot expires after 1 month."""
 
-    def test_rollover_from_previous_month(self, care_workspace, care_project, care_subscription):
+    def _prev_month(self):
         now = timezone.now()
         prev_month = now.month - 1
         prev_year = now.year
         if prev_month < 1:
             prev_month = 12
             prev_year -= 1
+        return prev_year, prev_month
 
-        # Create last month's balance with remaining minutes
+    def test_rollover_from_previous_month(self, care_workspace, care_project, care_subscription):
+        prev_year, prev_month = self._prev_month()
+
+        # base=480, consumed=300 => base_remaining = 480-300 = 180
         ProjectMonthlyBalance.objects.create(
             project=care_project,
             workspace=care_workspace,
@@ -319,17 +324,61 @@ class TestMonthlyBalanceRollover:
 
         balance = get_or_create_current_balance(care_project.id)
 
+        now = timezone.now()
         assert balance.year == now.year
         assert balance.month == now.month
         assert balance.rolled_over_minutes == 180  # 480 - 300
+        assert balance.borrowed_minutes == 0
+
+    def test_depot_expires_after_one_month(self, care_workspace, care_project, care_subscription):
+        """Previously rolled-over minutes should NOT carry over again."""
+        prev_year, prev_month = self._prev_month()
+
+        # Previous month had 120min depot from the month before, consumed nothing
+        # Only the base remainder (480-0=480) should carry, NOT the old depot
+        ProjectMonthlyBalance.objects.create(
+            project=care_project,
+            workspace=care_workspace,
+            year=prev_year,
+            month=prev_month,
+            base_hours=Decimal("8.00"),
+            rolled_over_minutes=120,  # depot from 2 months ago
+            borrowed_minutes=0,
+            consumed_minutes=0,  # nothing consumed
+            is_closed=False,
+        )
+
+        balance = get_or_create_current_balance(care_project.id)
+
+        # Only base remainder carries: 480 - 0 = 480, the old 120 depot expires
+        assert balance.rolled_over_minutes == 480
+        assert balance.borrowed_minutes == 0
+
+    def test_depot_consumed_first(self, care_workspace, care_project, care_subscription):
+        """Consumption eats depot first, then base. Only base remainder carries."""
+        prev_year, prev_month = self._prev_month()
+
+        # 120min depot + 480 base = 600 total, consumed 200
+        # depot consumed = min(200, 120) = 120, base consumed = 80, base remaining = 400
+        ProjectMonthlyBalance.objects.create(
+            project=care_project,
+            workspace=care_workspace,
+            year=prev_year,
+            month=prev_month,
+            base_hours=Decimal("8.00"),
+            rolled_over_minutes=120,
+            borrowed_minutes=0,
+            consumed_minutes=200,
+            is_closed=False,
+        )
+
+        balance = get_or_create_current_balance(care_project.id)
+
+        assert balance.rolled_over_minutes == 400  # 480 - 80
+        assert balance.borrowed_minutes == 0
 
     def test_no_rollover_if_previous_month_closed(self, care_workspace, care_project, care_subscription):
-        now = timezone.now()
-        prev_month = now.month - 1
-        prev_year = now.year
-        if prev_month < 1:
-            prev_month = 12
-            prev_year -= 1
+        prev_year, prev_month = self._prev_month()
 
         ProjectMonthlyBalance.objects.create(
             project=care_project,
@@ -345,16 +394,13 @@ class TestMonthlyBalanceRollover:
 
         balance = get_or_create_current_balance(care_project.id)
         assert balance.rolled_over_minutes == 0
+        assert balance.borrowed_minutes == 0
 
-    def test_no_rollover_if_previous_month_overconsumed(self, care_workspace, care_project, care_subscription):
-        now = timezone.now()
-        prev_month = now.month - 1
-        prev_year = now.year
-        if prev_month < 1:
-            prev_month = 12
-            prev_year -= 1
+    def test_overconsumed_creates_borrowing(self, care_workspace, care_project, care_subscription):
+        """Over-consumed previous month creates borrowed_minutes in current month."""
+        prev_year, prev_month = self._prev_month()
 
-        # consumed > base => remaining is negative => no rollover
+        # base=480, consumed=600 => remaining = -120 => borrow 120 from next month
         ProjectMonthlyBalance.objects.create(
             project=care_project,
             workspace=care_workspace,
@@ -363,12 +409,15 @@ class TestMonthlyBalanceRollover:
             base_hours=Decimal("8.00"),
             rolled_over_minutes=0,
             borrowed_minutes=0,
-            consumed_minutes=500,
+            consumed_minutes=600,
             is_closed=False,
         )
 
         balance = get_or_create_current_balance(care_project.id)
         assert balance.rolled_over_minutes == 0
+        assert balance.borrowed_minutes == 120
+        # total_available = 480 + 0 - 120 = 360
+        assert balance.total_available_minutes == 360
 
 
 # ---------------------------------------------------------------------------
@@ -760,9 +809,100 @@ class TestBalanceConsumedMinutesRecomputed:
         )
 
         assert balance.base_minutes == 480
-        assert balance.total_available_minutes == 540  # 480 + 60
+        assert balance.total_available_minutes == 540  # 480 + 60 - 0
         assert balance.remaining_minutes == 240  # 540 - 300
         assert balance.consumption_percentage == 56  # round(300/540 * 100)
+
+    def test_balance_properties_with_borrowing(self, care_workspace, care_project, care_subscription):
+        """Test that borrowed_minutes reduces total_available_minutes."""
+        now = timezone.now()
+        balance = ProjectMonthlyBalance.objects.create(
+            project=care_project,
+            workspace=care_workspace,
+            year=now.year,
+            month=now.month,
+            base_hours=Decimal("8.00"),
+            rolled_over_minutes=0,
+            borrowed_minutes=120,
+            consumed_minutes=100,
+        )
+
+        assert balance.base_minutes == 480
+        assert balance.total_available_minutes == 360  # 480 + 0 - 120
+        assert balance.remaining_minutes == 260  # 360 - 100
+
+
+# ---------------------------------------------------------------------------
+# 7b. compute_carryover_for_next_month
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+@pytest.mark.unit
+class TestComputeCarryover:
+    """Test the carryover computation helper used by reports."""
+
+    def test_positive_remaining_only_base(self, care_workspace, care_project, care_subscription):
+        now = timezone.now()
+        balance = ProjectMonthlyBalance.objects.create(
+            project=care_project,
+            workspace=care_workspace,
+            year=now.year,
+            month=now.month,
+            base_hours=Decimal("8.00"),
+            rolled_over_minutes=0,
+            consumed_minutes=300,
+        )
+        rollover, borrowed = compute_carryover_for_next_month(balance)
+        assert rollover == 180  # 480 - 300
+        assert borrowed == 0
+
+    def test_positive_remaining_with_depot_expiry(self, care_workspace, care_project, care_subscription):
+        now = timezone.now()
+        balance = ProjectMonthlyBalance.objects.create(
+            project=care_project,
+            workspace=care_workspace,
+            year=now.year,
+            month=now.month,
+            base_hours=Decimal("8.00"),
+            rolled_over_minutes=120,
+            consumed_minutes=100,
+        )
+        # depot_used = min(100, 120) = 100, base_consumed = 0, base_remaining = 480
+        rollover, borrowed = compute_carryover_for_next_month(balance)
+        assert rollover == 480
+        assert borrowed == 0
+
+    def test_negative_remaining_creates_borrowing(self, care_workspace, care_project, care_subscription):
+        now = timezone.now()
+        balance = ProjectMonthlyBalance.objects.create(
+            project=care_project,
+            workspace=care_workspace,
+            year=now.year,
+            month=now.month,
+            base_hours=Decimal("8.00"),
+            rolled_over_minutes=0,
+            consumed_minutes=600,
+        )
+        # remaining = 480 - 600 = -120
+        rollover, borrowed = compute_carryover_for_next_month(balance)
+        assert rollover == 0
+        assert borrowed == 120
+
+    def test_zero_remaining(self, care_workspace, care_project, care_subscription):
+        now = timezone.now()
+        balance = ProjectMonthlyBalance.objects.create(
+            project=care_project,
+            workspace=care_workspace,
+            year=now.year,
+            month=now.month,
+            base_hours=Decimal("8.00"),
+            rolled_over_minutes=0,
+            consumed_minutes=480,
+        )
+        rollover, borrowed = compute_carryover_for_next_month(balance)
+        assert rollover == 0
+        assert borrowed == 0
 
 
 # ---------------------------------------------------------------------------

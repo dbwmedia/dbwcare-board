@@ -4,6 +4,21 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.7.0 – 2026-05-31
+
+### Kontingent-System: Depot-Verfall & Überziehung (Borrowing)
+
+- **Depot-Verfall:** Nicht verbrauchte Stunden werden als Depot in den Folgemonat übertragen, verfallen aber im übernächsten Monat. Verbrauch frisst zuerst das Depot (use it or lose it), nur Base-Reste werden weitergetragen.
+- **Überziehung (Borrowing):** Wird mehr als das Kontingent verbraucht, wird die Differenz automatisch vom Folgemonat abgezogen (`borrowed_minutes`). `total_available_minutes` berücksichtigt jetzt `borrowed_minutes`.
+- **Monatsbericht:** 4 neue Info-Boxen — Depot aus Vormonat (grün), Überziehung vom Vormonat (rot), Depot in nächsten Monat (blau), Überziehung in nächsten Monat (rot).
+- **Wochenbericht:** Depot- und Borrowing-Hinweis unter dem Monatsstand-Balken.
+- **Frontend Care-Seite:** Borrowing-Hinweis im Hero-Bereich, MonthRow zeigt Depot und Überziehung an.
+- **Sidebar-Widget:** Zeigt Überziehung vom Vormonat an.
+- **Tests:** 7 neue Tests für Depot-Verfall, Borrowing, `compute_carryover_for_next_month` und Balance-Properties mit Borrowing.
+- **Keine Migration nötig** — `rolled_over_minutes` und `borrowed_minutes` Felder existieren bereits.
+
+---
+
 ## v0.6.0 – 2026-05-31
 
 ### Guest Create Wizard (Multi-Step Aufgaben-Erstellung)

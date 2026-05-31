@@ -51,8 +51,9 @@ def _build_balance_defaults(project_id, workspace_id, year, month):
     except ProjectCareSubscription.DoesNotExist:
         base_hours = 0
 
-    # Compute rollover from previous month
+    # Compute rollover/borrowing from previous month
     rolled_over = 0
+    borrowed = 0
     prev_month = month - 1
     prev_year = year
     if prev_month < 1:
@@ -66,9 +67,22 @@ def _build_balance_defaults(project_id, workspace_id, year, month):
             month=prev_month,
             deleted_at__isnull=True,
         )
-        remaining = prev_balance.remaining_minutes
-        if remaining > 0 and not prev_balance.is_closed:
-            rolled_over = remaining
+        if not prev_balance.is_closed:
+            remaining = prev_balance.remaining_minutes
+            if remaining < 0:
+                # Over-consumed: borrow from this month
+                borrowed = abs(remaining)
+            elif remaining > 0:
+                # Under-consumed: only carry forward base remainder
+                # (previously rolled-over minutes expire — depot lives 1 month max)
+                # Consumption eats rollover first (use it or lose it)
+                rollover_used = min(
+                    prev_balance.consumed_minutes,
+                    prev_balance.rolled_over_minutes,
+                )
+                base_consumed = prev_balance.consumed_minutes - rollover_used
+                base_remaining = prev_balance.base_minutes - base_consumed
+                rolled_over = max(0, base_remaining)
     except ProjectMonthlyBalance.DoesNotExist:
         pass
 
@@ -76,7 +90,7 @@ def _build_balance_defaults(project_id, workspace_id, year, month):
         "workspace_id": workspace_id,
         "base_hours": base_hours,
         "rolled_over_minutes": rolled_over,
-        "borrowed_minutes": 0,
+        "borrowed_minutes": borrowed,
         "consumed_minutes": 0,
     }
 
@@ -249,3 +263,20 @@ class CareOverviewEndpoint(BaseAPIView):
         )
 
         return Response(overview, status=status.HTTP_200_OK)
+
+
+def compute_carryover_for_next_month(balance):
+    """
+    Given a completed month's balance, compute what carries to the next month.
+    Returns (rolled_over, borrowed) tuple in minutes.
+    Used by report tasks to display depot/borrowing info.
+    """
+    remaining = balance.remaining_minutes
+    if remaining < 0:
+        return 0, abs(remaining)
+    elif remaining > 0:
+        rollover_used = min(balance.consumed_minutes, balance.rolled_over_minutes)
+        base_consumed = balance.consumed_minutes - rollover_used
+        base_remaining = balance.base_minutes - base_consumed
+        return max(0, base_remaining), 0
+    return 0, 0

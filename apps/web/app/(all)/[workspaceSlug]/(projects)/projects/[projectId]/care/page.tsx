@@ -109,7 +109,12 @@ const CareOverviewCustomerPage = observer(function CareOverviewCustomerPage() {
 
           {balance.rolled_over_minutes > 0 && (
             <div className="mt-3 rounded-md bg-emerald-500/10 px-3 py-2 text-body-xs-regular text-emerald-400">
-              +{formatMinutes(balance.rolled_over_minutes)} aus dem Vormonat übertragen
+              +{formatMinutes(balance.rolled_over_minutes)} aus dem Vormonat als Depot übertragen
+            </div>
+          )}
+          {balance.borrowed_minutes > 0 && (
+            <div className="mt-3 rounded-md bg-red-500/10 px-3 py-2 text-body-xs-regular text-red-400">
+              -{formatMinutes(balance.borrowed_minutes)} vom Vormonat abgezogen (Überziehung)
             </div>
           )}
         </div>
@@ -128,6 +133,7 @@ const CareOverviewCustomerPage = observer(function CareOverviewCustomerPage() {
               year={balance.year}
               baseMinutes={balance.base_minutes}
               rolledOver={balance.rolled_over_minutes}
+              borrowed={balance.borrowed_minutes}
               consumed={balance.consumed_minutes}
               totalAvailable={balance.total_available_minutes}
               isCurrent
@@ -143,6 +149,7 @@ const CareOverviewCustomerPage = observer(function CareOverviewCustomerPage() {
                   year={b.year}
                   baseMinutes={b.base_minutes}
                   rolledOver={b.rolled_over_minutes}
+                  borrowed={b.borrowed_minutes}
                   consumed={b.consumed_minutes}
                   totalAvailable={b.total_available_minutes}
                 />
@@ -165,6 +172,7 @@ function MonthRow({
   year,
   baseMinutes,
   rolledOver,
+  borrowed = 0,
   consumed,
   totalAvailable,
   isCurrent = false,
@@ -173,6 +181,7 @@ function MonthRow({
   year: number;
   baseMinutes: number;
   rolledOver: number;
+  borrowed?: number;
   consumed: number;
   totalAvailable: number;
   isCurrent?: boolean;
@@ -217,7 +226,8 @@ function MonthRow({
       {/* Detail row */}
       <div className="mt-2 flex gap-6 text-caption-xs text-tertiary">
         <span>Basis: {formatMinutes(baseMinutes)}</span>
-        {rolledOver > 0 && <span className="text-emerald-400">+{formatMinutes(rolledOver)} Übertrag</span>}
+        {rolledOver > 0 && <span className="text-emerald-400">+{formatMinutes(rolledOver)} Depot</span>}
+        {borrowed > 0 && <span className="text-red-400">-{formatMinutes(borrowed)} Überziehung</span>}
         <span>Verbraucht: {formatMinutes(consumed)}</span>
         <span>{pct}%</span>
       </div>

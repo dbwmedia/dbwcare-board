@@ -243,6 +243,10 @@ def _send_weekly_for_subscription(
             "consumption_pct_clamped": min(balance.consumption_percentage, 100),
             "available_formatted": format_minutes(balance.total_available_minutes),
             "package_label": sub.package_label or "-",
+            "rolled_over_minutes": balance.rolled_over_minutes,
+            "rolled_over_formatted": format_minutes(balance.rolled_over_minutes) if balance.rolled_over_minutes > 0 else None,
+            "borrowed_minutes": balance.borrowed_minutes,
+            "borrowed_formatted": format_minutes(balance.borrowed_minutes) if balance.borrowed_minutes > 0 else None,
         })
     else:
         context["has_balance"] = False

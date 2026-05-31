@@ -163,6 +163,39 @@
                   </table>
                   {% endif %}
 
+                  <!-- Depot / Borrowing info -->
+                  {% if rolled_over_formatted %}
+                  <div style="margin:24px 0 0;padding:12px 16px;border-radius:8px;background:#f0fdf4;border:1px solid #bbf7d0;">
+                    <p style="margin:0;font-size:13px;color:#059669;">
+                      <strong>+{{ rolled_over_formatted }}</strong> aus dem Vormonat als Depot übertragen.
+                    </p>
+                  </div>
+                  {% endif %}
+
+                  {% if borrowed_formatted %}
+                  <div style="margin:{% if rolled_over_formatted %}12px{% else %}24px{% endif %} 0 0;padding:12px 16px;border-radius:8px;background:#fef2f2;border:1px solid #fecaca;">
+                    <p style="margin:0;font-size:13px;color:#dc2626;">
+                      <strong>{{ borrowed_formatted }}</strong> wurden vom Vormonat überzogen und von diesem Monat abgezogen.
+                    </p>
+                  </div>
+                  {% endif %}
+
+                  {% if next_rollover_formatted %}
+                  <div style="margin:12px 0 0;padding:12px 16px;border-radius:8px;background:#eff6ff;border:1px solid #bfdbfe;">
+                    <p style="margin:0;font-size:13px;color:#2563eb;">
+                      <strong>{{ next_rollover_formatted }}</strong> werden als Depot in den nächsten Monat mitgenommen.
+                    </p>
+                  </div>
+                  {% endif %}
+
+                  {% if next_borrowed_formatted %}
+                  <div style="margin:12px 0 0;padding:12px 16px;border-radius:8px;background:#fef2f2;border:1px solid #fecaca;">
+                    <p style="margin:0;font-size:13px;color:#dc2626;">
+                      <strong>{{ next_borrowed_formatted }}</strong> wurden über das Kontingent hinaus verbraucht und werden vom nächsten Monat abgezogen.
+                    </p>
+                  </div>
+                  {% endif %}
+
                   <!-- Previous month comparison -->
                   {% if prev_month_consumed_formatted %}
                   <p style="margin:24px 0 0;font-size:13px;color:#888;">

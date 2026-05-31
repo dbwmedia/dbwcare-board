@@ -161,7 +161,7 @@ class ProjectMonthlyBalance(BaseModel):
 
     @property
     def total_available_minutes(self):
-        return self.base_minutes + self.rolled_over_minutes
+        return self.base_minutes + self.rolled_over_minutes - self.borrowed_minutes
 
     @property
     def remaining_minutes(self):
