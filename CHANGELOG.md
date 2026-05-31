@@ -4,7 +4,7 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
-## v1.4.0 – 2026-05-31
+## v0.4.0 – 2026-05-31
 
 ### Experten-Team Feature
 
@@ -40,12 +40,13 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ### Versionierung
 
-- **Version:** `package.json` von `1.3.1` auf `1.4.0` angehoben — eigene DBWCARE-Versionierung unabhaengig vom Plane-Upstream
-- **Footer:** Versionsnummer dynamisch aus `package.json` ("von dbw media v1.4.0")
+- **Eigene Versionierung:** DBWCARE nutzt `0.x.y` bis zum 1.0 Launch, unabhaengig von Plane-Upstream
+- **Plane-Basis:** `planeUpstreamVersion` Feld in `package.json` — wird bei Upstream-Merge aktualisiert
+- **Footer:** "von dbw media v0.4.0 (Plane 1.3.1)" — zeigt beide Versionen
 
 ---
 
-## v1.3.1 – 2026-05-30
+## v0.3.1 – 2026-05-30
 
 ### Zeiterfassung — Eintraege bearbeiten
 
@@ -84,7 +85,7 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
-## v1.3.0 – 2026-05-27
+## v0.3.0 – 2026-05-27
 
 ### Direct Customer Provisioning
 
@@ -99,7 +100,7 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
-## v1.2.0 – 2026-05-20
+## v0.2.0 – 2026-05-20
 
 ### DBWCARE Project-Level Refactor
 
@@ -125,7 +126,7 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
-## v1.1.0 – 2026-05-14
+## v0.1.1 – 2026-05-14
 
 ### CI/CD Pipeline
 
@@ -136,7 +137,7 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
-## v1.0.0 – 2026-05-08
+## v0.1.0 – 2026-05-08
 
 ### DBWCARE Time Tracking & Customer Quota Portal
 

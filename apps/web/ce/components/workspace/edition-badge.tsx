@@ -7,6 +7,8 @@
 import packageJson from "package.json";
 
 export function WorkspaceEditionBadge() {
+  const planeVersion = (packageJson as Record<string, unknown>).planeUpstreamVersion as string | undefined;
+
   return (
     <span className="text-11 text-tertiary">
       von{" "}
@@ -18,7 +20,10 @@ export function WorkspaceEditionBadge() {
       >
         dbw media
       </a>
-      <span className="ml-2 text-tertiary/50">v{packageJson.version}</span>
+      <span className="ml-2 text-tertiary/50">
+        v{packageJson.version}
+        {planeVersion && ` (Plane ${planeVersion})`}
+      </span>
     </span>
   );
 }
