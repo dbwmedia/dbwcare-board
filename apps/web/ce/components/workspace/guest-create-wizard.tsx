@@ -102,56 +102,39 @@ function esc(s: string): string {
 // --- Success Overlay with animated checkmark ---
 
 function SuccessOverlay({ onDone }: { onDone: () => void }) {
-  const [show, setShow] = useState(false);
+  const [phase, setPhase] = useState(0);
 
   useEffect(() => {
-    // Trigger animation after mount
-    requestAnimationFrame(() => setShow(true));
-    const timer = setTimeout(onDone, 2200);
-    return () => clearTimeout(timer);
+    // Phase 1: circle scales in
+    const t1 = setTimeout(() => setPhase(1), 50);
+    // Phase 2: checkmark appears
+    const t2 = setTimeout(() => setPhase(2), 400);
+    // Phase 3: close
+    const t3 = setTimeout(onDone, 2200);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [onDone]);
 
   return (
     <div className="flex flex-col items-center justify-center py-16">
       <div
-        className={`mb-5 flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500 transition-all duration-500 ${
-          show ? "scale-100 opacity-100" : "scale-50 opacity-0"
+        className={`mb-5 flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500 transition-all duration-500 ease-out ${
+          phase >= 1 ? "scale-100 opacity-100" : "scale-0 opacity-0"
         }`}
-        style={{ boxShadow: show ? "0 8px 32px rgba(16, 185, 129, 0.35)" : "none" }}
+        style={{ boxShadow: phase >= 1 ? "0 8px 32px rgba(16, 185, 129, 0.35)" : "none" }}
       >
-        <svg
-          className={`size-10 text-white transition-all duration-500 delay-200 ${show ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+        <Check
+          className={`size-10 text-white transition-all duration-300 ease-out ${
+            phase >= 2 ? "scale-100 opacity-100" : "scale-0 opacity-0"
+          }`}
           strokeWidth={3}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {show && (
-            <path
-              d="M5 13l4 4L19 7"
-              style={{
-                strokeDasharray: 24,
-                strokeDashoffset: 0,
-                animation: "checkmark-draw 0.4s ease-out 0.3s both",
-              }}
-            />
-          )}
-        </svg>
+        />
       </div>
-      <h3 className={`text-xl font-bold text-neutral-900 transition-all duration-500 delay-300 dark:text-neutral-100 ${show ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}>
+      <h3 className={`text-xl font-bold text-neutral-900 transition-all duration-500 ease-out dark:text-neutral-100 ${phase >= 2 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
         Aufgabe erstellt!
       </h3>
-      <p className={`mt-1.5 text-sm text-neutral-500 transition-all duration-500 delay-500 ${show ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}>
-        Wir k&uuml;mmern uns darum.
+      <p className={`mt-1.5 text-sm text-neutral-500 transition-all duration-500 delay-150 ease-out ${phase >= 2 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
+        Wir kümmern uns darum.
       </p>
-      <style>{`
-        @keyframes checkmark-draw {
-          from { stroke-dashoffset: 24; }
-          to { stroke-dashoffset: 0; }
-        }
-      `}</style>
     </div>
   );
 }
