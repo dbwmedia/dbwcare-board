@@ -4,6 +4,17 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.7.2 – 2026-05-31
+
+### Deutsche Default-States & Guest-Layout-Einschraenkung
+
+- **Default-States fuer neue Projekte:** Eingang, Geplant, In Arbeit, Feedback, Erledigt (kein Cancelled mehr)
+- **Feedback-State:** Neuer State (Gruppe: started, Farbe: Indigo) fuer "Ball liegt beim Kunden"
+- **Guest-Layout:** Guests sehen nur Liste + Kanban (Calendar, Spreadsheet, Gantt ausgeblendet)
+- **Hinweis:** Bestehende Projekte behalten ihre States — nur neue Projekte bekommen die deutschen Defaults
+
+---
+
 ## v0.7.1 – 2026-05-31
 
 ### Timer-Indikator im Header & Modal-Fix
