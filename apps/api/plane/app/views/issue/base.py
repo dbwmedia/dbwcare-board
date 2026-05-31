@@ -491,8 +491,9 @@ class IssueViewSet(BaseViewSet):
                         actor_display_name=request.user.display_name,
                         actor_email=request.user.email,
                     )
-            except Exception:
-                pass  # Never block issue creation for notification failure
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).error(f"DBWCARE guest notification trigger failed: {e}")
             return Response(issue, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
