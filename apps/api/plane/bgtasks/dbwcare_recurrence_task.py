@@ -70,11 +70,20 @@ def _process_recurrence(recurrence, now):
         logger.error(f"No state found for project {template.project_id}")
         return
 
+    # Resolve template variables in issue name
+    MONTH_NAMES_DE = [
+        "", "Januar", "Februar", "März", "April", "Mai", "Juni",
+        "Juli", "August", "September", "Oktober", "November", "Dezember",
+    ]
+    issue_name = template.name.replace("{monat}", MONTH_NAMES_DE[now.month])
+    issue_name = issue_name.replace("{jahr}", str(now.year))
+    issue_name = issue_name.replace("{monat_nr}", f"{now.month:02d}")
+
     # Clone the issue
     new_issue = Issue.objects.create(
         workspace_id=template.workspace_id,
         project_id=template.project_id,
-        name=template.name,
+        name=issue_name,
         description_html=template.description_html if hasattr(template, "description_html") else "",
         state=default_state,
         priority=template.priority,
