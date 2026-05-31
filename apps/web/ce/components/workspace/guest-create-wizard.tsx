@@ -50,15 +50,15 @@ const INITIAL_DATA: WizardData = {
 const CATEGORIES: { id: IssueCategory; icon: typeof Bug; label: string; description: string; color: string; bgHover: string; bgSelected: string; borderSelected: string }[] = [
   { id: "bug", icon: Bug, label: "Fehlverhalten", description: "Etwas funktioniert nicht richtig", color: "text-red-500", bgHover: "hover:bg-red-50 dark:hover:bg-red-500/5", bgSelected: "bg-red-50 dark:bg-red-500/10", borderSelected: "border-red-400" },
   { id: "feature", icon: Sparkles, label: "Erweiterung", description: "Neue Funktion oder Anpassung", color: "text-violet-500", bgHover: "hover:bg-violet-50 dark:hover:bg-violet-500/5", bgSelected: "bg-violet-50 dark:bg-violet-500/10", borderSelected: "border-violet-400" },
-  { id: "content", icon: FileText, label: "Inhalt \u00e4ndern", description: "Texte, Bilder oder Daten anpassen", color: "text-blue-500", bgHover: "hover:bg-blue-50 dark:hover:bg-blue-500/5", bgSelected: "bg-blue-50 dark:bg-blue-500/10", borderSelected: "border-blue-400" },
-  { id: "question", icon: HelpCircle, label: "Frage", description: "Beratung oder R\u00fcckfrage", color: "text-amber-500", bgHover: "hover:bg-amber-50 dark:hover:bg-amber-500/5", bgSelected: "bg-amber-50 dark:bg-amber-500/10", borderSelected: "border-amber-400" },
+  { id: "content", icon: FileText, label: "Inhalt ändern", description: "Texte, Bilder oder Daten anpassen", color: "text-blue-500", bgHover: "hover:bg-blue-50 dark:hover:bg-blue-500/5", bgSelected: "bg-blue-50 dark:bg-blue-500/10", borderSelected: "border-blue-400" },
+  { id: "question", icon: HelpCircle, label: "Frage", description: "Beratung oder Rückfrage", color: "text-amber-500", bgHover: "hover:bg-amber-50 dark:hover:bg-amber-500/5", bgSelected: "bg-amber-50 dark:bg-amber-500/10", borderSelected: "border-amber-400" },
 ];
 
 const PRIORITIES: { id: WizardData["priority"]; label: string; description: string; selectedBg: string; selectedBorder: string; selectedText: string }[] = [
   { id: "low", label: "Kann warten", description: "Kein Zeitdruck", selectedBg: "bg-neutral-100 dark:bg-neutral-700", selectedBorder: "border-neutral-400", selectedText: "text-neutral-700 dark:text-neutral-200" },
-  { id: "medium", label: "Normal", description: "Regul\u00e4re Bearbeitung", selectedBg: "bg-blue-50 dark:bg-blue-500/10", selectedBorder: "border-blue-400", selectedText: "text-blue-700 dark:text-blue-300" },
+  { id: "medium", label: "Normal", description: "Reguläre Bearbeitung", selectedBg: "bg-blue-50 dark:bg-blue-500/10", selectedBorder: "border-blue-400", selectedText: "text-blue-700 dark:text-blue-300" },
   { id: "high", label: "Wichtig", description: "Bald erledigen", selectedBg: "bg-orange-50 dark:bg-orange-500/10", selectedBorder: "border-orange-400", selectedText: "text-orange-700 dark:text-orange-300" },
-  { id: "urgent", label: "Dringend", description: "So schnell wie m\u00f6glich", selectedBg: "bg-red-50 dark:bg-red-500/10", selectedBorder: "border-red-400", selectedText: "text-red-700 dark:text-red-300" },
+  { id: "urgent", label: "Dringend", description: "So schnell wie möglich", selectedBg: "bg-red-50 dark:bg-red-500/10", selectedBorder: "border-red-400", selectedText: "text-red-700 dark:text-red-300" },
 ];
 
 const CATEGORY_PREFIX: Record<IssueCategory, string> = {
@@ -85,7 +85,7 @@ function buildDescription(data: WizardData): string {
       break;
     case "content":
       if (data.contentPage) sections.push(`<p><strong>Betroffene Seite:</strong> ${esc(data.contentPage)}</p>`);
-      if (data.contentChange) sections.push(`<p><strong>Gew\u00fcnschte \u00c4nderung:</strong><br/>${esc(data.contentChange)}</p>`);
+      if (data.contentChange) sections.push(`<p><strong>Gewünschte Änderung:</strong><br/>${esc(data.contentChange)}</p>`);
       break;
     case "question":
       if (data.questionDetail) sections.push(`<p>${esc(data.questionDetail)}</p>`);
@@ -99,21 +99,59 @@ function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br/>");
 }
 
-// --- Success Overlay ---
+// --- Success Overlay with animated checkmark ---
 
 function SuccessOverlay({ onDone }: { onDone: () => void }) {
+  const [show, setShow] = useState(false);
+
   useEffect(() => {
-    const timer = setTimeout(onDone, 2000);
+    // Trigger animation after mount
+    requestAnimationFrame(() => setShow(true));
+    const timer = setTimeout(onDone, 2200);
     return () => clearTimeout(timer);
   }, [onDone]);
 
   return (
-    <div className="flex flex-col items-center justify-center py-12">
-      <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shadow-lg shadow-green-200 dark:shadow-green-900/30">
-        <Check className="size-8 text-white" strokeWidth={3} />
+    <div className="flex flex-col items-center justify-center py-16">
+      <div
+        className={`mb-5 flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500 transition-all duration-500 ${
+          show ? "scale-100 opacity-100" : "scale-50 opacity-0"
+        }`}
+        style={{ boxShadow: show ? "0 8px 32px rgba(16, 185, 129, 0.35)" : "none" }}
+      >
+        <svg
+          className={`size-10 text-white transition-all duration-500 delay-200 ${show ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={3}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {show && (
+            <path
+              d="M5 13l4 4L19 7"
+              style={{
+                strokeDasharray: 24,
+                strokeDashoffset: 0,
+                animation: "checkmark-draw 0.4s ease-out 0.3s both",
+              }}
+            />
+          )}
+        </svg>
       </div>
-      <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Aufgabe erstellt!</h3>
-      <p className="mt-1 text-sm text-neutral-500">{"Wir k\u00fcmmern uns darum."}</p>
+      <h3 className={`text-xl font-bold text-neutral-900 transition-all duration-500 delay-300 dark:text-neutral-100 ${show ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}>
+        Aufgabe erstellt!
+      </h3>
+      <p className={`mt-1.5 text-sm text-neutral-500 transition-all duration-500 delay-500 ${show ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}>
+        Wir k&uuml;mmern uns darum.
+      </p>
+      <style>{`
+        @keyframes checkmark-draw {
+          from { stroke-dashoffset: 24; }
+          to { stroke-dashoffset: 0; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -285,13 +323,13 @@ export const GuestCreateWizard = observer(function GuestCreateWizard({ isOpen, o
                             update({ category: cat.id });
                             setStep(1);
                           }}
-                          className={`group flex flex-col items-start gap-2 rounded-xl border-2 p-4 text-left transition-all duration-150 ${
+                          className={`group flex flex-col items-start gap-2 rounded-xl border-2 p-4 text-left transition-all duration-200 ${
                             isSelected
-                              ? `${cat.borderSelected} ${cat.bgSelected} shadow-sm`
-                              : `border-neutral-200 ${cat.bgHover} hover:border-neutral-300 hover:shadow-sm dark:border-neutral-700 dark:hover:border-neutral-600`
+                              ? `${cat.borderSelected} ${cat.bgSelected} shadow-md ring-1 ring-current/10`
+                              : `border-neutral-200 ${cat.bgHover} hover:border-neutral-300 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm dark:border-neutral-700 dark:hover:border-neutral-600`
                           }`}
                         >
-                          <div className={`rounded-lg p-2 ${isSelected ? cat.bgSelected : "bg-neutral-100 group-hover:bg-neutral-50 dark:bg-neutral-800 dark:group-hover:bg-neutral-700"}`}>
+                          <div className={`rounded-xl p-2.5 transition-colors duration-200 ${isSelected ? cat.bgSelected : "bg-neutral-100 group-hover:bg-white dark:bg-neutral-800 dark:group-hover:bg-neutral-700"}`}>
                             <Icon className={`size-5 ${cat.color}`} />
                           </div>
                           <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{cat.label}</span>
@@ -320,7 +358,7 @@ export const GuestCreateWizard = observer(function GuestCreateWizard({ isOpen, o
                         : data.category === "feature"
                           ? "z.B. Kontaktformular um Telefonnummer erweitern"
                           : data.category === "content"
-                            ? "z.B. \u00d6ffnungszeiten auf der Startseite aktualisieren"
+                            ? "z.B. Öffnungszeiten auf der Startseite aktualisieren"
                             : "z.B. Kann man die Ladezeit der Seite verbessern?"
                     }
                     className="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 transition-colors focus:border-violet-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:ring-violet-500/20"
@@ -340,7 +378,7 @@ export const GuestCreateWizard = observer(function GuestCreateWizard({ isOpen, o
                       : data.category === "feature"
                         ? "Beschreibe deine Idee genauer"
                         : data.category === "content"
-                          ? "Was genau soll ge\u00e4ndert werden?"
+                          ? "Was genau soll geändert werden?"
                           : "Stelle deine Frage"}
                   </p>
 
@@ -372,7 +410,7 @@ export const GuestCreateWizard = observer(function GuestCreateWizard({ isOpen, o
                   {data.category === "feature" && (
                     <>
                       <WizardField
-                        label="Wo soll die \u00c4nderung umgesetzt werden?"
+                        label="Wo soll die Änderung umgesetzt werden?"
                         placeholder="z.B. Startseite, Kontaktbereich, Navigation..."
                         value={data.featureLocation}
                         onChange={(v) => update({ featureLocation: v })}
@@ -391,13 +429,13 @@ export const GuestCreateWizard = observer(function GuestCreateWizard({ isOpen, o
                     <>
                       <WizardField
                         label="Auf welcher Seite?"
-                        placeholder="z.B. Startseite, \u00dcber uns, Impressum..."
+                        placeholder="z.B. Startseite, Über uns, Impressum..."
                         value={data.contentPage}
                         onChange={(v) => update({ contentPage: v })}
                       />
                       <WizardField
-                        label="Was genau soll ge\u00e4ndert werden?"
-                        placeholder="Beschreibe die gew\u00fcnschte \u00c4nderung..."
+                        label="Was genau soll geändert werden?"
+                        placeholder="Beschreibe die gewünschte Änderung..."
                         value={data.contentChange}
                         onChange={(v) => update({ contentChange: v })}
                         multiline
@@ -408,7 +446,7 @@ export const GuestCreateWizard = observer(function GuestCreateWizard({ isOpen, o
                   {data.category === "question" && (
                     <WizardField
                       label="Deine Frage"
-                      placeholder="Was m\u00f6chtest du wissen?"
+                      placeholder="Was möchtest du wissen?"
                       value={data.questionDetail}
                       onChange={(v) => update({ questionDetail: v })}
                       multiline
@@ -417,7 +455,7 @@ export const GuestCreateWizard = observer(function GuestCreateWizard({ isOpen, o
 
                   {/* File Upload */}
                   <div>
-                    <p className="mb-2 text-xs font-medium text-neutral-500">{"Screenshots hinzuf\u00fcgen (optional)"}</p>
+                    <p className="mb-2 text-xs font-medium text-neutral-500">{"Screenshots hinzufügen (optional)"}</p>
                     <div
                       onDrop={handleDrop}
                       onDragOver={(e) => e.preventDefault()}
@@ -474,15 +512,19 @@ export const GuestCreateWizard = observer(function GuestCreateWizard({ isOpen, o
                             key={p.id}
                             type="button"
                             onClick={() => update({ priority: p.id })}
-                            className={`rounded-xl border-2 px-4 py-3 text-left transition-all duration-150 ${
+                            className={`rounded-xl border-2 px-4 py-3.5 text-left transition-all duration-200 ${
                               isSelected
-                                ? `${p.selectedBorder} ${p.selectedBg} ${p.selectedText} shadow-sm`
-                                : "border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 hover:shadow-sm dark:border-neutral-700 dark:hover:border-neutral-600 dark:hover:bg-neutral-800"
+                                ? `${p.selectedBorder} ${p.selectedBg} ${p.selectedText} shadow-md ring-1 ring-current/10 -translate-y-0.5`
+                                : "border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm dark:border-neutral-700 dark:hover:border-neutral-600 dark:hover:bg-neutral-800"
                             }`}
                           >
-                            <span className={`text-sm font-semibold ${isSelected ? "" : "text-neutral-900 dark:text-neutral-100"}`}>{p.label}</span>
-                            <br />
-                            <span className={`text-xs ${isSelected ? "opacity-75" : "text-neutral-500"}`}>{p.description}</span>
+                            <div className="flex items-center gap-2">
+                              <div className={`size-4 rounded-full border-2 transition-all duration-200 ${isSelected ? `${p.selectedBorder} ${p.selectedBg}` : "border-neutral-300"}`}>
+                                {isSelected && <div className="m-0.5 size-2 rounded-full bg-current" />}
+                              </div>
+                              <span className={`text-sm font-semibold ${isSelected ? "" : "text-neutral-900 dark:text-neutral-100"}`}>{p.label}</span>
+                            </div>
+                            <span className={`mt-1 block text-xs ${isSelected ? "opacity-75" : "text-neutral-500"}`}>{p.description}</span>
                           </button>
                         );
                       })}
