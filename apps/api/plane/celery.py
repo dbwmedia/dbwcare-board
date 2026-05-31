@@ -90,6 +90,10 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.dbwcare_monthly_report_task.dbwcare_monthly_report",
         "schedule": crontab(day_of_month=2, hour=8, minute=0),  # 2nd of month, 08:00 UTC
     },
+    "dbwcare-weekly-report": {
+        "task": "plane.bgtasks.dbwcare_weekly_report_task.dbwcare_weekly_report",
+        "schedule": crontab(day_of_week=1, hour=8, minute=0),  # Monday, 08:00 UTC
+    },
 }
 
 

@@ -4,6 +4,33 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.5.0 – 2026-05-31
+
+### Guest-Issue-Notification
+
+- **E-Mail an care@dbw-media.de** wenn ein Kunde (Guest) eine neue Aufgabe erstellt
+- Celery-Task `dbwcare_guest_issue_notification` — wird sofort aus `IssueViewSet.create()` getriggert
+- E-Mail-Template im DBWCARE-Design: Projektname, Issue-Titel, Kundenname, Direktlink
+- Immer aktiv (kein Toggle), feuert nur bei `role=5` (Guest)
+
+### Optionaler Wochenbericht
+
+- **Neues Feld:** `weekly_report_enabled` auf `ProjectCareSubscription` (Default: False)
+- **Migration:** `0504_care_weekly_report`
+- **Celery-Beat-Task:** `dbwcare_weekly_report` — jeden Montag 08:00 UTC
+- **Logik:** Nur senden wenn Worklog-Eintraege in den letzten 7 Tagen vorhanden, sonst schweigen
+- **Template:** Kompakter Wochenbericht im gleichen DBWCARE-Design wie Monatsbericht
+- **Inhalt:** Intro-Text mit Gesamt-Zeit, optionaler Monatsstand-Balken, Leistungen + Geschenke gruppiert nach Issue
+- **Settings-UI:** Toggle + Beschreibung in DBWCARE Project Settings (Sektion "Monatsbericht & Kundendaten")
+- **i18n:** Keys `weekly_report_enabled` und `weekly_report_desc` in EN + DE
+
+### Version & Build
+
+- **Version:** DBWCARE v0.5.0
+- **Edition-Badge:** Refactored — Version-Konstanten aus `ce/constants/version.ts` statt `package.json`
+
+---
+
 ## v0.4.0 – 2026-05-31
 
 ### Experten-Team Feature

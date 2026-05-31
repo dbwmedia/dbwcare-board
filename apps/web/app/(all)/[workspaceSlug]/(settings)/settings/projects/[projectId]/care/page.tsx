@@ -24,6 +24,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [reportEnabled, setReportEnabled] = useState(true);
+  const [weeklyReportEnabled, setWeeklyReportEnabled] = useState(false);
   const [expertIds, setExpertIds] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isSendingReport, setIsSendingReport] = useState(false);
@@ -51,6 +52,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
       setCustomerName(subscription.customer_name || "");
       setCustomerEmail(subscription.customer_email || "");
       setReportEnabled(subscription.report_enabled ?? true);
+      setWeeklyReportEnabled(subscription.weekly_report_enabled ?? false);
       setExpertIds(subscription.expert_ids || []);
     }
   }, [subscription]);
@@ -67,6 +69,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
         customer_name: customerName,
         customer_email: customerEmail,
         report_enabled: reportEnabled,
+        weekly_report_enabled: weeklyReportEnabled,
         expert_ids: expertIds,
       });
       await care.fetchCurrentBalance(workspaceSlug, projectId);
@@ -238,13 +241,21 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
               />
             </div>
 
-            {/* Report toggle */}
+            {/* Report toggles */}
             <div className="flex items-center gap-3">
               <ToggleSwitch value={reportEnabled} onChange={() => setReportEnabled(!reportEnabled)} />
               <span className="text-body-sm-regular">{t("dbwcare.report_enabled")}</span>
             </div>
 
-            {!customerEmail && reportEnabled && (
+            <div className="flex items-center gap-3">
+              <ToggleSwitch value={weeklyReportEnabled} onChange={() => setWeeklyReportEnabled(!weeklyReportEnabled)} />
+              <div>
+                <span className="text-body-sm-regular">{t("dbwcare.weekly_report_enabled")}</span>
+                <p className="text-body-xs-regular text-tertiary">{t("dbwcare.weekly_report_desc")}</p>
+              </div>
+            </div>
+
+            {!customerEmail && (reportEnabled || weeklyReportEnabled) && (
               <p className="text-amber-500 text-body-xs-regular">{t("dbwcare.report_no_email_warning")}</p>
             )}
 

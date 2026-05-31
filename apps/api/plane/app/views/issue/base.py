@@ -42,6 +42,7 @@ from plane.app.serializers import (
 )
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.bgtasks.issue_description_version_task import issue_description_version_task
+from plane.bgtasks.dbwcare_guest_issue_notification_task import dbwcare_guest_issue_notification
 from plane.bgtasks.recent_visited_task import recent_visited_task
 from plane.bgtasks.webhook_task import model_activity
 from plane.db.models import (
@@ -474,6 +475,24 @@ class IssueViewSet(BaseViewSet):
                 user_id=request.user.id,
                 is_creating=True,
             )
+            # DBWCARE: Notify team when a guest creates an issue
+            try:
+                membership = ProjectMember.objects.filter(
+                    project_id=project_id,
+                    member=request.user,
+                    is_active=True,
+                ).first()
+                if membership and membership.role == 5:  # GUEST role
+                    dbwcare_guest_issue_notification.delay(
+                        issue_id=str(serializer.data["id"]),
+                        issue_name=serializer.data.get("name", ""),
+                        project_id=str(project_id),
+                        project_name=project.name,
+                        actor_display_name=request.user.display_name,
+                        actor_email=request.user.email,
+                    )
+            except Exception:
+                pass  # Never block issue creation for notification failure
             return Response(issue, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

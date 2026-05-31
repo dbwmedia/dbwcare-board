@@ -6,13 +6,13 @@
 
 // assets
 import { useTranslation } from "@plane/i18n";
-import packageJson from "package.json";
+import { DBWCARE_VERSION } from "@/plane-web/constants/version";
 
 export function PlaneVersionNumber() {
   const { t } = useTranslation();
   return (
     <span>
-      {t("version")}: v{packageJson.version}
+      {t("version")}: v{DBWCARE_VERSION}
     </span>
   );
 }

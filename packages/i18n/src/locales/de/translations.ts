@@ -2765,6 +2765,8 @@ export default {
     customer_name_placeholder: "z.B. Mustermann GmbH",
     customer_email: "Kunden-E-Mail",
     report_enabled: "Monatsbericht automatisch versenden",
+    weekly_report_enabled: "Wochenbericht automatisch versenden",
+    weekly_report_desc: "Jeden Montag wird ein Bericht über die vergangene Woche per E-Mail verschickt – nur wenn es Einträge gab.",
     report_no_email_warning: "Kein E-Mail-Empfänger hinterlegt – der Bericht kann nicht versendet werden.",
     send_report_now: "Report senden",
     report_current_month: "Aktueller Monat",

@@ -75,6 +75,11 @@ class ProjectCareSubscription(BaseModel):
         help_text="Whether to send automatic monthly reports to the customer",
     )
 
+    weekly_report_enabled = models.BooleanField(
+        default=False,
+        help_text="Whether to send automatic weekly reports to the customer",
+    )
+
     # Expert team assignment
     expert_ids = models.JSONField(
         default=list,

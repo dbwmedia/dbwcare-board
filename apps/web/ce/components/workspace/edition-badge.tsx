@@ -9,9 +9,8 @@ import { observer } from "mobx-react";
 import { ArrowUpCircle } from "lucide-react";
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { useUserPermissions } from "@/hooks/store/user";
-import packageJson from "package.json";
+import { DBWCARE_VERSION, PLANE_UPSTREAM_VERSION } from "@/plane-web/constants/version";
 
-const PLANE_UPSTREAM_VERSION = (packageJson as Record<string, unknown>).planeUpstreamVersion as string | undefined;
 const CACHE_KEY = "dbwcare_plane_latest_version";
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
 
@@ -34,7 +33,7 @@ export const WorkspaceEditionBadge = observer(function WorkspaceEditionBadge() {
   const isAdmin = allowPermissions([EUserPermissions.ADMIN], EUserPermissionsLevel.WORKSPACE);
 
   useEffect(() => {
-    if (!isAdmin || !PLANE_UPSTREAM_VERSION) return;
+    if (!isAdmin) return;
 
     // Check cache first
     try {
@@ -65,7 +64,7 @@ export const WorkspaceEditionBadge = observer(function WorkspaceEditionBadge() {
       });
   }, [isAdmin]);
 
-  const hasUpdate = PLANE_UPSTREAM_VERSION && latestPlane && compareVersions(PLANE_UPSTREAM_VERSION, latestPlane);
+  const hasUpdate = latestPlane && compareVersions(PLANE_UPSTREAM_VERSION, latestPlane);
 
   return (
     <span className="text-11 text-tertiary">
@@ -79,8 +78,7 @@ export const WorkspaceEditionBadge = observer(function WorkspaceEditionBadge() {
         dbw media
       </a>
       <span className="ml-2 text-tertiary/50">
-        v{packageJson.version}
-        {PLANE_UPSTREAM_VERSION && ` (Plane ${PLANE_UPSTREAM_VERSION})`}
+        v{DBWCARE_VERSION} (Plane {PLANE_UPSTREAM_VERSION})
       </span>
       {isAdmin && hasUpdate && (
         <span className="ml-1.5 inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-600">
