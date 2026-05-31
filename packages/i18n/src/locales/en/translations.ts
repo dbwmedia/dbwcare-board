@@ -2787,6 +2787,7 @@ export default {
     save_changes: "Änderungen speichern",
     edit_entry: "Eintrag bearbeiten",
     stop_error: "Fehler beim Stoppen des Timers",
+    timer_running: "Timer läuft",
     base_quota: "Basis-Kontingent",
     rolled_over: "Aus Vormonat übertragen",
     total_available: "Gesamt verfügbar",

@@ -18,6 +18,7 @@ import { AppSidebarItem } from "@/components/sidebar/sidebar-item";
 import { InboxIcon } from "@plane/propel/icons";
 import useSWR from "swr";
 import { useWorkspaceNotifications } from "@/hooks/store/notifications";
+import { ActiveTimerIndicator } from "@/plane-web/components/workspace/active-timer-indicator";
 
 export const TopNavigationRoot = observer(function TopNavigationRoot() {
   // router
@@ -57,7 +58,8 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
         <TopNavPowerK />
       </div>
       {/* Additional Actions */}
-      <div className="flex flex-1 shrink-0 items-center justify-end gap-1">
+      <div className="flex flex-1 shrink-0 items-center justify-end gap-1.5">
+        <ActiveTimerIndicator />
         <Tooltip tooltipContent="Inbox" position="bottom">
           <AppSidebarItem
             variant="link"

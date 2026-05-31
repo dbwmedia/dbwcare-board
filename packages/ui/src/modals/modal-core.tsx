@@ -31,7 +31,7 @@ export function ModalCore(props: Props) {
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-30" onClose={() => handleClose && handleClose()}>
+      <Dialog as="div" className="relative z-30" onClose={() => handleClose && handleClose()} data-prevent-outside-click>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"

@@ -4,6 +4,17 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.7.1 – 2026-05-31
+
+### Timer-Indikator im Header & Modal-Fix
+
+- **Timer-Indikator:** Laufender Timer wird jetzt oben rechts in der Top-Navigation angezeigt (neben Inbox/Help/Avatar). Zeigt Echtzeit-Counter, Issue-Identifier und Stop-Button. Klick navigiert zum Issue.
+- **Modal-Backdrop-Fix:** Klick auf den Backdrop eines Modals (Timer-Stop, Manual-Entry, Edit-Entry) schließt nicht mehr den Peek-Overlay darunter. `data-prevent-outside-click` auf `ModalCore` Dialog-Element verhindert ungewolltes Schließen.
+- **Neue Komponente:** `ActiveTimerIndicator` in `ce/components/workspace/`
+- **i18n:** Neuer Key `dbwcare.timer_running`
+
+---
+
 ## v0.7.0 – 2026-05-31
 
 ### Kontingent-System: Depot-Verfall & Überziehung (Borrowing)
