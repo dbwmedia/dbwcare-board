@@ -117,15 +117,21 @@ function SuccessOverlay({ onDone }: { onDone: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-16">
       <div
-        className={`mb-5 flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500 transition-all duration-500 ease-out ${
+        className={`mb-5 flex items-center justify-center rounded-full transition-all duration-500 ease-out ${
           phase >= 1 ? "scale-100 opacity-100" : "scale-0 opacity-0"
         }`}
-        style={{ boxShadow: phase >= 1 ? "0 8px 32px rgba(16, 185, 129, 0.35)" : "none" }}
+        style={{
+          width: 80,
+          height: 80,
+          background: "linear-gradient(135deg, #4ade80, #10b981)",
+          boxShadow: phase >= 1 ? "0 8px 32px rgba(16, 185, 129, 0.4)" : "none",
+        }}
       >
         <Check
-          className={`size-10 text-white transition-all duration-300 ease-out ${
+          className={`transition-all duration-300 ease-out ${
             phase >= 2 ? "scale-100 opacity-100" : "scale-0 opacity-0"
           }`}
+          style={{ width: 40, height: 40, color: "#ffffff" }}
           strokeWidth={3}
         />
       </div>
