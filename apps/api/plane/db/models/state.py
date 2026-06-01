@@ -20,7 +20,7 @@ class StateGroup(models.TextChoices):
     TRIAGE = "triage", "Triage"
 
 
-# Default states
+# Default states for new projects (DBWCARE German defaults)
 DEFAULT_STATES = [
     {
         "name": "Eingang",
