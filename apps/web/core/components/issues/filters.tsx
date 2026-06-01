@@ -116,32 +116,34 @@ export const HeaderFilters = observer(function HeaderFilters(props: Props) {
           activeLayout={activeLayout}
         />
       </div>
-      <WorkItemFiltersToggle entityType={storeType} entityId={projectId} />
-      <FiltersDropdown
-        miniIcon={<SlidersHorizontal className="size-3.5" />}
-        title={t("common.display")}
-        placement="bottom-end"
-      >
-        <DisplayFiltersSelection
-          layoutDisplayFiltersOptions={layoutDisplayFiltersOptions}
-          displayFilters={issueFilters?.displayFilters ?? {}}
-          handleDisplayFiltersUpdate={handleDisplayFilters}
-          displayProperties={issueFilters?.displayProperties ?? {}}
-          handleDisplayPropertiesUpdate={handleDisplayProperties}
-          cycleViewDisabled={!currentProjectDetails?.cycle_view}
-          moduleViewDisabled={!currentProjectDetails?.module_view}
-          isEpic={storeType === EIssuesStoreType.EPIC}
-        />
-      </FiltersDropdown>
-      {canUserCreateIssue ? (
-        <Button className="hidden px-2 md:block" onClick={() => setAnalyticsModal(true)} variant="secondary" size="lg">
-          <div className="hidden @4xl:flex">{t("common.analytics")}</div>
-          <div className="flex @4xl:hidden">
-            <ChartNoAxesColumn className="size-3.5" />
-          </div>
-        </Button>
-      ) : (
-        <></>
+      {!isGuest && (
+        <>
+          <WorkItemFiltersToggle entityType={storeType} entityId={projectId} />
+          <FiltersDropdown
+            miniIcon={<SlidersHorizontal className="size-3.5" />}
+            title={t("common.display")}
+            placement="bottom-end"
+          >
+            <DisplayFiltersSelection
+              layoutDisplayFiltersOptions={layoutDisplayFiltersOptions}
+              displayFilters={issueFilters?.displayFilters ?? {}}
+              handleDisplayFiltersUpdate={handleDisplayFilters}
+              displayProperties={issueFilters?.displayProperties ?? {}}
+              handleDisplayPropertiesUpdate={handleDisplayProperties}
+              cycleViewDisabled={!currentProjectDetails?.cycle_view}
+              moduleViewDisabled={!currentProjectDetails?.module_view}
+              isEpic={storeType === EIssuesStoreType.EPIC}
+            />
+          </FiltersDropdown>
+          {canUserCreateIssue && (
+            <Button className="hidden px-2 md:block" onClick={() => setAnalyticsModal(true)} variant="secondary" size="lg">
+              <div className="hidden @4xl:flex">{t("common.analytics")}</div>
+              <div className="flex @4xl:hidden">
+                <ChartNoAxesColumn className="size-3.5" />
+              </div>
+            </Button>
+          )}
+        </>
       )}
     </>
   );

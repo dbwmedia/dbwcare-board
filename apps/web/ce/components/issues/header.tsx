@@ -63,6 +63,11 @@ export const IssuesHeader = observer(function IssuesHeader() {
     [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
     EUserPermissionsLevel.PROJECT
   );
+  // DBWCARE: Guests use the Expert-Bar wizard, hide header "Add work item" button
+  const isGuest = !allowPermissions(
+    [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
+    EUserPermissionsLevel.WORKSPACE
+  );
 
   return (
     <Header>
@@ -116,7 +121,7 @@ export const IssuesHeader = observer(function IssuesHeader() {
             canUserCreateIssue={canUserCreateIssue}
           />
         </div>
-        {canUserCreateIssue && (
+        {canUserCreateIssue && !isGuest && (
           <Button
             variant="primary"
             size="lg"
