@@ -65,10 +65,15 @@ class ProjectCareSubscription(BaseModel):
         default="",
         help_text="Customer display name for reports (e.g. company name)",
     )
-    customer_email = models.EmailField(
+    customer_email = models.TextField(
         blank=True,
         default="",
-        help_text="Customer email address for monthly report delivery",
+        help_text="Customer email addresses for report delivery (comma-separated)",
+    )
+    report_bcc = models.TextField(
+        blank=True,
+        default="",
+        help_text="BCC email addresses for report delivery (comma-separated)",
     )
     report_enabled = models.BooleanField(
         default=True,

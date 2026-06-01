@@ -13,6 +13,7 @@ export interface ICareSubscription {
   is_active: boolean;
   customer_name: string;
   customer_email: string;
+  report_bcc: string;
   report_enabled: boolean;
   weekly_report_enabled: boolean;
   expert_ids: string[];
@@ -27,6 +28,7 @@ export interface ICareSubscriptionFormData {
   is_active?: boolean;
   customer_name?: string;
   customer_email?: string;
+  report_bcc?: string;
   report_enabled?: boolean;
   weekly_report_enabled?: boolean;
   expert_ids?: string[];

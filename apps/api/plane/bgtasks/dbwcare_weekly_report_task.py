@@ -259,18 +259,24 @@ def _send_weekly_for_subscription(
         f"{sub.customer_name or project.name}"
     )
 
+    # Parse comma-separated email addresses
+    to_emails = [e.strip() for e in sub.customer_email.split(",") if e.strip()]
+    bcc_emails = [e.strip() for e in (sub.report_bcc or "").split(",") if e.strip()]
+
     msg = EmailMultiAlternatives(
         subject=subject,
         body=text_content,
         from_email=email_from,
-        to=[sub.customer_email],
+        to=to_emails,
+        bcc=bcc_emails,
         connection=connection,
     )
     msg.attach_alternative(html_content, "text/html")
     msg.send()
 
     logger.info(
-        f"DBWCARE weekly report sent to {sub.customer_email} for "
+        f"DBWCARE weekly report sent to {', '.join(to_emails)} "
+        f"(bcc: {', '.join(bcc_emails) or 'none'}) for "
         f"project {project.name} ({week_label})"
     )
     return True

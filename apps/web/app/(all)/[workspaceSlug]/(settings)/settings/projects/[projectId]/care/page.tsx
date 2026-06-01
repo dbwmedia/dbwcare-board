@@ -23,6 +23,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
   const [isActive, setIsActive] = useState(true);
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [reportBcc, setReportBcc] = useState("");
   const [reportEnabled, setReportEnabled] = useState(true);
   const [weeklyReportEnabled, setWeeklyReportEnabled] = useState(false);
   const [expertIds, setExpertIds] = useState<string[]>([]);
@@ -51,6 +52,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
       setIsActive(subscription.is_active);
       setCustomerName(subscription.customer_name || "");
       setCustomerEmail(subscription.customer_email || "");
+      setReportBcc(subscription.report_bcc || "");
       setReportEnabled(subscription.report_enabled ?? true);
       setWeeklyReportEnabled(subscription.weekly_report_enabled ?? false);
       setExpertIds(subscription.expert_ids || []);
@@ -68,6 +70,7 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
         is_active: isActive,
         customer_name: customerName,
         customer_email: customerEmail,
+        report_bcc: reportBcc,
         report_enabled: reportEnabled,
         weekly_report_enabled: weeklyReportEnabled,
         expert_ids: expertIds,
@@ -227,18 +230,34 @@ const ProjectCareSettingsPage = observer(function ProjectCareSettingsPage() {
               />
             </div>
 
-            {/* Customer email */}
+            {/* Customer email(s) */}
             <div>
               <label className="text-body-sm-medium">{t("dbwcare.customer_email")}</label>
               <Input
                 id="care-customer-email"
                 name="customer_email"
-                type="email"
-                placeholder="kunde@beispiel.de"
+                type="text"
+                placeholder="kunde@firma.de, chef@firma.de"
                 value={customerEmail}
                 onChange={(e) => setCustomerEmail(e.target.value)}
-                className="mt-1 w-72"
+                className="mt-1 w-96"
               />
+              <p className="mt-1 text-body-xs-regular text-tertiary">Mehrere E-Mails mit Komma trennen</p>
+            </div>
+
+            {/* BCC */}
+            <div>
+              <label className="text-body-sm-medium">BCC</label>
+              <Input
+                id="care-report-bcc"
+                name="report_bcc"
+                type="text"
+                placeholder="dennis@dbw-media.de"
+                value={reportBcc}
+                onChange={(e) => setReportBcc(e.target.value)}
+                className="mt-1 w-96"
+              />
+              <p className="mt-1 text-body-xs-regular text-tertiary">Unsichtbare Kopie an diese Adresse(n)</p>
             </div>
 
             {/* Report toggles */}
