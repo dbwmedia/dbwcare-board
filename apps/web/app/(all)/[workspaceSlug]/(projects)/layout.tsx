@@ -8,6 +8,7 @@ import { observer } from "mobx-react";
 import { Outlet } from "react-router";
 import { ProjectsAppPowerKProvider } from "@/components/power-k/projects-app-provider";
 // dbwcare components
+import { AdminWizardTrigger } from "@/plane-web/components/workspace/admin-wizard-trigger";
 import { ExpertTeamBar } from "@/plane-web/components/workspace/expert-team-bar";
 import { ProjectAppSidebar } from "./_sidebar";
 import { ExtendedProjectSidebar } from "./extended-project-sidebar";
@@ -26,6 +27,7 @@ function WorkspaceLayout() {
           </main>
         </div>
         <ExpertTeamBar />
+        <AdminWizardTrigger />
       </div>
     </>
   );

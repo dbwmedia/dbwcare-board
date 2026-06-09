@@ -4,6 +4,19 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.7.3 – 2026-06-09
+
+### Celery-Fix, Kunden-Bestaetigungsmail & Admin-Wizard
+
+- **Celery-Task-Fix:** Alle DBWCARE Celery-Tasks (Weekly/Monthly Report, Balance, Recurrence) waren im Worker nicht registriert. Explizite Imports in `celery.py` hinzugefuegt. **Betrifft alle scheduled Tasks seit dem letzten Worker-Neustart.**
+- **Kunden-Bestaetigungsmail:** Wenn ein Kunde (Guest) eine Aufgabe erstellt, erhaelt er jetzt eine Bestaetigungs-E-Mail mit Aufgaben-Titel und Link zum Board.
+- **Admin Kunden-Wizard:** Floating "Kunden-Wizard"-Button (unten rechts) fuer Admins/Members in der Projektansicht. Oeffnet den gleichen Multi-Step-Wizard wie Kunden, um strukturierte Aufgaben im Kundenformat zu erstellen.
+- **Neuer Task:** `dbwcare_guest_issue_confirmation` — Celery-Task fuer Kundenbestaetigung
+- **Neues Template:** `emails/care/guest_issue_confirmation.html`
+- **Neue Komponente:** `AdminWizardTrigger` in `ce/components/workspace/`
+
+---
+
 ## v0.7.2 – 2026-05-31
 
 ### Deutsche Default-States & Guest-Layout-Einschraenkung

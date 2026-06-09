@@ -43,6 +43,7 @@ from plane.app.serializers import (
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.bgtasks.issue_description_version_task import issue_description_version_task
 from plane.bgtasks.dbwcare_guest_issue_notification_task import dbwcare_guest_issue_notification
+from plane.bgtasks.dbwcare_guest_issue_confirmation_task import dbwcare_guest_issue_confirmation
 from plane.bgtasks.recent_visited_task import recent_visited_task
 from plane.bgtasks.webhook_task import model_activity
 from plane.db.models import (
@@ -487,6 +488,13 @@ class IssueViewSet(BaseViewSet):
                         issue_id=str(serializer.data["id"]),
                         issue_name=serializer.data.get("name", ""),
                         project_id=str(project_id),
+                        project_name=project.name,
+                        actor_display_name=request.user.display_name,
+                        actor_email=request.user.email,
+                    )
+                    # Send confirmation email to the customer
+                    dbwcare_guest_issue_confirmation.delay(
+                        issue_name=serializer.data.get("name", ""),
                         project_name=project.name,
                         actor_display_name=request.user.display_name,
                         actor_email=request.user.email,

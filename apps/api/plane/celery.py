@@ -117,4 +117,14 @@ def setup_task_loggers(logger, *args, **kwargs):
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
+# Ensure DBWCARE scheduled tasks are registered in the worker.
+# autodiscover_tasks() only finds tasks.py inside INSTALLED_APPS.
+# These modules use @shared_task, so importing them is enough to register.
+import plane.bgtasks.dbwcare_balance_task  # noqa: F401
+import plane.bgtasks.dbwcare_recurrence_task  # noqa: F401
+import plane.bgtasks.dbwcare_monthly_report_task  # noqa: F401
+import plane.bgtasks.dbwcare_weekly_report_task  # noqa: F401
+import plane.bgtasks.dbwcare_guest_issue_notification_task  # noqa: F401
+import plane.bgtasks.dbwcare_guest_issue_confirmation_task  # noqa: F401
+
 app.conf.beat_scheduler = "django_celery_beat.schedulers.DatabaseScheduler"
