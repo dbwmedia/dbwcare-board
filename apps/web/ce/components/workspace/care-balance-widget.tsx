@@ -15,38 +15,35 @@ const formatMinutes = (minutes: number) => {
   return `${sign}${h}h ${m}min`;
 };
 
-function getWidgetColors(percentage: number, remaining: number) {
-  if (remaining < 0) {
-    return {
-      gradient: "from-red-500/20 via-red-500/10 to-transparent",
-      bar: "bg-red-500",
-      text: "text-red-400",
-      icon: "bg-red-500/20",
-    };
-  }
-  if (percentage < 65) {
-    return {
-      gradient: "from-emerald-500/20 via-emerald-500/10 to-transparent",
-      bar: "bg-emerald-500",
-      text: "text-emerald-400",
-      icon: "bg-emerald-500/20",
-    };
-  }
-  if (percentage < 85) {
-    return {
-      gradient: "from-amber-500/20 via-amber-500/10 to-transparent",
-      bar: "bg-amber-500",
-      text: "text-amber-400",
-      icon: "bg-amber-500/20",
-    };
-  }
-  return {
-    gradient: "from-red-500/20 via-red-500/10 to-transparent",
-    bar: "bg-red-500",
-    text: "text-red-400",
-    icon: "bg-red-500/20",
-  };
+type StatusLevel = "healthy" | "warning" | "danger";
+
+function getStatusLevel(percentage: number, remaining: number): StatusLevel {
+  if (remaining < 0 || percentage >= 85) return "danger";
+  if (percentage >= 65) return "warning";
+  return "healthy";
 }
+
+// Plane TW v4 has no default colors. Use semantic classes + inline for subtle bg.
+const STATUS_STYLES = {
+  healthy: {
+    text: "text-success-primary",
+    bar: "#22c55e",
+    iconBg: "rgba(34, 197, 94, 0.15)",
+    gradient: "linear-gradient(to bottom right, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.04), transparent)",
+  },
+  warning: {
+    text: "text-warning-primary",
+    bar: "#f59e0b",
+    iconBg: "rgba(245, 158, 11, 0.15)",
+    gradient: "linear-gradient(to bottom right, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.04), transparent)",
+  },
+  danger: {
+    text: "text-danger-primary",
+    bar: "#ef4444",
+    iconBg: "rgba(239, 68, 68, 0.15)",
+    gradient: "linear-gradient(to bottom right, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.04), transparent)",
+  },
+} as const;
 
 interface CareBalanceWidgetProps {
   projectId?: string;
@@ -74,7 +71,8 @@ export const CareBalanceWidget = observer(function CareBalanceWidget({ projectId
   const total = balance.total_available_minutes;
   const consumed = balance.consumed_minutes;
   const percentage = total > 0 ? Math.min(Math.round((consumed / total) * 100), 100) : consumed > 0 ? 100 : 0;
-  const colors = getWidgetColors(percentage, remaining);
+  const level = getStatusLevel(percentage, remaining);
+  const styles = STATUS_STYLES[level];
 
   const carePageUrl = `/${workspaceSlug}/projects/${activeProjectId}/care`;
 
@@ -82,22 +80,19 @@ export const CareBalanceWidget = observer(function CareBalanceWidget({ projectId
     <div className="mx-3 my-1.5">
       <Link
         to={carePageUrl}
-        className={cn(
-          "group block w-full rounded-lg border border-subtle/50 p-3 text-left transition-all",
-          "bg-gradient-to-br hover:border-subtle",
-          colors.gradient
-        )}
+        className="group block w-full rounded-lg border border-subtle/50 p-3 text-left transition-all hover:border-subtle"
+        style={{ background: styles.gradient }}
       >
         <div className="flex items-center gap-2">
-          <div className={cn("rounded-md p-1", colors.icon)}>
-            <Clock className={cn("size-3.5", colors.text)} />
+          <div className="rounded-md p-1" style={{ backgroundColor: styles.iconBg }}>
+            <Clock className={cn("size-3.5", styles.text)} />
           </div>
           <span className="text-body-xs-medium text-tertiary"><span className="font-bold">CARE</span>-Kontingent</span>
         </div>
 
         {/* Main stat */}
         <div className="mt-2 flex items-baseline gap-1.5">
-          <span className={cn("text-xl font-semibold", colors.text)}>
+          <span className={cn("text-xl font-semibold", styles.text)}>
             {formatMinutes(remaining)}
           </span>
           <span className="text-body-xs-regular text-tertiary">verfügbar</span>
@@ -106,8 +101,8 @@ export const CareBalanceWidget = observer(function CareBalanceWidget({ projectId
         {/* Progress bar */}
         <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-layer-3/50">
           <div
-            className={cn("h-full rounded-full transition-all duration-700", colors.bar)}
-            style={{ width: `${percentage}%` }}
+            className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${percentage}%`, backgroundColor: styles.bar }}
           />
         </div>
 
@@ -117,12 +112,12 @@ export const CareBalanceWidget = observer(function CareBalanceWidget({ projectId
           <span>von {formatMinutes(total)}</span>
         </div>
         {remaining < 0 && (
-          <div className="mt-1 text-caption-xs text-red-400">
+          <div className="mt-1 text-caption-xs text-danger-primary">
             Überziehung - wird im Folgemonat verrechnet
           </div>
         )}
         {remaining >= 0 && balance.borrowed_minutes > 0 && (
-          <div className="mt-1 text-caption-xs text-red-400">
+          <div className="mt-1 text-caption-xs text-danger-primary">
             -{formatMinutes(balance.borrowed_minutes)} Überziehung Vormonat
           </div>
         )}

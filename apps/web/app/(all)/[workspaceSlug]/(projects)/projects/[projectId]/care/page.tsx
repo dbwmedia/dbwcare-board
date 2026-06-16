@@ -22,34 +22,35 @@ const formatMinutes = (minutes: number) => {
   return `${sign}${h}h ${m}min`;
 };
 
-function getStatusColors(percentage: number, remaining: number) {
-  if (remaining < 0) {
-    return {
-      bar: "bg-red-500",
-      text: "text-red-400",
-      hero: "from-red-500/5 via-transparent to-transparent",
-    };
-  }
-  if (percentage < 65) {
-    return {
-      bar: "bg-emerald-500",
-      text: "text-emerald-400",
-      hero: "from-emerald-500/5 via-transparent to-blue-500/3",
-    };
-  }
-  if (percentage < 85) {
-    return {
-      bar: "bg-amber-500",
-      text: "text-amber-400",
-      hero: "from-amber-500/5 via-transparent to-transparent",
-    };
-  }
-  return {
-    bar: "bg-red-500",
-    text: "text-red-400",
-    hero: "from-red-500/5 via-transparent to-transparent",
-  };
+// Plane TW v4 removes all default colors. Use semantic classes + inline styles.
+type StatusLevel = "healthy" | "warning" | "danger";
+
+function getStatusLevel(percentage: number, remaining: number): StatusLevel {
+  if (remaining < 0 || percentage >= 85) return "danger";
+  if (percentage >= 65) return "warning";
+  return "healthy";
 }
+
+const STATUS_STYLES = {
+  healthy: {
+    text: "text-success-primary",
+    bar: "#22c55e",
+    heroBg: "linear-gradient(to bottom right, rgba(34, 197, 94, 0.06), transparent, rgba(59, 130, 246, 0.03))",
+    subtleBg: "rgba(34, 197, 94, 0.08)",
+  },
+  warning: {
+    text: "text-warning-primary",
+    bar: "#f59e0b",
+    heroBg: "linear-gradient(to bottom right, rgba(245, 158, 11, 0.06), transparent, transparent)",
+    subtleBg: "rgba(245, 158, 11, 0.08)",
+  },
+  danger: {
+    text: "text-danger-primary",
+    bar: "#ef4444",
+    heroBg: "linear-gradient(to bottom right, rgba(239, 68, 68, 0.06), transparent, transparent)",
+    subtleBg: "rgba(239, 68, 68, 0.08)",
+  },
+} as const;
 
 const CareOverviewCustomerPage = observer(function CareOverviewCustomerPage() {
   const { workspaceSlug, projectId } = useParams<{ workspaceSlug: string; projectId: string }>();
@@ -79,7 +80,8 @@ const CareOverviewCustomerPage = observer(function CareOverviewCustomerPage() {
   const total = balance.total_available_minutes;
   const consumed = balance.consumed_minutes;
   const percentage = total > 0 ? Math.min(Math.round((consumed / total) * 100), 100) : consumed > 0 ? 100 : 0;
-  const colors = getStatusColors(percentage, remaining);
+  const level = getStatusLevel(percentage, remaining);
+  const styles = STATUS_STYLES[level];
   const packageLabel = subscription.package_label || "-";
 
   return (
@@ -95,14 +97,17 @@ const CareOverviewCustomerPage = observer(function CareOverviewCustomerPage() {
         </Link>
 
         {/* Hero section */}
-        <div className={cn("rounded-xl border border-subtle bg-gradient-to-br p-6", colors.hero)}>
+        <div
+          className="rounded-xl border border-subtle p-6"
+          style={{ background: styles.heroBg }}
+        >
           <div className="flex items-center gap-2 text-body-sm-medium text-tertiary">
             <Clock className="size-4" />
             <span><span className="font-bold">CARE</span>-Kontingent — Paket {packageLabel}</span>
           </div>
 
           <div className="mt-4 flex items-baseline gap-2">
-            <span className={cn("text-4xl font-bold", colors.text)}>
+            <span className={cn("text-4xl font-bold", styles.text)}>
               {formatMinutes(remaining)}
             </span>
             <span className="text-lg text-tertiary">verfügbar</span>
@@ -111,8 +116,8 @@ const CareOverviewCustomerPage = observer(function CareOverviewCustomerPage() {
           {/* Progress bar */}
           <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-layer-3">
             <div
-              className={cn("h-full rounded-full transition-all duration-700", colors.bar)}
-              style={{ width: `${percentage}%` }}
+              className="h-full rounded-full transition-all duration-700"
+              style={{ width: `${percentage}%`, backgroundColor: styles.bar }}
             />
           </div>
 
@@ -133,17 +138,17 @@ const CareOverviewCustomerPage = observer(function CareOverviewCustomerPage() {
           </div>
 
           {balance.rolled_over_minutes > 0 && (
-            <div className="mt-3 rounded-md bg-emerald-500/10 px-3 py-2 text-body-xs-regular text-emerald-400">
+            <div className="mt-3 rounded-md px-3 py-2 text-body-xs-regular text-success-primary" style={{ backgroundColor: "rgba(34, 197, 94, 0.1)" }}>
               +{formatMinutes(balance.rolled_over_minutes)} aus dem Vormonat als Depot übertragen
             </div>
           )}
           {balance.borrowed_minutes > 0 && (
-            <div className="mt-3 rounded-md bg-red-500/10 px-3 py-2 text-body-xs-regular text-red-400">
+            <div className="mt-3 rounded-md px-3 py-2 text-body-xs-regular text-danger-primary" style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}>
               -{formatMinutes(balance.borrowed_minutes)} vom Vormonat abgezogen (Überziehung)
             </div>
           )}
           {remaining < 0 && (
-            <div className="mt-3 rounded-md bg-red-500/10 px-3 py-2 text-body-xs-regular text-red-400">
+            <div className="mt-3 rounded-md px-3 py-2 text-body-xs-regular text-danger-primary" style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}>
               {formatMinutes(Math.abs(remaining))} Überziehung - wird im Folgemonat verrechnet
             </div>
           )}
@@ -230,7 +235,8 @@ const MonthRow = observer(function MonthRow({
 
   const pct = totalAvailable > 0 ? Math.min(Math.round((consumed / totalAvailable) * 100), 100) : consumed > 0 ? 100 : 0;
   const remaining = totalAvailable - consumed;
-  const colors = getStatusColors(pct, remaining);
+  const level = getStatusLevel(pct, remaining);
+  const styles = STATUS_STYLES[level];
 
   const worklogs = care.getMonthWorklogs(projectId, year, month);
 
@@ -247,7 +253,7 @@ const MonthRow = observer(function MonthRow({
     <div
       className={cn(
         "rounded-lg border border-subtle overflow-hidden transition-colors",
-        isCurrent && "border-primary/30 bg-layer-1"
+        isCurrent && "border-accent-subtle bg-layer-1"
       )}
     >
       {/* Header (clickable) */}
@@ -269,12 +275,12 @@ const MonthRow = observer(function MonthRow({
                 {MONATSNAMEN[month]} {year}
               </span>
               {isCurrent && (
-                <span className="rounded-full bg-primary/20 px-2 py-0.5 text-caption-xs font-medium text-primary">
+                <span className="rounded-full bg-accent-subtle px-2 py-0.5 text-caption-xs font-medium text-accent-primary">
                   Aktuell
                 </span>
               )}
             </div>
-            <span className={cn("text-body-sm-medium", remaining < 0 ? "text-red-400" : "text-tertiary")}>
+            <span className={cn("text-body-sm-medium", remaining < 0 ? "text-danger-primary" : "text-tertiary")}>
               {formatMinutes(remaining)} übrig
             </span>
           </div>
@@ -282,16 +288,16 @@ const MonthRow = observer(function MonthRow({
           {/* Progress bar */}
           <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-layer-3">
             <div
-              className={cn("h-full rounded-full", colors.bar)}
-              style={{ width: `${pct}%` }}
+              className="h-full rounded-full"
+              style={{ width: `${pct}%`, backgroundColor: styles.bar }}
             />
           </div>
 
           {/* Detail row */}
           <div className="mt-2 flex gap-6 text-caption-xs text-tertiary">
             <span>Basis: {formatMinutes(baseMinutes)}</span>
-            {rolledOver > 0 && <span className="text-emerald-400">+{formatMinutes(rolledOver)} Depot</span>}
-            {borrowed > 0 && <span className="text-red-400">-{formatMinutes(borrowed)} Überziehung</span>}
+            {rolledOver > 0 && <span className="text-success-primary">+{formatMinutes(rolledOver)} Depot</span>}
+            {borrowed > 0 && <span className="text-danger-primary">-{formatMinutes(borrowed)} Überziehung</span>}
             <span>Verbraucht: {formatMinutes(consumed)}</span>
             <span>{pct}%</span>
           </div>
@@ -300,7 +306,7 @@ const MonthRow = observer(function MonthRow({
 
       {/* Expanded: Worklog details */}
       {expanded && (
-        <div className="border-t border-subtle bg-layer-1/30 px-4 py-3">
+        <div className="border-t border-subtle px-4 py-3" style={{ backgroundColor: "rgba(0,0,0,0.02)" }}>
           {loading ? (
             <p className="text-caption-xs text-tertiary py-2">Lade Einträge...</p>
           ) : worklogs.length === 0 ? (
@@ -331,17 +337,17 @@ function WorklogList({ groups }: { groups: IMonthWorklogGroup[] }) {
                 key={entry.id}
                 className="flex items-start gap-2 pl-3 text-caption-xs text-tertiary"
               >
-                <span className="shrink-0 font-medium text-primary/80">
+                <span className="shrink-0 font-medium text-accent-primary">
                   {formatMinutes(entry.duration_minutes)}
                 </span>
                 <span className="truncate flex-1">{entry.description || "Ohne Beschreibung"}</span>
                 {entry.billing_status === "gift" && (
-                  <span className="shrink-0 inline-flex items-center gap-0.5 text-emerald-400" title={entry.gift_reason || "Geschenk"}>
+                  <span className="shrink-0 inline-flex items-center gap-0.5 text-success-primary" title={entry.gift_reason || "Geschenk"}>
                     <Gift className="size-3" />
                   </span>
                 )}
                 {entry.logged_by && (
-                  <span className="shrink-0 text-quaternary">{entry.logged_by.display_name}</span>
+                  <span className="shrink-0 text-placeholder">{entry.logged_by.display_name}</span>
                 )}
               </div>
             ))}
