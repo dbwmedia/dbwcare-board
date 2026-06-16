@@ -4,6 +4,7 @@ import type {
   ICareSubscriptionFormData,
   ICareOverviewItem,
   IMonthlyBalance,
+  IMonthWorklogGroup,
   IWorklogEntry,
   IWorklogEntryFormData,
   IWorklogTimerStartData,
@@ -16,6 +17,7 @@ export interface ICareStore {
   subscriptions: Record<string, ICareSubscription | null>; // project_id -> subscription
   balances: Record<string, IMonthlyBalance | null>; // project_id -> current balance
   balanceHistories: Record<string, IMonthlyBalance[]>; // project_id -> history
+  monthWorklogs: Record<string, IMonthWorklogGroup[]>; // "projectId-year-month" -> groups
   overview: ICareOverviewItem[];
   activeTimer: IWorklogEntry | null;
   worklogEntries: Record<string, IWorklogEntry[]>; // issue_id -> entries
@@ -33,6 +35,7 @@ export interface ICareStore {
   updateSubscription: (workspaceSlug: string, projectId: string, data: ICareSubscriptionFormData) => Promise<void>;
   fetchCurrentBalance: (workspaceSlug: string, projectId: string) => Promise<void>;
   fetchBalanceHistory: (workspaceSlug: string, projectId: string, months?: number) => Promise<void>;
+  fetchMonthWorklogs: (workspaceSlug: string, projectId: string, year: number, month: number) => Promise<void>;
   fetchCareOverview: (workspaceSlug: string) => Promise<void>;
   fetchActiveTimer: (workspaceSlug: string) => Promise<void>;
   fetchWorklogEntries: (workspaceSlug: string, projectId: string, issueId: string) => Promise<void>;
@@ -68,12 +71,14 @@ export interface ICareStore {
   getSubscription: (projectId: string) => ICareSubscription | null;
   getBalance: (projectId: string) => IMonthlyBalance | null;
   getBalanceHistory: (projectId: string) => IMonthlyBalance[];
+  getMonthWorklogs: (projectId: string, year: number, month: number) => IMonthWorklogGroup[];
 }
 
 export class CareStore implements ICareStore {
   subscriptions: Record<string, ICareSubscription | null> = {};
   balances: Record<string, IMonthlyBalance | null> = {};
   balanceHistories: Record<string, IMonthlyBalance[]> = {};
+  monthWorklogs: Record<string, IMonthWorklogGroup[]> = {};
   overview: ICareOverviewItem[] = [];
   activeTimer: IWorklogEntry | null = null;
   worklogEntries: Record<string, IWorklogEntry[]> = {};
@@ -87,6 +92,7 @@ export class CareStore implements ICareStore {
       subscriptions: observable,
       balances: observable,
       balanceHistories: observable,
+      monthWorklogs: observable,
       overview: observable,
       activeTimer: observable,
       worklogEntries: observable,
@@ -100,6 +106,7 @@ export class CareStore implements ICareStore {
       updateSubscription: action,
       fetchCurrentBalance: action,
       fetchBalanceHistory: action,
+      fetchMonthWorklogs: action,
       fetchCareOverview: action,
       fetchActiveTimer: action,
       fetchWorklogEntries: action,
@@ -146,6 +153,10 @@ export class CareStore implements ICareStore {
     return this.balanceHistories[projectId] ?? [];
   };
 
+  getMonthWorklogs = (projectId: string, year: number, month: number): IMonthWorklogGroup[] => {
+    return this.monthWorklogs[`${projectId}-${year}-${month}`] ?? [];
+  };
+
   fetchSubscription = async (workspaceSlug: string, projectId: string) => {
     this._currentProjectId = projectId;
     try {
@@ -186,6 +197,20 @@ export class CareStore implements ICareStore {
     runInAction(() => {
       this.balanceHistories[projectId] = data;
     });
+  };
+
+  fetchMonthWorklogs = async (workspaceSlug: string, projectId: string, year: number, month: number) => {
+    const key = `${projectId}-${year}-${month}`;
+    try {
+      const data = await careService.getMonthWorklogs(workspaceSlug, projectId, year, month);
+      runInAction(() => {
+        this.monthWorklogs[key] = data;
+      });
+    } catch {
+      runInAction(() => {
+        this.monthWorklogs[key] = [];
+      });
+    }
   };
 
   fetchCareOverview = async (workspaceSlug: string) => {

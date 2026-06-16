@@ -4,6 +4,18 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.7.4 – 2026-06-16
+
+### Aufklappbarer Monatsverlauf & verbesserte Farben
+
+- **Aufklappbare Monatskarten:** Im Monatsverlauf auf der Care-Seite koennen jetzt einzelne Monate aufgeklappt werden. Zeigt alle Worklog-Eintraege gruppiert nach Aufgabe mit Dauer, Beschreibung und Bearbeiter.
+- **Neuer Backend-Endpoint:** `GET /api/.../care-balance/:year/:month/worklogs/` liefert Worklog-Eintraege pro Monat gruppiert nach Issue (Guests sehen keine self_caused-Eintraege).
+- **Verbesserte Farbskala:** Sidebar-Widget und Care-Seite nutzen jetzt sanftere SaaS-Farben: Gruen (< 60%) -> Amber (60-80%) -> Orange (80-100%) -> weiches Rot (100%+ / Ueberziehung).
+- **Ueberziehungs-Hinweis:** Bei negativem Restguthaben wird jetzt "Ueberziehung - wird im Folgemonat verrechnet" angezeigt.
+- **Neue Types:** `IMonthWorklogGroup`, `IMonthWorklogEntry` in `@plane/types`
+
+---
+
 ## v0.7.3 – 2026-06-09
 
 ### Celery-Fix, Kunden-Bestaetigungsmail & Admin-Wizard

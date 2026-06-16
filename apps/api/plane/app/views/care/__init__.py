@@ -2,6 +2,7 @@ from .subscription import ProjectCareSubscriptionEndpoint
 from .balance import (
     ProjectCareBalanceEndpoint,
     ProjectCareBalanceHistoryEndpoint,
+    ProjectCareMonthWorklogsEndpoint,
     CareOverviewEndpoint,
 )
 from .worklog import (

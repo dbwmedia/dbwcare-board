@@ -4,6 +4,7 @@ import type {
   ICareSubscriptionFormData,
   ICareOverviewItem,
   IMonthlyBalance,
+  IMonthWorklogGroup,
   IWorklogEntry,
   IWorklogEntryFormData,
   IWorklogTimerStartData,
@@ -46,6 +47,13 @@ class CareService extends APIService {
     const { data } = await this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/care-balance/history/`, {
       params: { months },
     });
+    return data || [];
+  }
+
+  async getMonthWorklogs(workspaceSlug: string, projectId: string, year: number, month: number): Promise<IMonthWorklogGroup[]> {
+    const { data } = await this.get(
+      `/api/workspaces/${workspaceSlug}/projects/${projectId}/care-balance/${year}/${month}/worklogs/`
+    );
     return data || [];
   }
 

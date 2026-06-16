@@ -6,6 +6,7 @@ from plane.app.views import (
     ProjectCareSubscriptionEndpoint,
     ProjectCareBalanceEndpoint,
     ProjectCareBalanceHistoryEndpoint,
+    ProjectCareMonthWorklogsEndpoint,
     CareOverviewEndpoint,
     WorklogEntryViewSet,
     WorklogTimerStartEndpoint,
@@ -33,6 +34,11 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/care-balance/history/",
         ProjectCareBalanceHistoryEndpoint.as_view(),
         name="care-balance-history",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/care-balance/<int:year>/<int:month>/worklogs/",
+        ProjectCareMonthWorklogsEndpoint.as_view(),
+        name="care-month-worklogs",
     ),
     # Workspace-level admin overview (Mission Control)
     path(

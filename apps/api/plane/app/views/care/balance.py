@@ -11,6 +11,7 @@ from plane.db.models import (
     ProjectCareSubscription,
     ProjectMonthlyBalance,
     WorklogEntry,
+    WorkspaceMember,
 )
 from plane.app.serializers import ProjectMonthlyBalanceSerializer
 
@@ -263,6 +264,76 @@ class CareOverviewEndpoint(BaseAPIView):
         )
 
         return Response(overview, status=status.HTTP_200_OK)
+
+
+class ProjectCareMonthWorklogsEndpoint(BaseAPIView):
+    """GET: Worklog entries for a project in a specific month, grouped by issue."""
+
+    @allow_permission([ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="WORKSPACE")
+    def get(self, request, slug, project_id, year, month):
+        import calendar
+        from collections import OrderedDict
+        from datetime import datetime
+
+        if month < 1 or month > 12:
+            return Response(
+                {"error": "Invalid month"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        _, last_day = calendar.monthrange(year, month)
+        start = datetime(year, month, 1)
+        end = datetime(year, month, last_day, 23, 59, 59)
+
+        is_admin = WorkspaceMember.objects.filter(
+            member=request.user,
+            workspace__slug=slug,
+            role=20,
+            is_active=True,
+        ).exists()
+
+        entries = (
+            WorklogEntry.objects.filter(
+                project_id=project_id,
+                is_running=False,
+                started_at__gte=start,
+                started_at__lte=end,
+                deleted_at__isnull=True,
+            )
+            .select_related("logged_by", "issue")
+            .order_by("started_at")
+        )
+
+        if not is_admin:
+            entries = entries.exclude(billing_status="self_caused")
+
+        issues = OrderedDict()
+        for entry in entries:
+            issue_id = str(entry.issue_id)
+            if issue_id not in issues:
+                issues[issue_id] = {
+                    "issue_id": issue_id,
+                    "issue_title": entry.issue.name if entry.issue else "Unbekannt",
+                    "entries": [],
+                    "total_minutes": 0,
+                }
+            issues[issue_id]["entries"].append({
+                "id": str(entry.id),
+                "description": entry.description,
+                "duration_minutes": entry.duration_minutes,
+                "billing_status": entry.billing_status,
+                "gift_reason": entry.gift_reason,
+                "logged_by": {
+                    "id": str(entry.logged_by.id),
+                    "display_name": entry.logged_by.display_name,
+                }
+                if entry.logged_by
+                else None,
+                "started_at": entry.started_at.isoformat() if entry.started_at else None,
+            })
+            issues[issue_id]["total_minutes"] += entry.duration_minutes
+
+        return Response(list(issues.values()), status=status.HTTP_200_OK)
 
 
 def compute_carryover_for_next_month(balance):

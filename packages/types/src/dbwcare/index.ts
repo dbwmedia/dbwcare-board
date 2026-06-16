@@ -112,6 +112,23 @@ export interface IWorklogTimerStopData {
   billing_status?: TBillingStatus;
 }
 
+export interface IMonthWorklogEntry {
+  id: string;
+  description: string;
+  duration_minutes: number;
+  billing_status: TBillingStatus;
+  gift_reason: string;
+  logged_by: { id: string; display_name: string } | null;
+  started_at: string | null;
+}
+
+export interface IMonthWorklogGroup {
+  issue_id: string;
+  issue_title: string;
+  entries: IMonthWorklogEntry[];
+  total_minutes: number;
+}
+
 export interface IIssueRecurrence {
   id: string;
   template_issue: string;

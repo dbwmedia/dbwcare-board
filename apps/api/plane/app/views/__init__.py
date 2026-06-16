@@ -236,6 +236,7 @@ from .care import (
     ProjectCareSubscriptionEndpoint,
     ProjectCareBalanceEndpoint,
     ProjectCareBalanceHistoryEndpoint,
+    ProjectCareMonthWorklogsEndpoint,
     CareOverviewEndpoint,
     WorklogEntryViewSet,
     WorklogTimerStartEndpoint,
