@@ -18,41 +18,33 @@ const formatMinutes = (minutes: number) => {
 function getWidgetColors(percentage: number, remaining: number) {
   if (remaining < 0) {
     return {
-      gradient: "from-rose-500/15 via-rose-500/5 to-transparent",
-      bar: "bg-rose-500",
-      text: "text-rose-400",
-      icon: "bg-rose-500/20",
+      gradient: "from-red-500/20 via-red-500/10 to-transparent",
+      bar: "bg-red-500",
+      text: "text-red-400",
+      icon: "bg-red-500/20",
     };
   }
-  if (percentage < 60) {
+  if (percentage < 65) {
     return {
-      gradient: "from-emerald-500/15 via-emerald-500/5 to-transparent",
+      gradient: "from-emerald-500/20 via-emerald-500/10 to-transparent",
       bar: "bg-emerald-500",
       text: "text-emerald-400",
       icon: "bg-emerald-500/20",
     };
   }
-  if (percentage < 80) {
+  if (percentage < 85) {
     return {
-      gradient: "from-amber-400/15 via-amber-400/5 to-transparent",
-      bar: "bg-amber-400",
+      gradient: "from-amber-500/20 via-amber-500/10 to-transparent",
+      bar: "bg-amber-500",
       text: "text-amber-400",
-      icon: "bg-amber-400/20",
-    };
-  }
-  if (percentage < 100) {
-    return {
-      gradient: "from-orange-500/15 via-orange-500/5 to-transparent",
-      bar: "bg-orange-500",
-      text: "text-orange-400",
-      icon: "bg-orange-500/20",
+      icon: "bg-amber-500/20",
     };
   }
   return {
-    gradient: "from-rose-500/15 via-rose-500/5 to-transparent",
-    bar: "bg-rose-500",
-    text: "text-rose-400",
-    icon: "bg-rose-500/20",
+    gradient: "from-red-500/20 via-red-500/10 to-transparent",
+    bar: "bg-red-500",
+    text: "text-red-400",
+    icon: "bg-red-500/20",
   };
 }
 
@@ -125,12 +117,12 @@ export const CareBalanceWidget = observer(function CareBalanceWidget({ projectId
           <span>von {formatMinutes(total)}</span>
         </div>
         {remaining < 0 && (
-          <div className="mt-1 text-caption-xs text-rose-400">
+          <div className="mt-1 text-caption-xs text-red-400">
             Überziehung - wird im Folgemonat verrechnet
           </div>
         )}
         {remaining >= 0 && balance.borrowed_minutes > 0 && (
-          <div className="mt-1 text-caption-xs text-rose-400">
+          <div className="mt-1 text-caption-xs text-red-400">
             -{formatMinutes(balance.borrowed_minutes)} Überziehung Vormonat
           </div>
         )}

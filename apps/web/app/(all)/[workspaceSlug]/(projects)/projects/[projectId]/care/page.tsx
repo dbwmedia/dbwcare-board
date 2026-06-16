@@ -22,50 +22,32 @@ const formatMinutes = (minutes: number) => {
   return `${sign}${h}h ${m}min`;
 };
 
-// Smooth color interpolation based on consumption percentage
 function getStatusColors(percentage: number, remaining: number) {
   if (remaining < 0) {
     return {
-      bar: "bg-rose-500",
-      text: "text-rose-400",
-      badge: "bg-rose-500/15 text-rose-400",
-      glow: "from-rose-500/8 via-transparent to-transparent",
-      hero: "from-rose-500/6 via-transparent to-slate-500/3",
+      bar: "bg-red-500",
+      text: "text-red-400",
+      hero: "from-red-500/5 via-transparent to-transparent",
     };
   }
-  if (percentage < 60) {
+  if (percentage < 65) {
     return {
       bar: "bg-emerald-500",
       text: "text-emerald-400",
-      badge: "bg-emerald-500/15 text-emerald-400",
-      glow: "from-emerald-500/8 via-transparent to-transparent",
       hero: "from-emerald-500/5 via-transparent to-blue-500/3",
     };
   }
-  if (percentage < 80) {
+  if (percentage < 85) {
     return {
-      bar: "bg-amber-400",
+      bar: "bg-amber-500",
       text: "text-amber-400",
-      badge: "bg-amber-400/15 text-amber-400",
-      glow: "from-amber-400/8 via-transparent to-transparent",
-      hero: "from-amber-400/5 via-transparent to-orange-500/3",
-    };
-  }
-  if (percentage < 100) {
-    return {
-      bar: "bg-orange-500",
-      text: "text-orange-400",
-      badge: "bg-orange-500/15 text-orange-400",
-      glow: "from-orange-500/8 via-transparent to-transparent",
-      hero: "from-orange-500/5 via-transparent to-rose-500/3",
+      hero: "from-amber-500/5 via-transparent to-transparent",
     };
   }
   return {
-    bar: "bg-rose-500",
-    text: "text-rose-400",
-    badge: "bg-rose-500/15 text-rose-400",
-    glow: "from-rose-500/8 via-transparent to-transparent",
-    hero: "from-rose-500/5 via-transparent to-rose-500/3",
+    bar: "bg-red-500",
+    text: "text-red-400",
+    hero: "from-red-500/5 via-transparent to-transparent",
   };
 }
 
@@ -156,12 +138,12 @@ const CareOverviewCustomerPage = observer(function CareOverviewCustomerPage() {
             </div>
           )}
           {balance.borrowed_minutes > 0 && (
-            <div className="mt-3 rounded-md bg-rose-500/10 px-3 py-2 text-body-xs-regular text-rose-400">
+            <div className="mt-3 rounded-md bg-red-500/10 px-3 py-2 text-body-xs-regular text-red-400">
               -{formatMinutes(balance.borrowed_minutes)} vom Vormonat abgezogen (Überziehung)
             </div>
           )}
           {remaining < 0 && (
-            <div className="mt-3 rounded-md bg-rose-500/10 px-3 py-2 text-body-xs-regular text-rose-400">
+            <div className="mt-3 rounded-md bg-red-500/10 px-3 py-2 text-body-xs-regular text-red-400">
               {formatMinutes(Math.abs(remaining))} Überziehung - wird im Folgemonat verrechnet
             </div>
           )}
@@ -292,7 +274,7 @@ const MonthRow = observer(function MonthRow({
                 </span>
               )}
             </div>
-            <span className={cn("text-body-sm-medium", remaining < 0 ? "text-rose-400" : "text-tertiary")}>
+            <span className={cn("text-body-sm-medium", remaining < 0 ? "text-red-400" : "text-tertiary")}>
               {formatMinutes(remaining)} übrig
             </span>
           </div>
@@ -309,7 +291,7 @@ const MonthRow = observer(function MonthRow({
           <div className="mt-2 flex gap-6 text-caption-xs text-tertiary">
             <span>Basis: {formatMinutes(baseMinutes)}</span>
             {rolledOver > 0 && <span className="text-emerald-400">+{formatMinutes(rolledOver)} Depot</span>}
-            {borrowed > 0 && <span className="text-rose-400">-{formatMinutes(borrowed)} Überziehung</span>}
+            {borrowed > 0 && <span className="text-red-400">-{formatMinutes(borrowed)} Überziehung</span>}
             <span>Verbraucht: {formatMinutes(consumed)}</span>
             <span>{pct}%</span>
           </div>
