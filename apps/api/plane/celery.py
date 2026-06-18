@@ -127,6 +127,7 @@ app.conf.include = [
     "plane.bgtasks.dbwcare_weekly_report_task",
     "plane.bgtasks.dbwcare_guest_issue_notification_task",
     "plane.bgtasks.dbwcare_guest_issue_confirmation_task",
+    "plane.bgtasks.dbwcare_quota_exhausted_task",
 ]
 
 app.conf.beat_scheduler = "django_celery_beat.schedulers.DatabaseScheduler"

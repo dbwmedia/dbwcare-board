@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>dbwCARE – Kontingent aufgebraucht</title>
+    <style>
+      body, table, td, p { margin: 0; padding: 0; }
+      img { border: 0; line-height: 100%; text-decoration: none; }
+      table { border-collapse: collapse; }
+      @media only screen and (max-width: 600px) {
+        .email-container { width: 100% !important; }
+        .email-content { padding: 24px 20px !important; }
+      }
+    </style>
+  </head>
+  <body bgcolor="#f0f0f0" style="margin:0;padding:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#1a1a2e;-webkit-font-smoothing:antialiased;background-color:#f0f0f0;">
+    <!-- Preheader -->
+    <span style="display:none;font-size:1px;color:transparent;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+      {{ customer_name }} – dein Kontingent fuer {{ month_label }} ist aufgebraucht.
+    </span>
+
+    <center style="width:100%;background-color:#f0f0f0;padding:32px 0;">
+
+      <!-- MAIN CARD -->
+      <table role="presentation" width="100%">
+        <tr>
+          <td></td>
+          <td class="email-container" width="580" style="width:580px;max-width:580px;margin:0 auto;">
+            <table role="presentation" width="100%" style="background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+
+              <!-- Gradient accent bar -->
+              <tr>
+                <td style="height:4px;background:linear-gradient(90deg,#ea2b1f,#ff3c6f,#ff4fdd,#7e56ff,#00b2ff);"></td>
+              </tr>
+
+              <!-- Content -->
+              <tr>
+                <td class="email-content" style="padding:36px 40px 32px;">
+
+                  <!-- Header: Title + Logo -->
+                  <table role="presentation" width="100%">
+                    <tr>
+                      <td style="vertical-align:top;">
+                        <p style="margin:0;font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Kontingent-Info</p>
+                        <h1 style="margin:6px 0 4px;font-size:24px;font-weight:700;color:#1a1a2e;line-height:1.3;">Kontingent aufgebraucht</h1>
+                        <p style="margin:0;font-size:15px;color:#666;">{{ customer_name }}</p>
+                      </td>
+                      <td style="vertical-align:top;text-align:right;">
+                        <div style="display:inline-block;border-radius:40px;background:linear-gradient(135deg,#ea2b1f,#ff3c6f,#ff4fdd,#7e56ff,#00b2ff);padding:2px;">
+                          <div style="background:#ffffff;border-radius:38px;padding:6px 16px;">
+                            <span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;color:#1a1a2e;letter-spacing:0.3px;font-weight:400;">DBW</span><span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;color:#1a1a2e;letter-spacing:0.3px;font-weight:800;">CARE</span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  <div style="height:24px;"></div>
+
+                  <!-- Info text -->
+                  <p style="margin:0 0 16px;font-size:15px;color:#333;line-height:1.6;">
+                    Hallo {{ customer_name }},
+                  </p>
+                  <p style="margin:0 0 16px;font-size:15px;color:#333;line-height:1.6;">
+                    kurze Info: Dein Stundenkontingent fuer <strong>{{ month_label }}</strong> (Paket {{ package_label }}) ist jetzt aufgebraucht.
+                  </p>
+                  <p style="margin:0 0 16px;font-size:15px;color:#333;line-height:1.6;">
+                    Falls im laufenden Monat noch Aufgaben anfallen, greifen wir auf das Kontingent des Folgemonats zurueck. Das wird dann entsprechend verrechnet.
+                  </p>
+                  <p style="margin:0 0 4px;font-size:15px;color:#333;line-height:1.6;">
+                    Du musst nichts weiter tun. Wir wollten dich nur kurz auf dem Laufenden halten.
+                  </p>
+
+                  <div style="height:8px;"></div>
+
+                  <!-- Stats Box -->
+                  <table role="presentation" width="100%" style="background:#fafafa;border-radius:12px;border:1px solid #eee;">
+                    <tr>
+                      <td style="padding:20px 24px;">
+                        <table role="presentation" width="100%">
+                          <tr>
+                            <td width="50%" style="vertical-align:top;">
+                              <p style="margin:0;font-size:11px;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;">Kontingent</p>
+                              <p style="margin:3px 0 0;font-size:20px;font-weight:700;color:#1a1a2e;">{{ available_formatted }}</p>
+                            </td>
+                            <td width="50%" style="vertical-align:top;">
+                              <p style="margin:0;font-size:11px;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;">Verbraucht</p>
+                              <p style="margin:3px 0 0;font-size:20px;font-weight:700;color:#ea2b1f;">{{ consumed_formatted }}</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 24px 16px;">
+                        <!-- Progress bar (full) -->
+                        <div style="background:#e8e8e8;border-radius:6px;height:8px;width:100%;overflow:hidden;">
+                          <div style="background:linear-gradient(90deg,#ea2b1f,#ff3c6f,#ff4fdd,#7e56ff,#00b2ff);border-radius:6px;height:8px;width:100%;"></div>
+                        </div>
+                        <p style="margin:6px 0 0;font-size:11px;color:#888;text-align:right;">100% genutzt</p>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- CTA Button with gradient -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0 0;">
+                    <tr>
+                      <td style="border-radius:10px;background:linear-gradient(135deg,#ea2b1f,#ff3c6f,#ff4fdd,#7e56ff,#00b2ff);">
+                        <a href="{{ project_url }}" target="_blank" style="display:inline-block;padding:14px 32px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">
+                          DBWCARE oeffnen
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+
+      <!-- FOOTER -->
+      <table role="presentation" width="100%">
+        <tr>
+          <td></td>
+          <td class="email-container" width="580" style="width:580px;max-width:580px;margin:0 auto;">
+            <table role="presentation" width="100%" style="padding:20px 0 24px;">
+              <tr>
+                <td style="text-align:center;">
+                  <p style="margin:0;font-size:13px;color:#888;">Bei Fragen melde dich jederzeit bei uns.</p>
+                  <p style="margin:8px 0 0;font-size:11px;color:#aaa;">dbw media &middot; <a href="https://dbw-media.de" style="color:#888;text-decoration:underline;">dbw-media.de</a></p>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+
+    </center>
+  </body>
+</html>

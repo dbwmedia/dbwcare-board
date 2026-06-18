@@ -141,6 +141,10 @@ class ProjectMonthlyBalance(BaseModel):
         default=False,
         help_text="Month is finalized, no more bookings allowed",
     )
+    quota_exhausted_notified = models.BooleanField(
+        default=False,
+        help_text="Whether the customer was notified that the monthly quota is exhausted",
+    )
 
     class Meta:
         db_table = "project_monthly_balances"

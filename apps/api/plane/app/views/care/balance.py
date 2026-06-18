@@ -36,8 +36,12 @@ def get_or_create_current_balance(project_id):
     # Always recompute consumed_minutes from actual worklog entries
     consumed = _compute_consumed_minutes(project_id, year, month)
     if balance.consumed_minutes != consumed:
+        old_consumed = balance.consumed_minutes
         balance.consumed_minutes = consumed
         balance.save(update_fields=["consumed_minutes"], disable_auto_set_user=True)
+
+        # Check if quota was just exhausted (crossed the threshold)
+        _check_quota_exhausted(balance, old_consumed)
 
     return balance
 
@@ -334,6 +338,40 @@ class ProjectCareMonthWorklogsEndpoint(BaseAPIView):
             issues[issue_id]["total_minutes"] += entry.duration_minutes
 
         return Response(list(issues.values()), status=status.HTTP_200_OK)
+
+
+def _check_quota_exhausted(balance, old_consumed):
+    """
+    If consumed_minutes just crossed total_available_minutes,
+    send a one-time notification email to the customer.
+    Resets the flag if consumption drops back below the threshold.
+    """
+    total = balance.total_available_minutes
+    now_exhausted = balance.consumed_minutes >= total and total > 0
+    was_exhausted = old_consumed >= total and total > 0
+
+    if now_exhausted and not was_exhausted and not balance.quota_exhausted_notified:
+        # Quota just crossed the threshold — send notification
+        balance.quota_exhausted_notified = True
+        balance.save(
+            update_fields=["quota_exhausted_notified"],
+            disable_auto_set_user=True,
+        )
+        try:
+            from plane.bgtasks.dbwcare_quota_exhausted_task import (
+                dbwcare_quota_exhausted_notification,
+            )
+            dbwcare_quota_exhausted_notification.delay(str(balance.id))
+        except Exception:
+            pass  # Don't fail the main operation
+
+    elif not now_exhausted and balance.quota_exhausted_notified:
+        # Consumption dropped back below threshold (e.g. entry deleted)
+        balance.quota_exhausted_notified = False
+        balance.save(
+            update_fields=["quota_exhausted_notified"],
+            disable_auto_set_user=True,
+        )
 
 
 def compute_carryover_for_next_month(balance):

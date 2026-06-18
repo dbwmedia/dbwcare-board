@@ -4,6 +4,18 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.7.5 – 2026-06-18
+
+### Kontingent-erschoepft-Benachrichtigung
+
+- **Automatische E-Mail bei Kontingent-Erschoepfung:** Wenn ein Projekt sein monatliches Stundenkontingent vollstaendig verbraucht hat, erhaelt der Kunde eine freundliche E-Mail. Informiert, dass ab jetzt das Kontingent des Folgemonats genutzt wird.
+- **Einmalig pro Monat:** Flag `quota_exhausted_notified` auf der Balance verhindert Mehrfach-Versand. Wird automatisch zurueckgesetzt, falls Verbrauch wieder unter das Kontingent faellt (z.B. Eintrag geloescht).
+- **Neuer Celery-Task:** `dbwcare_quota_exhausted_notification` — wird asynchron getriggert, kein Scheduled Task
+- **Neues Template:** `emails/care/quota_exhausted.html` — im bestehenden dbwCARE-Design
+- **Migration:** `0506_care_quota_exhausted_notified`
+
+---
+
 ## v0.7.4 – 2026-06-16
 
 ### Aufklappbarer Monatsverlauf & verbesserte Farben
