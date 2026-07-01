@@ -77,9 +77,14 @@ function RenderIfVisible(props: Props) {
   //Set height after render
   useEffect(() => {
     if (intersectionRef.current && isVisible && shouldRecordHeights) {
-      window.requestIdleCallback(() => {
+      const recordHeight = () => {
         if (intersectionRef.current) placeholderHeight.current = `${intersectionRef.current.offsetHeight}px`;
-      });
+      };
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(recordHeight);
+      } else {
+        recordHeight();
+      }
     }
   }, [isVisible, intersectionRef, shouldRecordHeights]);
 

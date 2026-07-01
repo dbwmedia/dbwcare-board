@@ -4,6 +4,16 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.7.6 – 2026-07-01
+
+### Fix: Safari-Crash beim Oeffnen der Aufgaben-Seite
+
+- **Safari-Absturz behoben:** Beim Klick auf "Aufgaben" in der Sidebar crashte die App in Safari mit "Looks like something went wrong!". Chrome war nicht betroffen.
+- **Ursache:** `window.requestIdleCallback()` wurde ohne Guard aufgerufen. Safari < 16.4 hat diese API nicht nativ. Die vorhandene Polyfill-Datei wurde nach der Migration von Next.js zu React Router nicht mehr importiert.
+- **Fix:** Polyfill-Import in `entry.client.tsx` hinzugefuegt + defensiven Guard in `render-if-visible-HOC.tsx` eingebaut.
+
+---
+
 ## v0.7.5 – 2026-06-18
 
 ### Kontingent-erschoepft-Benachrichtigung
