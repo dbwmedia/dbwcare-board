@@ -4,6 +4,16 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.7.7 – 2026-07-15
+
+### Feature: Care-Stats-API fuer das DBW OS
+
+- **Neuer Endpoint `GET /api/v1/workspaces/<slug>/care-stats/`:** Read-only-Aggregat fuer das DBW-OS-Cockpit (os.dbw-media.de). Liefert pro aktivem Care-Abo die Monats-Balance (Basis, Rollover, Ueberziehung, verbraucht, verfuegbar, Prozent) plus die von Gaesten (Kunden) in den letzten 14 Tagen angelegten Aufgaben.
+- **Auth:** regulaerer Plane-API-Token (`X-API-Key`, Workspace-Einstellungen → API-Tokens), Token-Nutzer muss Workspace-Admin sein. Kein neues Secret, keine Server-Konfiguration noetig.
+- Neue Dateien: `apps/api/plane/api/views/care.py`, `apps/api/plane/api/urls/care.py`. Keine Migration.
+
+---
+
 ## v0.7.6 – 2026-07-01
 
 ### Fix: Safari-Crash beim Oeffnen der Aufgaben-Seite
