@@ -4,6 +4,17 @@ Alle wesentlichen Änderungen am DBWCARE-Fork von Plane.
 
 ---
 
+## v0.8.0 – 2026-09-22
+
+### Feature: Care-Timer mit der DBW-OS-Stempeluhr verbunden
+
+- **Neuer Endpoint `GET/POST /api/v1/workspaces/<slug>/care-timer/`:** Das DBW OS (os.dbw-media.de) liest den laufenden Timer einer Person (`GET ?email=`) und kann ihn stoppen (`POST {"email": …}`). Startet jemand hier einen Timer, wechselt die OS-Uhr auf „Care · <Projekt>: <Aufgabe>“; wechselt die Person im OS (Kalender, ClickUp, Pause, Feierabend), stoppt das OS den Care-Timer.
+- **Auth:** derselbe API-Token wie bei `care-stats` (`X-API-Key`), der Token-Nutzer muss hier aber echter Workspace-**Admin** sein (Rolle 20), weil er für alle Teammitglieder handelt. Angesprochen werden nur aktive Admins/Mitglieder, nie Gäste (Kunden).
+- **Beschreibung beim Stopp:** bleibt, was die Person eingetragen hat; ist sie leer, wird der Aufgabentitel verwendet (Kunden sehen die Beschreibung im Bericht, deshalb nie leer und nie ein OS-internes Label). Dauer und Balance-Aktualisierung wie beim Stopp in der App.
+- Neue Dateien: Test `apps/api/plane/tests/contract/api/test_care_timer.py` (8 Fälle). Keine Migration.
+
+---
+
 ## v0.7.7 – 2026-07-15
 
 ### Feature: Care-Stats-API fuer das DBW OS

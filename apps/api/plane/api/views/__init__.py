@@ -64,4 +64,4 @@ from .invite import WorkspaceInvitationsViewset
 
 from .sticky import StickyViewSet
 
-from .care import CareStatsAPIEndpoint
+from .care import CareStatsAPIEndpoint, CareTimerAPIEndpoint
